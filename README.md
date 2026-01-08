@@ -25,8 +25,6 @@ npm run build
 npm run preview
 ```
 
-개발 서버는 기본적으로 `http://localhost:5173`에서 실행됩니다.
-
 ## 팀원 안내
 
 - 로그인은 현재 임시 구현이므로 아무 이메일/비밀번호나 입력하면 됩니다
@@ -103,12 +101,3 @@ src/
 - Props는 interface로 타입 정의
 - 파일명은 PascalCase (예: `MyComponent.tsx`)
 
-## 향후 계획
-
-- [ ] 백엔드 API 연동
-- [ ] JWT 기반 인증 시스템 구현
-- [ ] 캘린더 기능 구현
-- [ ] 할일 관리 기능 구현
-- [ ] 반응형 디자인 적용
-- [ ] CSS 라이브러리 도입 (Tailwind CSS / Styled Components)
-- [ ] 상태 관리 라이브러리 도입 (Zustand / Recoil)
