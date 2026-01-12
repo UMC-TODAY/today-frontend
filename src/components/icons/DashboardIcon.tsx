@@ -1,0 +1,20 @@
+interface DashboardIconProps {
+  isActive?: boolean;
+}
+
+export default function DashboardIcon({ isActive = false }: DashboardIconProps) {
+  const fillColor = isActive ? '#4f46e5' : '#6b7280';
+
+  return (
+    <svg width="22" height="27" viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M21.343 8.92557L12.4215 0.56224C11.622 -0.187413 10.3777 -0.187413 9.5785 0.56224L0.656951 8.92557C0.237948 9.31847 0 9.86732 0 10.4419V24.6947C0 25.8426 0.931043 26.7734 2.07862 26.7734H7.28001V20.1791C7.28001 19.7363 7.63911 19.3772 8.08187 19.3772H13.9037C14.3465 19.3772 14.7056 19.7363 14.7056 20.1791V26.7734H19.9214C21.069 26.7734 22 25.8426 22 24.6947V10.4419C22 9.86732 21.7617 9.31847 21.343 8.92557Z"
+        fill={fillColor}
+      />
+      <path
+        d="M13.5987 20.6768H8.39062V26.7747H13.5987V20.6768Z"
+        fill={fillColor}
+      />
+    </svg>
+  );
+}
