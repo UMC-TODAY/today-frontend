@@ -1,12 +1,18 @@
 import { NavLink } from 'react-router-dom';
+import logoSvg from '../../assets/icons/logo.svg';
+import DashboardIcon from '../icons/DashboardIcon';
+import CalendarIcon from '../icons/CalendarIcon';
+import TodolistIcon from '../icons/TodolistIcon';
+import CommunityIcon from '../icons/CommunityIcon';
+import AnalyticsIcon from '../icons/AnalyticsIcon';
 
 export default function Sidebar() {
   const menuItems = [
-    { path: '/dashboard', icon: '🏠', label: '대시보드' },
-    { path: '/calendar', icon: '📅', label: '캘린더' },
-    { path: '/goal-tracker', icon: '✓', label: '할일 목록' },
-    { path: '/community', icon: '👥', label: '커뮤니티' },
-    { path: '/analytics', icon: '📊', label: '분석 및 추천' },
+    { path: '/dashboard', label: '대시보드', iconType: 'dashboard' },
+    { path: '/calendar', label: '캘린더', iconType: 'calendar' },
+    { path: '/goal-tracker', label: '할일 목록', iconType: 'todolist' },
+    { path: '/community', label: '커뮤니티', iconType: 'community' },
+    { path: '/analytics', label: '분석 및 추천', iconType: 'analytics' },
   ];
 
   return (
@@ -24,8 +30,12 @@ export default function Sidebar() {
         padding: '0 20px 30px',
         fontSize: '20px',
         fontWeight: 'bold',
-        color: '#000'
+        color: '#000',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px'
       }}>
+        <img src={logoSvg} alt="To:DAY Logo" style={{ width: '24px', height: '24px' }} />
         To:DAY
       </div>
 
@@ -47,8 +57,18 @@ export default function Sidebar() {
               fontWeight: isActive ? '600' : '400',
             })}
           >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
+            {({ isActive }) => (
+              <>
+                <span>
+                  {item.iconType === 'dashboard' && <DashboardIcon isActive={isActive} />}
+                  {item.iconType === 'calendar' && <CalendarIcon isActive={isActive} />}
+                  {item.iconType === 'todolist' && <TodolistIcon isActive={isActive} />}
+                  {item.iconType === 'community' && <CommunityIcon isActive={isActive} />}
+                  {item.iconType === 'analytics' && <AnalyticsIcon isActive={isActive} />}
+                </span>
+                <span>{item.label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
