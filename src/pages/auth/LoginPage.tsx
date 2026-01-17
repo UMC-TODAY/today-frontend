@@ -10,6 +10,26 @@ import NaverLogoIcon from "../../components/icons/NaverLogoIcon";
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+type LoginResponse = {
+  success: boolean;
+  code?: string;
+  message: string;
+  data: {
+    id: number;
+  };
+}
+
+const mockLoginApi = (): Promise<LoginResponse> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        success: true,
+        message: "요청이 성공적으로 처리되었습니다.",
+        data: { id: 1 }
+      });
+    }, 500);
+  });
+};
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -20,6 +40,7 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(true);
   const [showPw, setShowPw] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const canSubmit = useMemo(() => {
     if (!email.trim() || !password.trim()) return false;
@@ -27,7 +48,7 @@ export default function LoginPage() {
     return true;
   }, [email, password]);
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg(null);
 
@@ -36,13 +57,56 @@ export default function LoginPage() {
       return;
     }
 
-    // 임시 로그인 처리(백엔드 연동 전)
-    const payload = { email: email.trim(), loggedInAt: Date.now() };
-    const storage = remember ? window.localStorage : window.sessionStorage;
-    storage.setItem(AUTH_KEY, JSON.stringify(payload));
+    setIsLoading(true);
 
-    // 성공 시 대시보드로 이동
-    navigate("/dashboard", { replace: true });
+    try {
+
+      {/* 
+        개발 중일 때만 mockLoginApi() 호출
+        나중에 실제 API 연동 시 
+         - const result = await mockLoginApi(); 주석 처리
+         - const result = await response.json(); 주석 풀기 
+         - 아래 주석 처리된 실제 fetch 코드의 주석 풀기
+      */}
+
+      // const response = await fetch("/auth/login/email", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     email: email.trim(),
+      //     password: password,
+      //     remember: remember,
+      //   }),
+      // });
+
+      // const result = await response.json();
+      const result = await mockLoginApi();
+
+      if (result.success) {
+        // 로그인 성공
+        const payload = { 
+          email: email.trim(), 
+          userId: result.data.id,
+          loggedInAt: Date.now() 
+        };
+        
+        const storage = remember ? window.localStorage : window.sessionStorage;
+        storage.setItem(AUTH_KEY, JSON.stringify(payload));
+
+        // 대시보드로 이동
+        navigate("/dashboard", { replace: true });
+      } else {
+        // 로그인 실패
+        setErrorMsg(result.message || "로그인에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrorMsg("서버와의 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleGoogleLogin() {
@@ -55,12 +119,12 @@ export default function LoginPage() {
 
   const submitStyle: React.CSSProperties = {
     ...s.submitBase,
-    background: canSubmit ? "#0066FF" : "#3182F6",
-    cursor: canSubmit ? "pointer" : "not-allowed",
+    background: canSubmit && !isLoading ? "#0066FF" : "#3182F6",
+    cursor: canSubmit && !isLoading ? "pointer" : "not-allowed",
   };
 
   return (
-    <div style={s.page} >
+    <div style={s.page}>
       <div style={s.card}>
         <div style={getTextStyle(700, 28, "#000000")}>로그인하기</div>
         <div style={s.subtitle}>멤버십 무료 체험 14일 지원중!</div>
@@ -85,6 +149,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@naver.com"
                 autoComplete="email"
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -105,6 +170,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호"
                 autoComplete="current-password"
+                disabled={isLoading}
               />
 
               <button 
@@ -112,6 +178,7 @@ export default function LoginPage() {
                 onClick={() => setShowPw((v) => !v)} 
                 style={s.eyeBtn}
                 aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 보기"}
+                disabled={isLoading}
               >
                 <EyeIcon isOn={showPw} />
               </button>
@@ -125,6 +192,7 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
+                disabled={isLoading}
               />
               <div style={getTextStyle(400, 11, "#4D4D4D")}>로그인 유지</div>
             </label>
@@ -135,8 +203,14 @@ export default function LoginPage() {
           </div>
 
           {/* 6) 로그인 */}
-          <button style={submitStyle} disabled={!canSubmit} type="submit">
-            <div style={getTextStyle(600, 14, "#FFFFFF")}>로그인</div>
+          <button 
+            style={submitStyle} 
+            disabled={!canSubmit || isLoading} 
+            type="submit"
+          >
+            <div style={getTextStyle(600, 14, "#FFFFFF")}>
+              {isLoading ? "로그인 중..." : "로그인"}
+            </div>
           </button>
 
           {errorMsg && <div style={s.error}>{errorMsg}</div>}
@@ -149,7 +223,12 @@ export default function LoginPage() {
           </div>
 
           {/* 7) 구글 */}
-          <button type="button" style={s.socialBtnBase} onClick={handleGoogleLogin}>
+          <button 
+            type="button" 
+            style={s.socialBtnBase} 
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+          >
             <div style={s.googleIconWrap}>
               <GoogleLogoIcon />
             </div>
@@ -161,6 +240,7 @@ export default function LoginPage() {
             type="button"
             style={{ ...s.socialBtnBase, ...s.naverBtn }}
             onClick={handleNaverLogin}
+            disabled={isLoading}
           >
             <div style={s.naverIconWrap}>
               <NaverLogoIcon />
