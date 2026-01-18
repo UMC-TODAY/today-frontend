@@ -1,8 +1,8 @@
 import ProfileSummaryCard from "../components/dashboard/ProfileSummaryCard.tsx";
 import CategoryStatsCard from "../components/dashboard/CategoryStatsCard.tsx";
 import ActivityHeatmap from "../components/dashboard/ActivityHeatmap.tsx";
-import TodoListPanel from "../components/dashboard/TodoListPanel.tsx";
-import ScheduleListPanel from "../components/dashboard/ScheduleListPanel.tsx";
+import TodoList from "../components/goalTracker/TodoList.tsx";
+import ScheduleList from "../components/calendar/ScheduleList.tsx";
 
 const cardStyle: React.CSSProperties = {
   borderRadius: "12px",
@@ -114,7 +114,7 @@ export default function DashboardPage() {
               display: "flex",
             }}
           >
-            <TodoListPanel />
+            <TodoList />
           </div>
 
           {/* 오른쪽 : 일정 리스트 */}
@@ -127,7 +127,7 @@ export default function DashboardPage() {
               display: "flex",
             }}
           >
-            <ScheduleListPanel />
+            <ScheduleList />
           </div>
         </div>
         {/* 메인 컨텐츠 영역 끝 */}
