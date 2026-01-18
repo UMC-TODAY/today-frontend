@@ -1,21 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import MainLayout from './components/layout/MainLayout';
-import ProtectedRoute from './components/layout/ProtectedRoute';
-import LoginPage from './pages/auth/LoginPage';
-import LoginHelpPage from './pages/auth/LoginHelpPage';
-import FindIdPage from './pages/auth/FindIdPage';
-import FindPasswordPage from './pages/auth/FindPasswordPage';
-import FindPasswordVerifyPage from './pages/auth/FindPasswordVerifyPage';
-import FindPasswordDonePage from './pages/auth/FindPasswordDonePage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
-import SignupPage from './pages/auth/SignupPage';
-import SignupPasswordPage from './pages/auth/SignupPasswordPage';
-import DashboardPage from './pages/DashboardPage';
-import CalendarPage from './pages/CalendarPage';
-import GoalTrackerPage from './pages/GoalTrackerPage';
-import CommunityPage from './pages/CommunityPage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import MainLayout from "./components/layout/MainLayout";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import LoginPage from "./pages/auth/LoginPage";
+import LoginHelpPage from "./pages/auth/LoginHelpPage";
+import FindIdPage from "./pages/auth/FindIdPage";
+import FindPasswordPage from "./pages/auth/FindPasswordPage";
+import FindPasswordVerifyPage from "./pages/auth/FindPasswordVerifyPage";
+import FindPasswordDonePage from "./pages/auth/FindPasswordDonePage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import SignupPage from "./pages/auth/SignupPage";
+import SignupPasswordPage from "./pages/auth/SignupPasswordPage";
+import DashboardPage from "./pages/DashboardPage";
+import CalendarPage from "./pages/CalendarPage";
+import GoalTrackerPage from "./pages/GoalTrackerPage";
+import CommunityPage from "./pages/CommunityPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
+import "./App.css";
 
 function App() {
   return (
@@ -26,8 +26,14 @@ function App() {
         <Route path="/login/help" element={<LoginHelpPage />} />
         <Route path="/login/find-id" element={<FindIdPage />} />
         <Route path="/login/find-password" element={<FindPasswordPage />} />
-        <Route path="/login/find-password/verify" element={<FindPasswordVerifyPage />} />
-        <Route path="/login/find-password/done" element={<FindPasswordDonePage />} />
+        <Route
+          path="/login/find-password/verify"
+          element={<FindPasswordVerifyPage />}
+        />
+        <Route
+          path="/login/find-password/done"
+          element={<FindPasswordDonePage />}
+        />
         <Route path="/login/reset-password" element={<ResetPasswordPage />} />
 
         <Route path="/signup" element={<SignupPage />} />
