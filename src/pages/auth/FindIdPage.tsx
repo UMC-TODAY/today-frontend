@@ -100,7 +100,7 @@ export default function FindIdPage() {
         setOkMsg("이미 해당 이메일로 회원가입되어 있습니다.");
       } else {
         // 가입되지 않은 이메일
-        setOkMsg("해당 이메일의 회원 정보가 없습니다.");
+        setErrorMsg("해당 이메일의 회원 정보가 없습니다.");
       }
     } catch (err) {
       console.error(err);

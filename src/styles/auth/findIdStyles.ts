@@ -97,7 +97,7 @@ export const findIdStyles = {
   success: {
     marginTop: "18px",
     fontSize: "13px",
-    color: "#4D4D4D",
+    color: "#0066FF",
     fontWeight: 500,
     lineHeight: 1.4,
   } as const,
