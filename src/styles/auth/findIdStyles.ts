@@ -88,7 +88,7 @@ export const findIdStyles = {
 
   error: {
     marginTop: "18px",
-    fontSize: "12px",
+    fontSize: "13px",
     color: "#d93025",
     fontWeight: 600,
     lineHeight: 1.4,
