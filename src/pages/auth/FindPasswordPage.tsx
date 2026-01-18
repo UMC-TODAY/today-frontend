@@ -126,7 +126,7 @@ export default function FindPasswordPage() {
           type="button"
           style={s.closeBtn}
           aria-label="나가기"
-          onClick={() => navigate("/login/help", { replace: true })}
+          onClick={() => navigate("/login", { replace: true })}
           disabled={isLoading}
         >
           <FindIdXIcon />
