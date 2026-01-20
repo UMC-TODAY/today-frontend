@@ -1,13 +1,15 @@
 import type { AxiosInstance } from "axios";
 
-export const setupInterceptors = (instance: AxiosInstance) => {
+export const setupInterceptors = (instance: AxiosInstance): AxiosInstance => {
   instance.interceptors.request.use(
-    (config) => config,
-    (error) => Promise.reject(error),
-  );
+    (config) => {
+      const token = localStorage.getItem("accessToken");
 
-  instance.interceptors.response.use(
-    (response) => response,
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
     (error) => Promise.reject(error),
   );
 
