@@ -1,11 +1,4 @@
-<<<<<<< Updated upstream
-export default function CommunityPage() {
-  return (
-    <div>
-      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
-        커뮤니티입니다
-      </h1>
-=======
+
 import { useState } from "react";
 import { Bell, Heart, MessageCircle, MoreVertical, Plus } from "lucide-react";
 
@@ -332,7 +325,6 @@ export default function CommunityPage() {
           </div>
         </div>
       </div>
->>>>>>> Stashed changes
     </div>
   </div>
 );
