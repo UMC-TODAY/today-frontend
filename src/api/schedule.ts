@@ -3,7 +3,7 @@ import type { ApiResponse } from "../types/common";
 import type { CreateScheduleRequest } from "../types/schedule";
 
 export const postSchedule = async (data: CreateScheduleRequest) => {
-  const response = await axiosInstance.post<ApiResponse<null>>(
+  const response = await axiosInstance.post<ApiResponse<number>>(
     "/api/v1/schedules",
     data,
   );
