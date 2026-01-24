@@ -178,7 +178,7 @@ export default function ResetPasswordPage() {
         </form>
 
         {errorMsg && (
-          <div style={{ ...s.error, marginTop: "10px" }}>{errorMsg}</div>
+          <div style={{ ...s.error, marginTop: "16px" }}>{errorMsg}</div>
         )}
       </div>
     </div>
