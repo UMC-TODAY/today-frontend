@@ -100,6 +100,7 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPw(e.target.value)}
                 placeholder=""
                 autoComplete="new-password"
+                maxLength={32}
               />
             </div>
 
@@ -142,6 +143,7 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPw2(e.target.value)}
                 placeholder=""
                 autoComplete="new-password"
+                maxLength={32}
               />
             </div>
 
