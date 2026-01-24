@@ -6,11 +6,19 @@ import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMemo, useState } from "react";
 
 function isValidPassword(pw: string) {
+  // 8~32자 검증
   if (pw.length < 8 || pw.length > 32) return false;
+
+  // 영문, 숫자, 특수문자 조합 검증
   const hasLetter = /[A-Za-z]/.test(pw);
   const hasNumber = /[0-9]/.test(pw);
   const hasSpecial = /[^A-Za-z0-9]/.test(pw);
-  return hasLetter && hasNumber && hasSpecial;
+  const isCombined = hasLetter && hasNumber && hasSpecial;
+
+  // 3자 이상 연속된 동일 문자 및 숫자 제외 로직
+  const has3Reapting = /(.)\1{2,}/.test(pw);
+
+  return isCombined && !has3Reapting;
 }
 
 export default function ResetPasswordPage() {
