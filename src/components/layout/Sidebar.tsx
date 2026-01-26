@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import logoSvg from '../../assets/icons/logo.svg';
 import DashboardIcon from '../icons/DashboardIcon';
 import CalendarIcon from '../icons/CalendarIcon';
@@ -7,6 +7,7 @@ import CommunityIcon from '../icons/CommunityIcon';
 import AnalyticsIcon from '../icons/AnalyticsIcon';
 
 export default function Sidebar() {
+  const location = useLocation();
   const menuItems = [
     { path: '/dashboard', label: '대시보드', iconType: 'dashboard' },
     { path: '/calendar', label: '캘린더', iconType: 'calendar' },
@@ -15,12 +16,13 @@ export default function Sidebar() {
     { path: '/analytics', label: '분석 및 추천', iconType: 'analytics' },
   ];
 
+  const isAnyMenuActive = menuItems.some(item => location.pathname === item.path);
+
   return (
     <aside style={{
       width: '220px',
       minWidth: '220px',
       background: '#fff',
-      borderRight: '1px solid #e5e7eb',
       height: '100vh',
       padding: '20px 0',
       flexShrink: 0
@@ -30,10 +32,11 @@ export default function Sidebar() {
         padding: '0 20px 30px',
         fontSize: '20px',
         fontWeight: 'bold',
-        color: '#000',
+        color: isAnyMenuActive ? '#6987D2' : '#000',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px'
+        gap: '10px',
+        transition: 'color 0.2s'
       }}>
         <img src={logoSvg} alt="To:DAY Logo" style={{ width: '24px', height: '24px' }} />
         To:DAY
@@ -51,9 +54,8 @@ export default function Sidebar() {
               gap: '12px',
               padding: '12px 20px',
               textDecoration: 'none',
-              color: isActive ? '#4f46e5' : '#6b7280',
-              background: isActive ? '#eef2ff' : 'transparent',
-              borderLeft: isActive ? '3px solid #4f46e5' : '3px solid transparent',
+              color: isActive ? '#111827' : '#6b7280',
+              background: 'transparent',
               fontWeight: isActive ? '600' : '400',
             })}
           >
