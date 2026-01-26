@@ -15,7 +15,7 @@ export default function MainLayout() {
       <Sidebar />
       <main style={{
         flex: 1,
-        background: '#f9fafb',
+        background: '#ffffff',
         padding: '40px',
         overflowY: 'auto',
         minWidth: 0
