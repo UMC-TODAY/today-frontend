@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bell, Heart, MessageCircle, MoreVertical, Plus, Calendar, Clock, Repeat, X, Pencil, Loader2 } from "lucide-react";
 import todosData from "../data/todos.json";
@@ -43,17 +43,69 @@ const formatTime = (dateString: string) => {
   return date.toLocaleDateString("ko-KR");
 };
 
-// 카테고리별 이모지와 색상 매핑
-const categoryEmojis: Record<string, string> = {
-  "관리": "📁",
-  "업무": "💼",
-  "반려동물": "🐾",
-  "출퇴근": "🚗",
-  "학습": "📚",
-  "건강": "💪",
-  "취미": "🎯",
-  "소설": "📖",
-  "준비": "🎁"
+// 카테고리 SVG 아이콘 컴포넌트
+const CategoryIcon = ({ category }: { category: string }) => {
+  const icons: Record<string, JSX.Element> = {
+    "관리": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path fillRule="evenodd" clipRule="evenodd" d="M6.33165 0.0562493L8.0864 1.44381C8.13252 1.48026 8.18945 1.50006 8.24817 1.50006H13.2391C13.3831 1.50006 13.4998 1.61683 13.4998 1.76083V3.48791C13.4998 3.6319 13.3831 3.74868 13.2391 3.74868H2.79311C2.67882 3.74868 2.57779 3.82315 2.54404 3.93228L0.0528743 11.9809C0.0492744 11.9921 0.0389245 12 0.0269997 12C0.0121498 12 0 11.9879 0 11.973V0.260772C0 0.116774 0.116774 0 0.260772 0H6.1701C6.22882 0 6.28575 0.0197998 6.33187 0.0562493H6.33165ZM3.8992 5.24828H14.9835C15.1585 5.24828 15.2838 5.41748 15.233 5.58488L13.3421 11.8148C13.3088 11.9246 13.2076 11.9998 13.0926 11.9998H1.97075C1.79525 11.9998 1.6697 11.8297 1.72168 11.6621L3.65013 5.43188C3.68388 5.32276 3.7849 5.24828 3.8992 5.24828Z" fill="#6987D2" />
+      </svg>
+    ),
+    "업무": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="none">
+        <path fillRule="evenodd" clipRule="evenodd" d="M0 6.95246C1.91902 7.69901 3.94401 8.13685 6.00005 8.25003V9.75009H8.99996V8.25003C11.051 8.12155 13.0722 7.69451 15 6.98261V12.75H0V6.95246ZM9.74988 0L10.4998 0.749921V2.24999H14.9998V6.15754C12.7001 7.01613 10.2694 7.47041 7.81489 7.50011H7.27489C4.78753 7.47333 2.32446 7.00601 0 6.12019V2.24999H4.49998V0.749921L5.2499 0H9.74988ZM8.99996 1.50007H6.00005V2.24999H8.99996V1.50007Z" fill="#6987D2" />
+      </svg>
+    ),
+    "반려동물": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="13" viewBox="0 0 15 13" fill="none">
+        <path d="M0.333398 5.37705C-0.213327 5.87933 -0.0729215 6.96395 0.646611 7.8017C1.36614 8.63871 2.39219 8.90968 2.93779 8.40555C3.4834 7.90512 3.34337 6.81864 2.62346 5.98275C1.90393 5.14686 0.877889 4.87477 0.333026 5.37705H0.333398Z" fill="#6987D2" />
+        <path d="M12.2833 5.79155C11.6427 6.69639 11.6029 7.79103 12.1932 8.23696C12.7827 8.68141 13.7794 8.31295 14.4188 7.40737C15.0583 6.50438 15.0985 5.41086 14.509 4.96381C13.9194 4.51862 12.922 4.88931 12.2833 5.79155Z" fill="#6987D2" />
+        <path d="M5.72499 5.58104C6.68623 5.35085 7.1864 3.92149 6.84116 2.38945C6.49852 0.856665 5.44008 -0.198674 4.47884 0.031521C3.51872 0.26357 3.01929 1.69256 3.36193 3.22497C3.70717 4.75553 4.76487 5.81124 5.72499 5.58067V5.58104Z" fill="#6987D2" />
+        <path d="M10.5494 0.0315213C9.58928 -0.198674 8.53158 0.856666 8.18708 2.38908C7.84259 3.92149 8.34202 5.35048 9.304 5.58067C10.2634 5.81087 11.3218 4.75553 11.6663 3.22497C12.0116 1.69256 11.5095 0.26357 10.5494 0.0315213Z" fill="#6987D2" />
+        <path d="M7.4626 6.87695C5.17142 6.87695 3.45117 10.5086 3.45117 11.7099C3.45117 14.6643 5.17105 11.6165 7.4626 11.6165C9.75416 11.6165 11.474 14.6643 11.474 11.7099C11.474 10.5086 9.7549 6.87695 7.4626 6.87695Z" fill="#6987D2" />
+      </svg>
+    ),
+    "출퇴근": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M7.5 8.4375C8.01769 8.4375 8.4375 8.01769 8.4375 7.5C8.4375 6.98231 8.01769 6.5625 7.5 6.5625C6.98231 6.5625 6.5625 6.98231 6.5625 7.5C6.5625 8.01769 6.98231 8.4375 7.5 8.4375Z" fill="#6987D2" />
+        <path fillRule="evenodd" clipRule="evenodd" d="M15 7.5C15 11.6421 11.6421 15 7.5 15C3.35794 15 0 11.6421 0 7.5C0 3.35794 3.35794 0 7.5 0C11.6421 0 15 3.35794 15 7.5ZM5.625 5.625L3.75 10.3125L4.6875 11.25L9.375 9.375L11.25 4.6875L10.3125 3.75L5.625 5.625Z" fill="#6987D2" />
+      </svg>
+    ),
+    "학습": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="17" viewBox="0 0 14 17" fill="none">
+        <path d="M13.9462 4.8209C13.9462 4.76451 14 4.70813 14 4.65174V4.31343C14 4.25705 13.9462 4.20066 13.9462 4.14428C13.9103 4.10669 13.8744 4.0691 13.8385 4.03151L7.91538 0.0845771C7.75385 -0.0281924 7.48461 -0.0281924 7.32308 0.0845771L0.323077 5.1592L0.269231 5.21559H0.215385C0.161538 5.27197 0.161538 5.32836 0.107692 5.38474V5.44113C0 5.61028 0 5.66667 0 5.72305V12.4892C0 12.6584 0.107692 12.8839 0.269231 12.9403L6.19231 16.8872C6.3 16.9436 6.40769 17 6.46154 17C6.56923 17 6.67692 16.9436 6.78462 16.8872L13.7846 11.8126C13.8923 11.6998 14 11.5871 14 11.4179C14 11.2488 13.9462 11.0796 13.8385 10.9668C13.3538 10.4594 13.2462 9.72637 13.5692 9.04975L13.9462 8.20398C13.9462 8.1476 14 8.09121 14 8.03483V7.97844C14 7.92206 14 7.80929 13.9462 7.7529V7.69652C13.9462 7.64013 13.8923 7.58375 13.8385 7.52736C13.3538 7.0199 13.2462 6.2869 13.5692 5.61028L13.9462 4.8209ZM12.7077 7.86567L6.46154 12.3765L1.07692 8.82421V6.79436L6.19231 10.1774C6.3 10.2338 6.40769 10.2902 6.46154 10.2902C6.56923 10.2902 6.67692 10.2338 6.78462 10.1774L12.3308 6.17413C12.2769 6.73798 12.3846 7.30182 12.7077 7.86567ZM6.46154 15.7595L1.07692 12.2073V10.1774L6.19231 13.5605C6.3 13.6169 6.40769 13.6733 6.46154 13.6733C6.56923 13.6733 6.67692 13.6169 6.78462 13.5605L12.3308 9.55721C12.2769 10.1774 12.3846 10.7977 12.7077 11.3051L6.46154 15.7595Z" fill="#6987D2" />
+      </svg>
+    ),
+    "건강": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path fillRule="evenodd" clipRule="evenodd" d="M12.4442 0H1.55561C0.699988 0 0.00769987 0.699988 0.00769987 1.55561L0 12.4444C0 13.3 0.699988 14 1.55561 14H12.4444C13.3 14 14 13.3 14 12.4444V1.55561C14 0.699988 13.3 0 12.4444 0H12.4442ZM11.6665 8.55549H8.55549V11.6665H5.44451V8.55549H2.33329V5.44451H5.44428V2.33329H8.55526V5.44428H11.6662V8.55526L11.6665 8.55549Z" fill="#6987D2" />
+      </svg>
+    ),
+    "취미": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M13.0546 11.9413H13.0023C12.5893 11.9135 12.2772 11.5562 12.3051 11.1436C12.3051 11.1425 12.3051 11.1412 12.3053 11.14L12.5751 7.39484C12.8028 4.35051 10.5183 1.69784 7.47243 1.47021C5.79799 1.34505 4.15728 1.98704 3.01296 3.21529C1.94935 4.33073 1.40529 5.84279 1.5141 7.37978L1.78388 11.125C1.81288 11.5387 1.50084 11.8975 1.08695 11.9265C0.67306 11.9555 0.314027 11.6436 0.285026 11.2299L0.015245 7.48472C-0.238124 3.61257 2.69686 0.268482 6.57069 0.0152375C10.4445 -0.238007 13.7905 2.69554 14.0438 6.56747C14.0638 6.87284 14.0638 7.17912 14.0438 7.48449L13.7741 11.2297C13.7549 11.6173 13.4427 11.9263 13.0546 11.9413Z" fill="#6987D2" />
+        <path d="M10.8068 6.69922H10.0575C9.22967 6.69922 8.55859 7.36997 8.55859 8.19734V13.4404C8.55859 14.2678 9.22967 14.9385 10.0575 14.9385H10.8068C12.4623 14.9385 13.8043 13.597 13.8043 11.9425V9.69546C13.8043 8.04072 12.4621 6.69944 10.8068 6.69944V6.69922Z" fill="#6987D2" />
+        <path d="M4.06126 6.69749H3.31194C1.65639 6.69749 0.314453 8.03899 0.314453 9.69351V11.9406C0.314453 13.5953 1.65661 14.9366 3.31194 14.9366H4.06126C4.88903 14.9366 5.56011 14.2658 5.56011 13.4385V8.19539C5.56011 7.36802 4.88903 6.69727 4.06126 6.69727V6.69749Z" fill="#6987D2" />
+      </svg>
+    ),
+    "소셜": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M9.10684 0H1.60709C0.696405 0 0 0.696405 0 1.60709V10.7139C0 10.9282 0.107139 11.0889 0.267848 11.1961C0.374988 11.2496 0.428557 11.2496 0.535697 11.2496C0.642836 11.2496 0.749975 11.1961 0.803545 11.1425L4.82127 8.57114H9.10684C10.0175 8.57114 10.7139 7.87474 10.7139 6.96405V1.60709C10.7139 0.696405 10.0175 0 9.10684 0ZM4.28557 5.89266H3.21418C2.89276 5.89266 2.67848 5.67838 2.67848 5.35696C2.67848 5.03555 2.89276 4.82127 3.21418 4.82127H4.28557C4.60699 4.82127 4.82127 5.03555 4.82127 5.35696C4.82127 5.67838 4.60699 5.89266 4.28557 5.89266ZM5.89266 3.74988H3.21418C2.89276 3.74988 2.67848 3.5356 2.67848 3.21418C2.67848 2.89276 2.89276 2.67848 3.21418 2.67848H5.89266C6.21408 2.67848 6.42836 2.89276 6.42836 3.21418C6.42836 3.5356 6.21408 3.74988 5.89266 3.74988Z" fill="#6987D2" />
+        <path d="M13.392 3.75H11.7849V6.96418C11.7849 8.46413 10.6064 9.64266 9.10642 9.64266H5.14227L4.28516 10.1784V10.7141C4.28516 11.6247 4.98156 12.3211 5.89225 12.3211H10.1778L14.1955 14.8925C14.3027 14.9461 14.4098 14.9996 14.4634 14.9996C14.5705 14.9996 14.6241 14.9996 14.7312 14.9461C14.8919 14.8389 14.9991 14.6782 14.9991 14.4639V5.35709C14.9991 4.44641 14.3027 3.75 13.392 3.75Z" fill="#6987D2" />
+      </svg>
+    ),
+    "준비": (
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M11.6822 1.81428L10.1821 1.03104C8.86543 0.34383 8.20708 0 7.49878 0C6.79048 0 6.13212 0.34383 4.81542 1.03127L4.57422 1.15729L11.2664 4.9618L14.2789 3.46337C13.7943 2.9174 13.0124 2.50911 11.682 1.81451L11.6822 1.81428Z" fill="#6987D2" />
+        <path d="M14.8114 4.45117L11.8126 5.94289V8.20868C11.8126 8.51781 11.5608 8.76829 11.2501 8.76829C10.9394 8.76829 10.6876 8.51781 10.6876 8.20868V6.50251L8.0625 7.80821V14.8522C8.60093 14.7188 9.2136 14.399 10.1834 13.8926L11.6834 13.1096C13.2971 12.267 14.104 11.8457 14.5522 11.0889C15.0002 10.3319 15.0002 9.38992 15.0002 7.50602V7.41872C15.0002 6.00646 15.0002 5.12361 14.8114 4.45117Z" fill="#6987D2" />
+        <path d="M6.93745 14.8525V7.80844L0.188776 4.45117C0 5.12361 0 6.00669 0 7.41872V7.50602C0 9.38992 0 10.3319 0.447976 11.0889C0.895953 11.846 1.70281 12.267 3.31674 13.1096L4.81682 13.8926C5.78657 14.399 6.39925 14.7188 6.93767 14.8522L6.93745 14.8525Z" fill="#6987D2" />
+        <path d="M0.71875 3.46237L7.49892 6.83508L10.0574 5.5625L3.39243 1.77344L3.31571 1.81351C1.9855 2.5081 1.2034 2.9164 0.71875 3.46237Z" fill="#6987D2" />
+      </svg>
+    ),
+  };
+
+  // SVG 아이콘이 있으면 반환, 없으면 기본 아이콘 반환
+  return icons[category] || icons["관리"];
 };
 
 const categoryColors: Record<string, string[]> = {
@@ -64,7 +116,7 @@ const categoryColors: Record<string, string[]> = {
   "학습": ["bg-indigo-100", "bg-purple-100", "bg-blue-100", "bg-green-100", "bg-yellow-100"],
   "건강": ["bg-green-100", "bg-blue-100", "bg-yellow-100", "bg-pink-100", "bg-purple-100"],
   "취미": ["bg-pink-100", "bg-purple-100", "bg-yellow-100", "bg-blue-100", "bg-green-100"],
-  "소설": ["bg-purple-100", "bg-indigo-100", "bg-pink-100", "bg-blue-100", "bg-yellow-100"],
+  "소셜": ["bg-purple-100", "bg-indigo-100", "bg-pink-100", "bg-blue-100", "bg-yellow-100"],
   "준비": ["bg-orange-100", "bg-yellow-100", "bg-blue-100", "bg-green-100", "bg-purple-100"]
 };
 
@@ -148,9 +200,9 @@ export default function CommunityPage() {
   // 카테고리 정렬 로직
   const sortedCategories = selectedCategory
     ? [
-        categories.find(cat => cat.categoryKey === selectedCategory)!,
-        ...categories.filter(cat => cat.categoryKey !== selectedCategory)
-      ]
+      categories.find(cat => cat.categoryKey === selectedCategory)!,
+      ...categories.filter(cat => cat.categoryKey !== selectedCategory)
+    ]
     : categories;
 
   // 할일 아이템 클릭 핸들러
@@ -165,7 +217,7 @@ export default function CommunityPage() {
           {/* Left Card - 할일 찾기 */}
           <div className="flex-[2] bg-white rounded-2xl shadow-sm border p-6 overflow-y-auto max-h-[calc(100vh-120px)]">
             {/* Header */}
-            <h1 className="text-xl font-bold mb-4 text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>할일 찾기</h1>
+            <h1 className="text-xl text-left font-bold mb-4 text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>할일 찾기</h1>
 
             {/* Filter Buttons - 상단 고정 */}
             <div className="flex flex-wrap gap-2 mb-6">
@@ -173,14 +225,22 @@ export default function CommunityPage() {
                 <button
                   key={category.categoryKey}
                   onClick={() => handleCategoryClick(category.categoryKey)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition ${
-                    selectedCategory === category.categoryKey
+                  className={`
+                      w-[72px] h-[25px]
+                      rounded-[12px]
+                      flex items-center justify-center gap-1.5
+                      text-[14px] font-medium
+                      transition
+                      shadow-[0_0_1px_rgba(0,0,0,0.08),0_0_1px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.12)]
+                      ${selectedCategory === category.categoryKey
                       ? "bg-blue-100 text-blue-700"
-                      : "border border-gray-200 hover:bg-gray-50 text-[#0F1724]"
-                  }`}
-                  style={{ fontFamily: 'Pretendard', fontSize: '14px', fontWeight: 500 }}
+                      : "bg-white text-[#0F1724]"
+                    }
+      `}
+                  style={{ fontFamily: "Pretendard" }}
                 >
-                  {categoryEmojis[category.categoryKey]} {category.categoryKey}
+                  <CategoryIcon category={category.categoryKey} />
+                  <span className="leading-none">{category.categoryKey}</span>
                 </button>
               ))}
             </div>
@@ -190,7 +250,7 @@ export default function CommunityPage() {
               <div key={category.categoryKey} className={categoryIndex > 0 ? "mt-6" : ""}>
                 {/* 카테고리 키워드 - 왼쪽 상단 */}
                 <h2
-                  className="text-base font-semibold mb-3 text-[#0F1724]"
+                  className="text-base font-semibold text-left mb-3 text-[#0F1724]"
                   style={{ fontFamily: 'Pretendard' }}
                 >
                   {category.categoryKey}
@@ -207,13 +267,17 @@ export default function CommunityPage() {
                     return (
                       <div
                         key={todo.taskId}
-                        className={`bg-white rounded-xl transition overflow-hidden ${
-                          isOpen ? "border-2 border-blue-300 shadow-sm" : "border border-gray-200 hover:shadow-sm"
-                        }`}
+                        className={`bg-white rounded-lg transition overflow-hidden ${isOpen ? "border-2 border-blue-300" : ""
+                          }`}
+                        style={{
+                          width: '611px',
+                          minHeight: isOpen ? 'auto' : '40px',
+                          filter: 'drop-shadow(0 0 1px rgba(0, 0, 0, 0.08)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.08)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12))'
+                        }}
                       >
                         {/* Todo Header */}
                         <div
-                          className="flex items-center justify-between px-4 py-3 cursor-pointer"
+                          className="flex items-center justify-between px-4 cursor-pointer h-10"
                           onClick={() => handleTodoClick(todo.taskId)}
                         >
                           <div className="flex items-center gap-3 flex-1">
@@ -223,8 +287,14 @@ export default function CommunityPage() {
                               {emoji}
                             </div>
                             <p
-                              className="text-[#0F1724] font-medium"
-                              style={{ fontFamily: 'Pretendard', fontSize: '15px' }}
+                              style={{
+                                color: '#0F1724',
+                                fontFamily: 'Pretendard',
+                                fontSize: '14px',
+                                fontStyle: 'normal',
+                                fontWeight: 500,
+                                lineHeight: 'normal'
+                              }}
                             >
                               {todo.title}
                             </p>
@@ -398,33 +468,30 @@ export default function CommunityPage() {
               <div className="flex gap-6 px-5">
                 <button
                   onClick={() => setActiveTab("recent")}
-                  className={`pb-3 text-sm font-medium ${
-                    activeTab === "recent"
+                  className={`pb-3 text-sm font-medium ${activeTab === "recent"
                       ? "border-b-2 border-blue-500 text-blue-500"
                       : "text-gray-400 hover:text-gray-600"
-                  }`}
+                    }`}
                   style={{ fontFamily: 'Pretendard' }}
                 >
                   최신
                 </button>
                 <button
                   onClick={() => setActiveTab("friends")}
-                  className={`pb-3 text-sm font-medium ${
-                    activeTab === "friends"
+                  className={`pb-3 text-sm font-medium ${activeTab === "friends"
                       ? "border-b-2 border-blue-500 text-blue-500"
                       : "text-gray-400 hover:text-gray-600"
-                  }`}
+                    }`}
                   style={{ fontFamily: 'Pretendard' }}
                 >
                   친구 관리
                 </button>
                 <button
                   onClick={() => setActiveTab("activity")}
-                  className={`pb-3 text-sm font-medium ${
-                    activeTab === "activity"
+                  className={`pb-3 text-sm font-medium ${activeTab === "activity"
                       ? "border-b-2 border-blue-500 text-blue-500"
                       : "text-gray-400 hover:text-gray-600"
-                  }`}
+                    }`}
                   style={{ fontFamily: 'Pretendard' }}
                 >
                   내 활동
@@ -492,9 +559,8 @@ export default function CommunityPage() {
                     <div className="flex items-center gap-4">
                       <button
                         onClick={() => handleLike(post.postId, post.isLiked)}
-                        className={`flex items-center gap-1 ${
-                          post.isLiked ? "text-red-500" : "text-gray-400 hover:text-red-500"
-                        }`}
+                        className={`flex items-center gap-1 ${post.isLiked ? "text-red-500" : "text-gray-400 hover:text-red-500"
+                          }`}
                       >
                         <Heart className={`w-4 h-4 ${post.isLiked ? "fill-current" : ""}`} />
                         <span className="text-xs font-medium">{post.likeCount}</span>
