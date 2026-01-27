@@ -24,7 +24,8 @@
             "recommendedTimes": ["09:00", "18:00"],
             "minPerSession": 15
           },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3842
         },
         {
           "taskId": "MG-002",
@@ -45,7 +46,8 @@
             "recommendedTimes": ["20:30"],
             "minPerSession": 20
           },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2156
         },
         {
           "taskId": "MG-003",
@@ -66,7 +68,8 @@
             "recommendedTimes": ["14:00"],
             "minPerSession": 30
           },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1523
         },
         {
           "taskId": "MG-004",
@@ -87,7 +90,8 @@
             "recommendedTimes": ["21:00"],
             "minPerSession": 20
           },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 4217
         },
         {
           "taskId": "MG-005",
@@ -108,7 +112,8 @@
             "recommendedTimes": ["22:30"],
             "minPerSession": 10
           },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2891
         }
       ]
     },
