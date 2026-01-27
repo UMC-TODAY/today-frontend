@@ -1,0 +1,876 @@
+{
+  "version": 1,
+  "generatedAt": "2026-01-26",
+  "categories": [
+    {
+      "categoryKey": "관리",
+      "items": [
+        {
+          "taskId": "MG-001",
+          "title": "개인 이메일 정리하기",
+          "description": "수신함을 깔끔하게 정리하고 중요한 메일을 놓치지 않도록 관리합니다.",
+          "subTasks": [
+            "하루 1회 또는 주 3회, 이메일 확인 시간을 고정하세요.",
+            "광고/알림 메일은 구독 해지 또는 필터로 자동 분류하세요.",
+            "업무/개인/결제 등 폴더(라벨)를 만들고 규칙을 설정하세요.",
+            "중요 메일은 별표 또는 '미처리' 라벨로 따로 모아두세요.",
+            "2분 안에 처리 가능한 메일은 바로 답장/처리하세요."
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["정리", "루틴", "인박스제로"],
+          "template": {
+            "recommendedTimes": ["09:00", "18:00"],
+            "minPerSession": 15
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "MG-002",
+          "title": "구독/멤버십 점검하기",
+          "description": "불필요한 구독을 정리하고 월 고정비를 줄입니다.",
+          "subTasks": [
+            "현재 결제 중인 구독 목록을 모두 적어보세요.",
+            "최근 30일 사용 여부를 기준으로 유지/해지 결정을 하세요.",
+            "무료체험은 종료일을 캘린더에 등록하세요.",
+            "결제일을 월 1~3일로 통일하면 관리가 쉬워집니다.",
+            "해지 후 대체 서비스(무료/저렴) 옵션을 비교해보세요."
+          ],
+          "defaultDurationMin": 25,
+          "repeatRule": "MONTHLY",
+          "difficulty": 2,
+          "tags": ["재무", "절약", "점검"],
+          "template": {
+            "recommendedTimes": ["20:30"],
+            "minPerSession": 20
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "MG-003",
+          "title": "집안 서류/영수증 정리하기",
+          "description": "필요한 서류를 빠르게 찾을 수 있도록 분류 체계를 만듭니다.",
+          "subTasks": [
+            "서류를 '보관/폐기/스캔' 3분류로 나누세요.",
+            "계약서/세금/보증/병원 등 카테고리 폴더를 만드세요.",
+            "중요 서류는 스캔 후 클라우드에 백업하세요.",
+            "영수증은 월별 봉투/파일에 모아두세요.",
+            "폐기 서류는 개인정보 부분을 파쇄/가림 처리하세요."
+          ],
+          "defaultDurationMin": 40,
+          "repeatRule": "MONTHLY",
+          "difficulty": 3,
+          "tags": ["정리", "문서", "백업"],
+          "template": {
+            "recommendedTimes": ["14:00"],
+            "minPerSession": 30
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "MG-004",
+          "title": "주간 일정 리셋하기",
+          "description": "다음 주 우선순위를 정하고 일정 충돌을 미리 방지합니다.",
+          "subTasks": [
+            "지난주 완료/미완료 할 일을 정리하세요.",
+            "이번주 꼭 해야 하는 3가지를 선택하세요.",
+            "회의/약속/마감일을 캘린더에 확정 등록하세요.",
+            "버퍼 시간(이동/휴식)을 블록으로 미리 잡아두세요.",
+            "하루 1개는 '미니 목표'로 작게 설정하세요."
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["계획", "루틴", "우선순위"],
+          "template": {
+            "recommendedTimes": ["21:00"],
+            "minPerSession": 20
+          },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "MG-005",
+          "title": "디지털 정리: 사진/파일 정리하기",
+          "description": "휴대폰/PC 저장공간을 확보하고 필요한 파일을 찾기 쉽게 만듭니다.",
+          "subTasks": [
+            "스크린샷/중복 사진을 먼저 삭제하세요.",
+            "폴더를 월별/이벤트별로 나누고 이름 규칙을 정하세요.",
+            "중요 파일은 클라우드(드라이브)에 백업하세요.",
+            "다운로드 폴더를 비우고 필요한 것만 이동하세요.",
+            "정리 기준(매주 10분)을 루틴으로 고정하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["정리", "디지털", "백업"],
+          "template": {
+            "recommendedTimes": ["22:30"],
+            "minPerSession": 10
+          },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "업무",
+      "items": [
+        {
+          "taskId": "WK-001",
+          "title": "오늘의 핵심 업무 3개 선정",
+          "description": "하루 성과를 좌우하는 핵심 업무를 먼저 고릅니다.",
+          "subTasks": [
+            "오늘 해야 할 일을 모두 적어보세요.",
+            "영향도가 큰 3개를 '핵심'으로 표시하세요.",
+            "각 업무에 30~90분 집중 블록을 배정하세요.",
+            "방해 요소(알림/메신저)를 끄고 시작하세요.",
+            "완료 후 다음 액션 1줄만 남기세요."
+          ],
+          "defaultDurationMin": 15,
+          "repeatRule": "DAILY",
+          "difficulty": 2,
+          "tags": ["우선순위", "집중", "생산성"],
+          "template": { "recommendedTimes": ["09:10"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "WK-002",
+          "title": "보고서 초안 작성하기",
+          "description": "보고서 구조를 먼저 잡고 빠르게 초안을 만듭니다.",
+          "subTasks": [
+            "목적/결론 2줄을 먼저 써보세요.",
+            "현황/문제/대안/요청사항 순서로 목차를 잡으세요.",
+            "데이터/근거 링크를 모아 한 곳에 붙여넣으세요.",
+            "10분 타이머로 '초안만' 빠르게 쓰세요.",
+            "마지막에 읽는 사람의 질문 3개를 예상해 보완하세요."
+          ],
+          "defaultDurationMin": 60,
+          "repeatRule": "NONE",
+          "difficulty": 3,
+          "tags": ["문서", "보고", "정리"],
+          "template": { "recommendedTimes": ["15:00"], "minPerSession": 45 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "WK-003",
+          "title": "회의 준비 체크리스트",
+          "description": "회의 시간을 줄이고 결정 사항을 명확히 합니다.",
+          "subTasks": [
+            "회의 목적(결정/공유/브레인스토밍)을 한 줄로 적으세요.",
+            "안건 3개 이내로 줄이세요.",
+            "필요 자료를 미리 링크로 첨부하세요.",
+            "결정이 필요한 항목에는 옵션 A/B를 준비하세요.",
+            "회의록 템플릿(결정/할일/담당/기한)을 미리 열어두세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "NONE",
+          "difficulty": 2,
+          "tags": ["회의", "커뮤니케이션", "정리"],
+          "template": { "recommendedTimes": ["10:00"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "WK-004",
+          "title": "업무 루즈한 부분 마무리하기",
+          "description": "미뤄둔 작은 업무를 몰아서 처리합니다.",
+          "subTasks": [
+            "미완료 목록에서 10분 이하 작업을 모으세요.",
+            "메일 답장/문서 수정/요청 처리 순으로 진행하세요.",
+            "타이머 25분(포모도로)로 한 번만 집중하세요.",
+            "완료 항목은 즉시 체크하고 목록을 줄이세요.",
+            "남은 건 '다음 행동'으로 쪼개서 다시 등록하세요."
+          ],
+          "defaultDurationMin": 25,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["정리", "마무리", "루틴"],
+          "template": { "recommendedTimes": ["16:30"], "minPerSession": 25 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "WK-005",
+          "title": "업무 인수인계 메모 작성",
+          "description": "업무 진행상황을 남겨 팀 커뮤니케이션 비용을 줄입니다.",
+          "subTasks": [
+            "현재 진행중인 업무를 리스트로 적으세요.",
+            "각 업무에 '상태/다음 단계/리스크'를 1줄씩 쓰세요.",
+            "관련 링크(문서/이슈/PR)를 묶어두세요.",
+            "필요한 의사결정 사항을 별도로 표시하세요.",
+            "공유 대상(팀/상사/동료)을 지정해 전달하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["문서화", "협업", "정리"],
+          "template": { "recommendedTimes": ["18:10"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "반려동물",
+      "items": [
+        {
+          "taskId": "PT-001",
+          "title": "급식/급수 루틴 점검",
+          "description": "반려동물의 식사와 물 상태를 매일 확인합니다.",
+          "subTasks": [
+            "사료/간식 양을 정량으로 맞추세요.",
+            "물그릇을 씻고 신선한 물로 교체하세요.",
+            "식사 시간대를 일정하게 유지하세요.",
+            "식욕/배변 변화가 있는지 기록하세요.",
+            "간식은 하루 총 칼로리 기준을 넘지 않게 조절하세요."
+          ],
+          "defaultDurationMin": 10,
+          "repeatRule": "DAILY",
+          "difficulty": 1,
+          "tags": ["루틴", "케어", "건강"],
+          "template": { "recommendedTimes": ["08:00", "19:00"], "minPerSession": 5 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PT-002",
+          "title": "산책 퀄리티 올리기",
+          "description": "짧아도 집중도 높은 산책으로 스트레스를 줄입니다.",
+          "subTasks": [
+            "5분은 냄새 맡기(탐색) 시간으로 주세요.",
+            "리드 줄 텐션을 최소화하도록 천천히 걸으세요.",
+            "사람/강아지 반응을 관찰하고 거리 조절하세요.",
+            "돌아오면 발 닦기/간단 브러싱을 하세요.",
+            "산책 후 물을 제공하고 과호흡 여부를 확인하세요."
+          ],
+          "defaultDurationMin": 25,
+          "repeatRule": "DAILY",
+          "difficulty": 2,
+          "tags": ["산책", "행동", "케어"],
+          "template": { "recommendedTimes": ["07:30", "21:00"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PT-003",
+          "title": "털/피부 관리 브러싱",
+          "description": "엉킴과 피부 트러블을 예방합니다.",
+          "subTasks": [
+            "목/등/배 순서로 부드럽게 브러싱하세요.",
+            "엉킨 부위는 억지로 당기지 말고 풀어주세요.",
+            "피부에 붉은기/비듬이 있는지 확인하세요.",
+            "브러시를 세척/건조해 위생을 유지하세요.",
+            "끝나면 칭찬/간식으로 긍정 경험을 주세요."
+          ],
+          "defaultDurationMin": 15,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["그루밍", "피부", "위생"],
+          "template": { "recommendedTimes": ["20:00"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PT-004",
+          "title": "화장실/배변 환경 청소",
+          "description": "쾌적한 환경 유지로 냄새와 질병 위험을 줄입니다.",
+          "subTasks": [
+            "배변물을 바로 치워 청결을 유지하세요.",
+            "주 1회는 전체 모래/패드를 교체하세요.",
+            "주변 바닥을 닦아 잔여 냄새를 제거하세요.",
+            "탈취제는 반려동물 안전 제품만 사용하세요.",
+            "배변 횟수/상태 변화를 간단히 기록하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["청소", "위생", "루틴"],
+          "template": { "recommendedTimes": ["19:30"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PT-005",
+          "title": "놀이/훈련 10분",
+          "description": "짧은 놀이와 훈련으로 에너지 소모와 유대감을 높입니다.",
+          "subTasks": [
+            "장난감 1~2개로 짧게 집중 놀이를 하세요.",
+            "앉아/기다려 같은 기본 훈련을 3회 반복하세요.",
+            "성공하면 즉시 칭찬과 보상을 주세요.",
+            "과흥분 시 잠깐 멈추고 호흡을 안정시켜 주세요.",
+            "끝나면 장난감을 치워 과몰입을 방지하세요."
+          ],
+          "defaultDurationMin": 10,
+          "repeatRule": "DAILY",
+          "difficulty": 1,
+          "tags": ["놀이", "훈련", "유대감"],
+          "template": { "recommendedTimes": ["18:30"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "출퇴근",
+      "items": [
+        {
+          "taskId": "CM-001",
+          "title": "출근 전 10분 준비 루틴",
+          "description": "아침을 덜 급하게 만들고 지각 확률을 줄입니다.",
+          "subTasks": [
+            "가방/지갑/키/이어폰을 한 곳에 모아두세요.",
+            "오늘 일정(첫 미팅/마감)을 1분 확인하세요.",
+            "옷은 전날 밤에 미리 골라두세요.",
+            "물 한 컵 마시고 간단 스트레칭을 하세요.",
+            "집을 나설 시간을 5분 앞당겨 설정하세요."
+          ],
+          "defaultDurationMin": 10,
+          "repeatRule": "DAILY",
+          "difficulty": 1,
+          "tags": ["루틴", "아침", "준비"],
+          "template": { "recommendedTimes": ["07:40"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "CM-002",
+          "title": "퇴근 후 리셋(정리 15분)",
+          "description": "퇴근 후 집/책상 상태를 정리해 다음날 스트레스를 줄입니다.",
+          "subTasks": [
+            "가방 내용물을 비우고 제자리에 두세요.",
+            "내일 필요한 물건을 미리 챙기세요.",
+            "작업 메모(내일 첫 할 일 1개)를 적어두세요.",
+            "옷/세탁물은 한 곳에 모아두세요.",
+            "휴식 시작 전에 물/간식 준비를 끝내세요."
+          ],
+          "defaultDurationMin": 15,
+          "repeatRule": "DAILY",
+          "difficulty": 1,
+          "tags": ["정리", "퇴근", "루틴"],
+          "template": { "recommendedTimes": ["19:30"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "CM-003",
+          "title": "지하철/버스 이동 시간 활용",
+          "description": "이동 시간을 가볍게 활용해 하루 여유를 만듭니다.",
+          "subTasks": [
+            "팟캐스트/강의 1개를 미리 저장해두세요.",
+            "핵심 업무 1개를 머릿속으로 정리해보세요.",
+            "메시지/메일은 '읽기'만 하고 답장은 미루세요.",
+            "내릴 역 2정거장 전부터 가방 정리하세요.",
+            "하차 후 2분은 천천히 걸으며 호흡을 안정하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 1,
+          "tags": ["이동", "시간관리", "습관"],
+          "template": { "recommendedTimes": ["08:30", "18:00"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "CM-004",
+          "title": "출퇴근 스트레스 줄이기(호흡 5분)",
+          "description": "짧은 호흡/이완으로 긴장을 낮춥니다.",
+          "subTasks": [
+            "4초 들이마시고 6초 내쉬기를 10회 반복하세요.",
+            "어깨/턱 힘을 풀고 자세를 바로잡으세요.",
+            "소음이 크면 노이즈캔슬링/귀마개를 사용하세요.",
+            "혼잡 시간대를 피할 수 있는지 한 번 점검하세요.",
+            "스트레스 원인을 1문장으로 적고 내려놓으세요."
+          ],
+          "defaultDurationMin": 5,
+          "repeatRule": "DAILY",
+          "difficulty": 1,
+          "tags": ["마음관리", "호흡", "스트레스"],
+          "template": { "recommendedTimes": ["08:10", "18:20"], "minPerSession": 5 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "CM-005",
+          "title": "교통비/이동 경로 점검",
+          "description": "최적 경로를 찾고 불필요한 비용을 줄입니다.",
+          "subTasks": [
+            "현재 출퇴근 경로 시간을 기록하세요.",
+            "대체 경로(급행/환승/도보)를 1개 비교하세요.",
+            "정기권/할인/환승 정책을 확인하세요.",
+            "우천/지연 상황 대비 우회 루트를 메모하세요.",
+            "월 1회, 가장 스트레스 적은 루트를 업데이트하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "MONTHLY",
+          "difficulty": 2,
+          "tags": ["교통", "비용", "최적화"],
+          "template": { "recommendedTimes": ["12:30"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "학습",
+      "items": [
+        {
+          "taskId": "ST-001",
+          "title": "오늘 배울 것 1개 정해서 25분 공부",
+          "description": "짧게라도 매일 학습을 이어가는 습관을 만듭니다.",
+          "subTasks": [
+            "오늘 학습 주제를 1개로 좁히세요.",
+            "25분 타이머를 켜고 집중하세요.",
+            "모르는 부분은 질문 리스트로 따로 적으세요.",
+            "끝나면 3줄 요약을 작성하세요.",
+            "내일 복습할 포인트 1개를 표시하세요."
+          ],
+          "defaultDurationMin": 25,
+          "repeatRule": "DAILY",
+          "difficulty": 2,
+          "tags": ["공부", "루틴", "집중"],
+          "template": { "recommendedTimes": ["21:30"], "minPerSession": 20 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "ST-002",
+          "title": "오답노트/복습 15분",
+          "description": "틀린 문제를 다시 보면 학습 효율이 크게 올라갑니다.",
+          "subTasks": [
+            "최근 틀린 문제 3개만 고르세요.",
+            "왜 틀렸는지 원인을 1문장으로 쓰세요.",
+            "정답 풀이를 한 줄로 요약하세요.",
+            "비슷한 유형 1개를 추가로 풀어보세요.",
+            "다음 복습 날짜를 캘린더에 등록하세요."
+          ],
+          "defaultDurationMin": 15,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["복습", "오답", "시험"],
+          "template": { "recommendedTimes": ["19:00"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "ST-003",
+          "title": "영어 말하기(쉐도잉) 10분",
+          "description": "짧은 쉐도잉으로 발음/리듬을 꾸준히 잡습니다.",
+          "subTasks": [
+            "1~2분짜리 음성을 선택하세요.",
+            "스크립트를 먼저 읽고 내용 이해를 하세요.",
+            "문장 단위로 따라 말하며 녹음하세요.",
+            "녹음 파일을 듣고 고칠 포인트 1개를 적으세요.",
+            "마지막에 전체를 한 번 더 자연스럽게 말해보세요."
+          ],
+          "defaultDurationMin": 10,
+          "repeatRule": "DAILY",
+          "difficulty": 2,
+          "tags": ["영어", "말하기", "훈련"],
+          "template": { "recommendedTimes": ["08:50", "22:00"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "ST-004",
+          "title": "코딩 문제 1개 풀기",
+          "description": "매일 1문제로 감을 유지합니다.",
+          "subTasks": [
+            "난이도 쉬움/보통 중 하나를 고르세요.",
+            "문제 이해 후 예제를 손으로 먼저 따라가세요.",
+            "10분 내 풀이 방향이 안 나오면 힌트를 보세요.",
+            "풀이 후 다른 사람 풀이 1개를 비교하세요.",
+            "배운 포인트를 한 줄로 기록하세요."
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "WEEKLY",
+          "difficulty": 3,
+          "tags": ["코딩", "문제풀이", "루틴"],
+          "template": { "recommendedTimes": ["20:30"], "minPerSession": 25 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "ST-005",
+          "title": "노트 정리(개념 1페이지)",
+          "description": "개념을 내 말로 정리해 기억을 고정합니다.",
+          "subTasks": [
+            "오늘 학습한 개념 중 1개만 고르세요.",
+            "정의/예시/주의점 3칸으로 나누어 적으세요.",
+            "자주 틀리는 포인트를 별표로 표시하세요.",
+            "마지막에 한 줄 요약을 추가하세요.",
+            "다음 주에 다시 볼 날짜를 정하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["정리", "필기", "복습"],
+          "template": { "recommendedTimes": ["22:20"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "건강",
+      "items": [
+        {
+          "taskId": "HL-001",
+          "title": "가벼운 근력운동 10분",
+          "description": "짧게라도 매일 몸을 쓰는 루틴을 만듭니다.",
+          "subTasks": [
+            "스쿼트 15회 × 2세트",
+            "런지 좌/우 10회 × 2세트",
+            "플랭크 30초 × 2세트",
+            "마무리 스트레칭 2분",
+            "운동 후 물 한 컵 마시기"
+          ],
+          "defaultDurationMin": 10,
+          "repeatRule": "DAILY",
+          "difficulty": 2,
+          "tags": ["운동", "근력", "루틴"],
+          "template": { "recommendedTimes": ["07:10", "21:10"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HL-002",
+          "title": "물 1.5L 챌린지",
+          "description": "수분 섭취를 의식적으로 늘립니다.",
+          "subTasks": [
+            "아침 기상 후 물 1컵",
+            "점심 전 물 1컵",
+            "오후 3시 물 1컵",
+            "저녁 식사 전 물 1컵",
+            "취침 2시간 전 물 1컵"
+          ],
+          "defaultDurationMin": 5,
+          "repeatRule": "DAILY",
+          "difficulty": 1,
+          "tags": ["수분", "습관", "건강"],
+          "template": { "recommendedTimes": ["09:00", "12:00", "15:00", "18:00"], "minPerSession": 2 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HL-003",
+          "title": "하루 7,000보 걷기",
+          "description": "일상 속 활동량을 확보합니다.",
+          "subTasks": [
+            "점심 후 10분 산책을 추가하세요.",
+            "엘리베이터 대신 계단 1~2층 이용해보세요.",
+            "가까운 거리는 1정거장 먼저 내려 걷기",
+            "걸음 수를 저녁에 확인하고 부족하면 10분 더 걷기",
+            "무릎/발 통증이 있으면 속도를 줄이세요."
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "DAILY",
+          "difficulty": 2,
+          "tags": ["걷기", "활동량", "유산소"],
+          "template": { "recommendedTimes": ["12:40", "19:40"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HL-004",
+          "title": "스트레칭으로 목/어깨 풀기",
+          "description": "장시간 앉아있는 자세로 생기는 뻐근함을 줄입니다.",
+          "subTasks": [
+            "목 옆 스트레칭 좌/우 30초",
+            "어깨 돌리기 10회",
+            "흉추(등) 펴기 1분",
+            "손목/팔 스트레칭 1분",
+            "끝나면 자세를 10초 정렬하세요."
+          ],
+          "defaultDurationMin": 8,
+          "repeatRule": "DAILY",
+          "difficulty": 1,
+          "tags": ["스트레칭", "자세", "통증예방"],
+          "template": { "recommendedTimes": ["11:00", "16:00", "22:00"], "minPerSession": 5 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HL-005",
+          "title": "수면 루틴 만들기(취침 30분 전)",
+          "description": "수면의 질을 높이는 작은 습관을 세팅합니다.",
+          "subTasks": [
+            "취침 30분 전 밝은 화면(폰) 줄이기",
+            "내일 할 일 3개를 적고 머리 비우기",
+            "따뜻한 물로 샤워 또는 족욕 10분",
+            "침실 조명 낮추고 온도 조절",
+            "같은 시간에 눕는 습관 만들기"
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "DAILY",
+          "difficulty": 2,
+          "tags": ["수면", "루틴", "회복"],
+          "template": { "recommendedTimes": ["23:30"], "minPerSession": 20 },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "취미",
+      "items": [
+        {
+          "taskId": "HB-001",
+          "title": "사진 산책(테마 1개)",
+          "description": "오늘의 테마를 정하고 가볍게 사진을 찍어봅니다.",
+          "subTasks": [
+            "테마를 1개 선택(하늘/간판/그림자/파란색 등)",
+            "15분 동안 테마에 맞는 사진 10장 찍기",
+            "가장 마음에 드는 사진 1장 선택",
+            "간단한 보정(밝기/대비)만 적용",
+            "한 줄 감상 기록하기"
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 1,
+          "tags": ["사진", "산책", "감성"],
+          "template": { "recommendedTimes": ["17:30"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HB-002",
+          "title": "요리 실험: 새로운 레시피 1개",
+          "description": "간단한 새 레시피로 요리 경험을 확장합니다.",
+          "subTasks": [
+            "레시피를 1개 고르세요(10~20분 난이도)",
+            "재료를 체크하고 부족하면 대체재를 정하세요.",
+            "조리 과정을 타이머로 관리하세요.",
+            "완성 후 사진을 찍어 기록하세요.",
+            "다음에 개선할 점 1개를 적으세요."
+          ],
+          "defaultDurationMin": 35,
+          "repeatRule": "MONTHLY",
+          "difficulty": 2,
+          "tags": ["요리", "레시피", "기록"],
+          "template": { "recommendedTimes": ["19:00"], "minPerSession": 30 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HB-003",
+          "title": "그림/스케치 15분",
+          "description": "짧은 드로잉으로 손을 풀고 감각을 유지합니다.",
+          "subTasks": [
+            "대상 1개(컵/손/식물)를 정하세요.",
+            "연필로 큰 형태부터 잡으세요.",
+            "그림자 영역 2~3군데만 넣어보세요.",
+            "마지막에 선을 정리하고 날짜를 적으세요.",
+            "완성작 1장 보관/촬영하세요."
+          ],
+          "defaultDurationMin": 15,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["그림", "스케치", "창작"],
+          "template": { "recommendedTimes": ["22:10"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HB-004",
+          "title": "음악 감상(앨범 1개)",
+          "description": "한 앨범을 처음부터 끝까지 집중해서 들어봅니다.",
+          "subTasks": [
+            "앨범 1개를 선택하세요.",
+            "가사/리듬에 집중하며 1회 감상하세요.",
+            "좋았던 트랙 2개를 저장하세요.",
+            "왜 좋았는지 키워드 3개를 적으세요.",
+            "다음에 들을 앨범 후보 1개를 찜하세요."
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "WEEKLY",
+          "difficulty": 1,
+          "tags": ["음악", "감상", "휴식"],
+          "template": { "recommendedTimes": ["21:00"], "minPerSession": 20 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "HB-005",
+          "title": "카페 탐방(후기 3줄)",
+          "description": "새로운 공간에서 기분 전환하고 기록을 남깁니다.",
+          "subTasks": [
+            "가고 싶은 카페 1곳을 지도에 저장하세요.",
+            "메뉴 1개를 시키고 분위기를 관찰하세요.",
+            "사진 1장 찍기(테이블/창가 등)",
+            "후기 3줄(맛/가격/분위기) 작성",
+            "다음에 다시 갈지 '예/아니오'로 결론"
+          ],
+          "defaultDurationMin": 60,
+          "repeatRule": "MONTHLY",
+          "difficulty": 1,
+          "tags": ["카페", "기록", "힐링"],
+          "template": { "recommendedTimes": ["14:30"], "minPerSession": 45 },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "소설",
+      "items": [
+        {
+          "taskId": "NV-001",
+          "title": "단편 아이디어 10개 뽑기",
+          "description": "짧은 아이디어를 많이 뽑아 창작 근육을 키웁니다.",
+          "subTasks": [
+            "키워드 3개(장소/감정/사건)를 정하세요.",
+            "키워드 조합으로 아이디어 10개를 적으세요.",
+            "가장 끌리는 1개를 선택하세요.",
+            "주인공 목표/장애물을 1줄로 적으세요.",
+            "다음 작업(시놉시스)을 일정에 등록하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["창작", "아이디어", "글쓰기"],
+          "template": { "recommendedTimes": ["22:40"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "NV-002",
+          "title": "캐릭터 설정 만들기",
+          "description": "주요 인물의 성격/동기를 명확히 합니다.",
+          "subTasks": [
+            "이름/나이/직업을 정하세요.",
+            "결핍(약점) 1개, 욕망(목표) 1개를 정하세요.",
+            "습관/말버릇 같은 디테일 1개를 추가하세요.",
+            "인물의 비밀 1개를 설정하세요.",
+            "이 인물이 갈등을 만드는 방식을 1줄로 적으세요."
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "NONE",
+          "difficulty": 3,
+          "tags": ["캐릭터", "설정", "서사"],
+          "template": { "recommendedTimes": ["20:40"], "minPerSession": 25 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "NV-003",
+          "title": "1,000자 써보기",
+          "description": "짧은 분량이라도 꾸준히 쓰는 습관을 만듭니다.",
+          "subTasks": [
+            "장면 1개(대화/추격/고백)를 정하세요.",
+            "시작 문장을 1줄만 먼저 쓰세요.",
+            "멈추지 말고 1,000자까지 써보세요.",
+            "끝나면 제목을 임시로 붙이세요.",
+            "고칠 점 1개만 체크하고 저장하세요."
+          ],
+          "defaultDurationMin": 25,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["집필", "습관", "단편"],
+          "template": { "recommendedTimes": ["23:00"], "minPerSession": 20 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "NV-004",
+          "title": "대사 연습(대화 20줄)",
+          "description": "캐릭터별 말투를 다르게 만드는 훈련입니다.",
+          "subTasks": [
+            "두 인물의 성격을 한 줄씩 정의하세요.",
+            "갈등 주제(돈/비밀/사랑)를 정하세요.",
+            "대사만 20줄 써보세요.",
+            "누가 말하는지 표시하고 말투를 다르게 하세요.",
+            "가장 좋은 대사 1줄을 따로 저장하세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "WEEKLY",
+          "difficulty": 2,
+          "tags": ["대사", "연습", "캐릭터"],
+          "template": { "recommendedTimes": ["21:50"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "NV-005",
+          "title": "시놉시스 1페이지 작성",
+          "description": "이야기의 시작-중간-끝을 간단히 구조화합니다.",
+          "subTasks": [
+            "주인공 목표를 1문장으로 쓰세요.",
+            "발단/전개/위기/절정/결말을 한 줄씩 채우세요.",
+            "반전 또는 선택의 순간을 1개 넣으세요.",
+            "주제(메시지)를 1문장으로 적으세요.",
+            "다음 작업(1화/장면)을 캘린더에 등록하세요."
+          ],
+          "defaultDurationMin": 40,
+          "repeatRule": "NONE",
+          "difficulty": 3,
+          "tags": ["시놉시스", "구성", "플롯"],
+          "template": { "recommendedTimes": ["16:00"], "minPerSession": 30 },
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    {
+      "categoryKey": "준비",
+      "items": [
+        {
+          "taskId": "PR-001",
+          "title": "여행 준비 체크리스트 만들기",
+          "description": "여행 전 필수 준비물을 정리해 빠뜨림을 줄입니다.",
+          "subTasks": [
+            "필수 서류(신분증/예약/결제)를 체크하세요.",
+            "의류는 날씨 기준으로 최소 구성으로 잡으세요.",
+            "세면/약/충전기 등 소형 필수품을 정리하세요.",
+            "이동 경로(공항/역)와 소요 시간을 확인하세요.",
+            "출발 전날 확인할 항목을 따로 표시하세요."
+          ],
+          "defaultDurationMin": 25,
+          "repeatRule": "NONE",
+          "difficulty": 2,
+          "tags": ["여행", "체크리스트", "준비"],
+          "template": { "recommendedTimes": ["20:00"], "minPerSession": 20 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PR-002",
+          "title": "면접/발표 준비(핵심 3문장)",
+          "description": "핵심 메시지를 짧게 정리해 전달력을 높입니다.",
+          "subTasks": [
+            "내 강점 1문장, 경험 1문장, 목표 1문장을 쓰세요.",
+            "예상 질문 5개를 적고 키워드로 답을 준비하세요.",
+            "1분 자기소개를 2회 연습/녹음하세요.",
+            "복장/자료/장비를 전날 준비하세요.",
+            "당일 이동 시간과 도착 시간을 확보하세요."
+          ],
+          "defaultDurationMin": 30,
+          "repeatRule": "NONE",
+          "difficulty": 3,
+          "tags": ["면접", "발표", "준비"],
+          "template": { "recommendedTimes": ["19:30"], "minPerSession": 25 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PR-003",
+          "title": "서류 제출 전 최종 점검",
+          "description": "제출 실수를 줄이기 위한 마지막 체크입니다.",
+          "subTasks": [
+            "파일명 규칙(이름_날짜)을 확인하세요.",
+            "오탈자/맞춤법을 한 번 더 검사하세요.",
+            "요구 서류 누락이 없는지 체크하세요.",
+            "PDF 변환/서명/날짜 기입 여부를 확인하세요.",
+            "제출 후 저장용 사본을 별도로 보관하세요."
+          ],
+          "defaultDurationMin": 15,
+          "repeatRule": "NONE",
+          "difficulty": 2,
+          "tags": ["서류", "체크", "제출"],
+          "template": { "recommendedTimes": ["11:30"], "minPerSession": 10 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PR-004",
+          "title": "행사/모임 준비(선물/복장)",
+          "description": "모임 전에 필요한 준비를 미리 끝냅니다.",
+          "subTasks": [
+            "장소/시간/참석자 정보를 다시 확인하세요.",
+            "선물/축하 메시지를 준비하세요.",
+            "복장 컨셉을 정하고 미리 준비하세요.",
+            "이동 시간과 도착 버퍼 10분을 확보하세요.",
+            "연락할 사람에게 간단 확인 메시지를 보내세요."
+          ],
+          "defaultDurationMin": 20,
+          "repeatRule": "NONE",
+          "difficulty": 2,
+          "tags": ["모임", "준비", "일정"],
+          "template": { "recommendedTimes": ["18:00"], "minPerSession": 15 },
+          "status": "ACTIVE"
+        },
+        {
+          "taskId": "PR-005",
+          "title": "장보기 리스트 만들기",
+          "description": "충동구매를 줄이고 필요한 것만 빠르게 구매합니다.",
+          "subTasks": [
+            "이번 주 식단/필요 재료를 먼저 정하세요.",
+            "집에 남은 재료를 확인하고 중복을 제거하세요.",
+            "필수/선택 항목으로 나눠 우선순위를 정하세요.",
+            "예산 상한선을 정하고 넘지 않게 조절하세요.",
+            "장보기 후 영수증/결제 내역을 기록하세요."
+          ],
+          "defaultDurationMin": 10,
+          "repeatRule": "WEEKLY",
+          "difficulty": 1,
+          "tags": ["장보기", "식단", "준비"],
+          "template": { "recommendedTimes": ["10:30"], "minPerSession": 8 },
+          "status": "ACTIVE"
+        }
+      ]
+    }
+  ]
+}
