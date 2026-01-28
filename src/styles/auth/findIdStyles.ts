@@ -59,6 +59,7 @@ export const findIdStyles = {
     alignItems: "center",
     marginBottom: "6px",
     gap: "3px",
+    marginLeft: "8px",
   } as const,
 
   inputWrap: { position: "relative" as const },
