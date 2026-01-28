@@ -99,9 +99,9 @@ export default function FindPasswordVerifyPage() {
     height: "36px",
     borderRadius: "10px",
     padding: "0 14px",
-    background: canSend ? "#FFFFFF" : "#F2F4F6",
-    border: canSend ? "1px solid #3182F6" : "1px solid #E5E8EB",
-    color: canSend ? "#3182F6" : "#A0A0A0",
+    background: "#FFFFFF",
+    border: canSend ? "1px solid #0066FF" : "1px solid #3182F6",
+    color: canSend ? "#0066FF" : "#3182F6",
     fontWeight: 600,
     marginTop: 0,
     fontSize: "12px",
@@ -220,7 +220,7 @@ export default function FindPasswordVerifyPage() {
           </div>
 
           {/* 인증 번호 입력하기 */}
-          <div style={{ marginTop: "14px" }}>
+          <div style={{ marginTop: "18px", marginBottom: "30px" }}>
             <div style={{ ...s.labelRow, marginBottom: "6px" }}>
               <div style={getTextStyle(400, 12, "#4D4D4D")}>
                 인증 번호 입력하기
