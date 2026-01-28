@@ -78,29 +78,30 @@ export const signupStyles = {
     // 생년월일 + 주민1 자리 한 줄
     rowBirth: {
         display: "flex",
-        gap: "10px",
+        gap: "15px",
         alignItems: "center",
     } as const,
 
     birthInput: {
-        flex: 1,
+        width: "130px",
     } as const,
 
     rrFrontWrap: {
-        width: "62px",
+        width: "50px",
     } as const,
 
     rrFrontInput: {
-        width: "62px",
+        width: "50px",
         textAlign: "center" as const,
     } as const,
 
     rrMask: {
         display: "inline-flex",
-        gap: "6px",
-        alignItems: "center",
+        gap: "9px",
+        //alignItems: "center",
         color: "#B0B8C1",
         fontSize: "12px",
+        marginTop: "4px",
         marginLeft: "2px",
         userSelect: "none" as const,
     } as const,
@@ -118,20 +119,14 @@ export const signupStyles = {
     } as const,
 
     rightBtn: {
-        width: "86px",
+        width: "80px",
         height: "42px",
         borderRadius: "10px",
-        border: "1px solid #A7C5FF",
         background: "#FFFFFF",
         color: "#0066FF",
         fontWeight: 600,
         fontSize: "12px",
         cursor: "pointer",
-    } as const,
-
-    rightBtnDisabled: {
-        opacity: 0.55,
-        cursor: "not-allowed",
     } as const,
 
     // 인증번호 + 확인하기 한 줄
@@ -150,11 +145,6 @@ export const signupStyles = {
         fontWeight: 700,
         marginTop: "10px",
         cursor: "pointer",
-    } as const,
-
-    submitDisabled: {
-        opacity: 0.65,
-        cursor: "not-allowed",
     } as const,
 
     footer: {
