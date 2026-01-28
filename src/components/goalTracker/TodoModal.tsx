@@ -5,7 +5,7 @@ import { useState } from "react";
 import TodoDesignPicker from "./TodoDesignPicker";
 import EmojiCircle from "./EmojiCircle";
 import { useCreateSchedule } from "../../hooks/queries/useSchedule";
-import type { CreateScheduleRequest } from "../../types/schedule";
+import type { CreateScheduleRequest } from "../../types/event.ts";
 
 // 스타일
 const inputStyle = {
@@ -49,7 +49,7 @@ export default function TodoModal({ onClose }: TodoModalProps) {
   const [inputs, setInputs] = useState({
     title: "",
     date: "2026-01-01",
-    duration: "",
+    duration: "60",
     repeat: "",
     subTasks: [] as { subTitle: string; subColor: string; subEmoji: string }[],
     memo: "",
@@ -139,9 +139,7 @@ export default function TodoModal({ onClose }: TodoModalProps) {
       return;
     }
 
-    const baseRequest = {
-      scheduleType: selectedType as "TASK" | "EVENT",
-      mode: selectedMode as "CUSTOM" | "ANYTIME",
+    const baseFields = {
       title: inputs.title,
       memo: inputs.memo,
       emoji: inputs.emoji,
@@ -149,38 +147,61 @@ export default function TodoModal({ onClose }: TodoModalProps) {
       subSchedules: inputs.subTasks,
     };
 
-    let finalRequest: CreateScheduleRequest;
+    let requestData: CreateScheduleRequest;
 
     // CASE A: 일정 (EVENT)
     if (selectedType === "EVENT") {
-      finalRequest = {
-        ...baseRequest,
-        repeatType: (inputs.repeat || "NONE") as any,
+      requestData = {
+        ...baseFields,
+        scheduleType: "EVENT",
+        mode: "CUSTOM",
         startAt: `${inputs.startDate} ${inputs.startTime}`, // "2026-01-10 14:00"
         endAt: `${inputs.endDate} ${inputs.endTime}`,
+        repeatType: (inputs.repeat || "NONE") as
+          | "NONE"
+          | "DAILY"
+          | "WEEKLY"
+          | "MONTHLY"
+          | "YEARLY",
       };
     }
     // CASE B: 할 일 - 사용자 지정
     else if (selectedType === "TASK" && selectedMode === "CUSTOM") {
-      finalRequest = {
-        ...baseRequest,
+      requestData = {
+        ...baseFields,
+        scheduleType: "TASK",
+        mode: "CUSTOM",
         date: inputs.date,
-        duration: Number(inputs.duration),
-        repeatType: (inputs.repeat || "NONE") as any,
+        duration: Number(inputs.duration) || 0,
+        repeatType: (inputs.repeat || "NONE") as
+          | "NONE"
+          | "DAILY"
+          | "WEEKLY"
+          | "MONTHLY"
+          | "YEARLY",
       };
     }
     // CASE C: 할 일 - 언제든지
     else {
-      finalRequest = {
-        ...baseRequest,
-        duration: Number(inputs.duration),
+      requestData = {
+        ...baseFields,
+        scheduleType: "TASK",
+        mode: "ANYTIME",
+        duration: Number(inputs.duration) || 0,
       };
     }
 
-    createSchedule(finalRequest, {
+    createSchedule(requestData, {
       onSuccess: () => {
         alert("일정이 등록되었습니다.");
         onClose();
+      },
+      onError: (error: any) => {
+        console.log("등록 실패: ", error);
+        alert(
+          error.response?.data?.message ||
+            "등록에 실패했습니다. 입력값을 확인해주세요.",
+        );
       },
     });
   };

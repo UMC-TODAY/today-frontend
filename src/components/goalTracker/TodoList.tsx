@@ -15,6 +15,8 @@ export default function TodoList() {
     <div>
       {todoList.length === 0 ? <div>데이터가 0개입니다</div> : null}
 
+      <button>지난 일정 숨기기</button>
+
       {todoList.map((todo) => (
         <div
           key={todo.id}
