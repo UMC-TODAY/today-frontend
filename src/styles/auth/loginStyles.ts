@@ -38,6 +38,7 @@ export const loginStyles = {
     display: "flex",
     alignItems: "center",
     marginBottom: "6px",
+    marginLeft: "8px",
   },
 
   inputWrap: { position: "relative" as const },
