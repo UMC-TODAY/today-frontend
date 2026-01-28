@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   getMonthlySchedule,
   getSchedule,
@@ -36,7 +41,8 @@ export const useGetSchedule = (params: SearchScheduleParams) => {
 // 캘린더 - 월별 일정 조회
 export const useGetMonthlySchedule = (params: ScheduleParams) => {
   return useQuery({
-    queryKey: ["schedules", params],
+    queryKey: ["schedules", "monthly", params],
     queryFn: () => getMonthlySchedule(params),
+    placeholderData: keepPreviousData, // 달력 넘길 때 로딩바 대신 이전 달 데이터 보여주다가 바뀌게
   });
 };

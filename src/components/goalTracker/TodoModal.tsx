@@ -49,7 +49,7 @@ export default function TodoModal({ onClose }: TodoModalProps) {
   const [inputs, setInputs] = useState({
     title: "",
     date: "2026-01-01",
-    duration: "",
+    duration: "60",
     repeat: "",
     subTasks: [] as { subTitle: string; subColor: string; subEmoji: string }[],
     memo: "",
