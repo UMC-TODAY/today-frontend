@@ -95,15 +95,16 @@ export default function FindPasswordVerifyPage() {
 
   const sendBtnStyle: React.CSSProperties = {
     ...s.submitBase,
-    width: "auto",
+    width: canSend ? "80px" : "60px",
     height: "36px",
     borderRadius: "10px",
     padding: "0 14px",
-    background: canSend ? "#FFFFFF" : "#F2F4F6",
-    border: canSend ? "1px solid #2F6FED" : "1px solid #E5E8EB",
-    color: canSend ? "#2F6FED" : "#A0A0A0",
+    background: "#FFFFFF",
+    border: canSend ? "1px solid #0066FF" : "1px solid #3182F6",
+    color: canSend ? "#0066FF" : "#3182F6",
     fontWeight: 600,
     marginTop: 0,
+    fontSize: "12px",
   };
 
   const nextBtnStyle: React.CSSProperties = {
@@ -188,11 +189,11 @@ export default function FindPasswordVerifyPage() {
         </button>
 
         {/* 타이틀/설명 */}
-        <div style={getTextStyle(650, 28, "#000000")}>이메일 주소 입력</div>
+        <div style={getTextStyle(700, 28, "#000000")}>이메일 주소 입력</div>
 
         <form onSubmit={handleNext}>
           {/* 이메일 */}
-          <div style={s.fieldBlock}>
+          <div style={{ marginTop: "45px", marginBottom: "14px" }}>
             <div style={s.labelRow}>
               <div style={getTextStyle(400, 12, "#4D4D4D")}>
                 이메일{" "}
@@ -219,7 +220,7 @@ export default function FindPasswordVerifyPage() {
           </div>
 
           {/* 인증 번호 입력하기 */}
-          <div style={{ marginTop: "14px" }}>
+          <div style={{ marginTop: "18px", marginBottom: "30px" }}>
             <div style={{ ...s.labelRow, marginBottom: "6px" }}>
               <div style={getTextStyle(400, 12, "#4D4D4D")}>
                 인증 번호 입력하기
@@ -253,7 +254,7 @@ export default function FindPasswordVerifyPage() {
                 style={sendBtnStyle}
                 disabled={!canSend}
               >
-                {sendLocked ? "전송완료" : "전송하기"}
+                {sendLocked ? `${remainSec}s` : "전송하기"}
               </button>
             </div>
           </div>
