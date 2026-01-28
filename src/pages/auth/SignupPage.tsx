@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signupStyles as s } from "../../styles/auth/signupStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
@@ -9,14 +9,25 @@ import FindIdXIcon from "../../components/icons/findIdXIcon";
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
 function onlyDigits(v: string) {
   return v.replace(/\D/g, "");
 }
 
 // mock: 백엔드 연동 전
-const mockSendEmailCode = async (_email: string) => {
+const EXISTING_EMAILS = ["kei@naver.com", "test@gmail.com"];
+
+const mockSendEmailCode = async (email: string) => {
   await new Promise((r) => setTimeout(r, 500));
-  return { success: true as const, message: "인증번호를 전송했습니다." };
+
+  if (EXISTING_EMAILS.includes(email)) {
+    return {
+      success: false,
+      message: "이미 가입된 이메일입니다.",
+    };
+  }
+
+  return { success: true, message: "요청이 성공적으로 처리되었습니다." };
 };
 
 const mockVerifyEmailCode = async (_email: string, code: string) => {
@@ -35,6 +46,29 @@ export default function SignupPage() {
   const [rr1, setRr1] = useState(""); // 1자리
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+
+  const [remainSec, setRemainSec] = useState<number>(0);
+  const [sendLocked, setSendLocked] = useState(false);
+
+  // 60초 타이머
+  useEffect(() => {
+    if (remainSec <= 0) return;
+    const t = window.setInterval(() => {
+      setRemainSec((prev) => {
+        if (prev <= 1) {
+          window.clearInterval(t);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(t);
+  }, [remainSec]);
+
+  useEffect(() => {
+    if (remainSec === 0) setSendLocked(false);
+  }, [remainSec]);
 
   // states
   const [isSending, setIsSending] = useState(false);
@@ -55,18 +89,19 @@ export default function SignupPage() {
 
   const sendBtnStyle: React.CSSProperties = {
     ...s.rightBtn,
-    ...(canSend ? {} : s.rightBtnDisabled),
+    border: canSend ? "1px solid #0066FF" : "1px solid #3182F6",
+    color: canSend ? "#0066FF" : "#3182F6",
   };
 
   const verifyBtnStyle: React.CSSProperties = {
     ...s.rightBtn,
-    ...(canVerify ? {} : s.rightBtnDisabled),
+    border: canVerify ? "1px solid #0066FF" : "1px solid #3182F6",
+    color: canVerify ? "#0066FF" : "#3182F6",
   };
 
   const nextBtnStyle: React.CSSProperties = {
     ...s.submitBase,
     background: canNext ? "#0066FF" : "#3182F6",
-    ...(canNext ? {} : s.submitDisabled),
   };
 
   function handleClose() {
@@ -85,13 +120,17 @@ export default function SignupPage() {
     setIsSending(true);
     try {
       // 실제 연동 시:
-      // await fetch("/auth/verify/email/send", { ... })
+      // 연동 후 await fetch("/members/email/check", { ... })로 교체해야 함!
       const res = await mockSendEmailCode(email.trim());
       if (res.success) {
+        setRemainSec(60);
+        setSendLocked(true);
         setSent(true);
         setVerified(false);
         setCode("");
         setOkMsg("인증번호를 전송했습니다.");
+      } else {
+        setErrorMsg("이미 회원가입되어 있습니다. 로그인을 시도해주세요.");
       }
     } catch (e) {
       console.error(e);
@@ -124,7 +163,7 @@ export default function SignupPage() {
         setOkMsg("인증이 완료되었습니다.");
       } else {
         setVerified(false);
-        setErrorMsg(res.message);
+        setErrorMsg("잘못된 인증번호입니다.");
       }
     } catch (e) {
       console.error(e);
@@ -164,7 +203,7 @@ export default function SignupPage() {
           aria-label="나가기"
           onClick={handleClose}
         >
-            <FindIdXIcon />
+          <FindIdXIcon />
         </button>
 
         {/* 제목 */}
@@ -197,6 +236,8 @@ export default function SignupPage() {
                 />
               </div>
 
+              <div style={{ color: "#BFBFBF" }}>-</div>
+
               <div style={s.rowBirth}>
                 <div style={{ ...s.inputWrap, ...s.rrFrontWrap }}>
                   <input
@@ -212,12 +253,12 @@ export default function SignupPage() {
                 </div>
 
                 <div style={s.rrMask}>
-                  <span>•</span>
-                  <span>•</span>
-                  <span>•</span>
-                  <span>•</span>
-                  <span>•</span>
-                  <span>•</span>
+                  <span>*</span>
+                  <span>*</span>
+                  <span>*</span>
+                  <span>*</span>
+                  <span>*</span>
+                  <span>*</span>
                 </div>
               </div>
             </div>
@@ -260,7 +301,7 @@ export default function SignupPage() {
                 onClick={handleSend}
                 disabled={!canSend}
               >
-                {isSending ? "전송중" : "전송하기"}
+                {sendLocked ? `${remainSec}s` : "전송하기"}
               </button>
             </div>
           </div>
@@ -287,7 +328,7 @@ export default function SignupPage() {
                   placeholder="인증번호 6글자"
                   inputMode="numeric"
                   maxLength={6}
-                  disabled={!sent || verified || isVerifying}
+                  disabled={!sent || isVerifying}
                 />
               </div>
 
@@ -297,7 +338,7 @@ export default function SignupPage() {
                 onClick={handleVerify}
                 disabled={!canVerify}
               >
-                {isVerifying ? "확인중" : "확인하기"}
+                확인하기
               </button>
             </div>
           </div>
@@ -307,6 +348,9 @@ export default function SignupPage() {
             <div style={getTextStyle(600, 14, "#FFFFFF")}>다음으로</div>
           </button>
         </form>
+
+        {errorMsg && <div style={s.error}>{errorMsg}</div>}
+        {/* {okMsg && <div style={s.success}>{okMsg}</div>} */}
 
         {/* 약관 */}
         <div style={s.footer}>
@@ -333,9 +377,6 @@ export default function SignupPage() {
             </div>
           </div>
         </div>
-
-        {errorMsg && <div style={s.error}>{errorMsg}</div>}
-        {okMsg && <div style={s.success}>{okMsg}</div>}
       </div>
     </div>
   );

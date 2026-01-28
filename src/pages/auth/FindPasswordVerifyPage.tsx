@@ -53,7 +53,7 @@ export default function FindPasswordVerifyPage() {
   const [code, setCode] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-  const [sendLocked, setSnedLocked] = useState(false);
+  const [sendLocked, setSendLocked] = useState(false);
   const [remainSec, setRemainSec] = useState<number>(0);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -75,7 +75,7 @@ export default function FindPasswordVerifyPage() {
   }, [remainSec]);
 
   useEffect(() => {
-    if (remainSec === 0) setSnedLocked(false);
+    if (remainSec === 0) setSendLocked(false);
   }, [remainSec]);
 
   const canSend = useMemo(() => {
@@ -130,7 +130,7 @@ export default function FindPasswordVerifyPage() {
       const res = await mockSendCodeApi(email.trim());
 
       if (res.success) {
-        setSnedLocked(true);
+        setSendLocked(true);
         setRemainSec(60);
       } else {
         setErrorMsg(res.message || "인증번호 전송에 실패했습닏다.");
