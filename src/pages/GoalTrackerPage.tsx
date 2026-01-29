@@ -40,7 +40,6 @@ export default function GoalTrackerPage() {
           style={{
             ...cardStyle,
             flex: 3,
-            padding: "30px",
             alignItems: "center",
             justifyContent: "center",
             display: "flex",
