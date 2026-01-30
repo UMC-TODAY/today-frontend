@@ -1,35 +1,21 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import EyeIcon from "../../components/icons/EyeIcon";
-import { AUTH_KEY, getTextStyle, loginStyles as s } from "../../styles/auth/loginStyles";
+import {
+  AUTH_KEY,
+  getTextStyle,
+  loginStyles as s,
+} from "../../styles/auth/loginStyles";
 import QuestionIcon from "../../components/icons/QuestionIcon";
 import EmailBoxIcon from "../../components/icons/EmailBoxIcon";
 import GoogleLogoIcon from "../../components/icons/GoogleLogoIcon";
 import NaverLogoIcon from "../../components/icons/NaverLogoIcon";
+import { useMutation } from "@tanstack/react-query";
+import { postEmailLogin } from "../../api/auth/auth";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-type LoginResponse = {
-  success: boolean;
-  code?: string;
-  message: string;
-  data: {
-    id: number;
-  };
-}
-
-const mockLoginApi = (): Promise<LoginResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        message: "요청이 성공적으로 처리되었습니다.",
-        data: { id: 1 }
-      });
-    }, 500);
-  });
-};
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -40,13 +26,56 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(true);
   const [showPw, setShowPw] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const canSubmit = useMemo(() => {
     if (!email.trim() || !password.trim()) return false;
     if (!isValidEmail(email.trim())) return false;
     return true;
   }, [email, password]);
+
+  const loginMutation = useMutation({
+    mutationFn: () =>
+      postEmailLogin({
+        email: email.trim(),
+        password: password,
+      }),
+    onSuccess: (result) => {
+      if (!result.isSuccess) {
+        setErrorMsg("잘못된 이메일 혹은 비밀번호를 입력하셨습니다.");
+        return;
+      }
+
+      if (result.isSuccess && "data" in result) {
+        const storage = remember ? window.localStorage : window.sessionStorage;
+        storage.setItem("accessToken", result.data.accessToken);
+        storage.setItem("refreshToken", result.data.refreshToken);
+
+        const payload = {
+          email: email.trim(),
+          loggedInAt: Date.now(),
+        };
+
+        storage.setItem(AUTH_KEY, JSON.stringify(payload));
+
+        navigate("/dashboard", { replace: true });
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 405 || status === 404 || status === 400) {
+        setErrorMsg("잘못된 이메일 혹은 비밀번호를 입력하셨습니다.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+
+      console.error("로그인 에러 상세:", error.response?.data);
+    },
+  });
+
+  const isLoading = loginMutation.isPending;
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -57,56 +86,7 @@ export default function LoginPage() {
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-
-      {/* 
-        개발 중일 때만 mockLoginApi() 호출
-        나중에 실제 API 연동 시 
-         - const result = await mockLoginApi(); 주석 처리
-         - const result = await response.json(); 주석 풀기 
-         - 아래 주석 처리된 실제 fetch 코드의 주석 풀기
-      */}
-
-      // const response = await fetch("/auth/login/email", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     email: email.trim(),
-      //     password: password,
-      //     remember: remember,
-      //   }),
-      // });
-
-      // const result = await response.json();
-      const result = await mockLoginApi();
-
-      if (result.success) {
-        // 로그인 성공
-        const payload = { 
-          email: email.trim(), 
-          userId: result.data.id,
-          loggedInAt: Date.now() 
-        };
-        
-        const storage = remember ? window.localStorage : window.sessionStorage;
-        storage.setItem(AUTH_KEY, JSON.stringify(payload));
-
-        // 대시보드로 이동
-        navigate("/dashboard", { replace: true });
-      } else {
-        // 로그인 실패
-        setErrorMsg(result.message || "로그인에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setErrorMsg("서버와의 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      setIsLoading(false);
-    }
+    loginMutation.mutate();
   }
 
   function handleGoogleLogin() {
@@ -134,7 +114,10 @@ export default function LoginPage() {
           <div style={s.fieldBlock}>
             <div style={s.labelRow}>
               <div style={getTextStyle(400, 12, "#4D4D4D")}>
-                이메일 <div style={{ marginLeft: "3px" }}><QuestionIcon /></div>
+                이메일{" "}
+                <div style={{ marginLeft: "3px" }}>
+                  <QuestionIcon />
+                </div>
               </div>
             </div>
 
@@ -158,7 +141,10 @@ export default function LoginPage() {
           <div style={s.fieldBlock}>
             <div style={s.labelRow}>
               <div style={getTextStyle(400, 12, "#4D4D4D")}>
-                비밀번호 <div style={{ marginLeft: "3px" }}><QuestionIcon /></div>
+                비밀번호{" "}
+                <div style={{ marginLeft: "3px" }}>
+                  <QuestionIcon />
+                </div>
               </div>
             </div>
 
@@ -173,9 +159,9 @@ export default function LoginPage() {
                 disabled={isLoading}
               />
 
-              <button 
-                type="button" 
-                onClick={() => setShowPw((v) => !v)} 
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
                 style={s.eyeBtn}
                 aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 보기"}
                 disabled={isLoading}
@@ -203,9 +189,9 @@ export default function LoginPage() {
           </div>
 
           {/* 6) 로그인 */}
-          <button 
-            style={submitStyle} 
-            disabled={!canSubmit || isLoading} 
+          <button
+            style={submitStyle}
+            disabled={!canSubmit || isLoading}
             type="submit"
           >
             <div style={getTextStyle(600, 14, "#FFFFFF")}>
@@ -223,9 +209,9 @@ export default function LoginPage() {
           </div>
 
           {/* 7) 구글 */}
-          <button 
-            type="button" 
-            style={s.socialBtnBase} 
+          <button
+            type="button"
+            style={s.socialBtnBase}
             onClick={handleGoogleLogin}
             disabled={isLoading}
           >
@@ -244,7 +230,7 @@ export default function LoginPage() {
           >
             <div style={s.naverIconWrap}>
               <NaverLogoIcon />
-            </div> 
+            </div>
             <div style={getTextStyle(600, 14, "#FFFFFF")}>네이버로 로그인</div>
           </button>
 
