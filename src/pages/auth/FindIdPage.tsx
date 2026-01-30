@@ -5,59 +5,17 @@ import EmailBoxIcon from "../../components/icons/EmailBoxIcon";
 import { findIdStyles as s } from "../../styles/auth/findIdStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import QuestionIcon from "../../components/icons/QuestionIcon";
+import { useMutation } from "@tanstack/react-query";
+import { postEmailCheck } from "../../api/auth/auth";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-type EmailCheckSuccess = {
-  success: true;
-  message: string;
-  data: Record<string, never>;
-};
-
-type EmailCheckFail = {
-  success: false;
-  code: string;
-  message: string;
-  data: { id: number };
-};
-
-type EmailCheckResponse = EmailCheckSuccess | EmailCheckFail;
-
-/**
- * 개발 중 mock
- * - success:true  => (보통 "가입 안 됨" / "사용 가능" 의미)
- * - success:false => "이미 가입된 이메일입니다." (가입됨)
- */
-const mockEmailCheckApi = (email: string): Promise<EmailCheckResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const isRegistered = email.trim().toLowerCase().endsWith("@naver.com");
-      if (isRegistered) {
-        resolve({
-          success: false,
-          code: "EMAIL_VEIFY400_1",
-          message: "이미 가입된 이메일입니다.",
-          data: { id: 1 },
-        });
-      } else {
-        resolve({
-          success: true,
-          message: "요청이 성공적으로 처리되었습니다.",
-          data: {},
-        });
-      }
-    }, 500);
-  });
-};
-
 export default function FindIdPage() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
@@ -66,6 +24,32 @@ export default function FindIdPage() {
     if (!isValidEmail(email.trim())) return false;
     return true;
   }, [email]);
+
+  const emailCheckMutation = useMutation({
+    mutationFn: () => postEmailCheck({ email: email.trim() }),
+    onSuccess: (result) => {
+      setErrorMsg(null);
+      setOkMsg(null);
+
+      if (result.isSuccess) {
+        setErrorMsg("해당 이메일의 회원 정보가 없습니다.");
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        setErrorMsg("이미 해당 이메일로 회원가입되어 있습니다.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+
+      console.error("이메일 중복 에러 상세:", error.response?.data);
+    },
+  });
+
+  const isLoading = emailCheckMutation.isPending;
 
   const submitStyle: React.CSSProperties = {
     ...s.submitBase,
@@ -78,36 +62,12 @@ export default function FindIdPage() {
     setErrorMsg(null);
     setOkMsg(null);
 
-    setIsLoading(true);
-    try {
-      //   백엔드 연동 시 이 fetch 주석 해제하고 mock 제거
-      //   const response = await fetch("/members/email/check", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //       body: JSON.stringify({ email: email.trim() }),
-      //   });
-      //   const result: EmailCheckResponse = await response.json();
-
-      const result = await mockEmailCheckApi(email);
-
-      // - success:false + "이미 가입된 이메일입니다." => 가입된 이메일
-      // - success:true  => 가입된 이메일이 아님
-      if (result.success === false) {
-        // 가입된 이메일
-        setOkMsg("이미 해당 이메일로 회원가입되어 있습니다.");
-      } else {
-        // 가입되지 않은 이메일
-        setErrorMsg("해당 이메일의 회원 정보가 없습니다.");
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("서버와의 연결에 실패");
-    } finally {
-      setIsLoading(false);
+    if (!canSubmit) {
+      setErrorMsg("이메일 형식을 확인해주세요.");
+      return;
     }
+
+    emailCheckMutation.mutate();
   }
 
   return (
