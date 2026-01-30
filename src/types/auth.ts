@@ -51,3 +51,20 @@ export interface EmailVerifyErrorResonponse {
 }
 
 export type EmailVerifyResponse = EmailVerifySuccessResonponse | EmailVerifyErrorResonponse;
+
+// 이메일 인증코드 확인
+export interface EmailVerifyCheckRequest {
+    email: string;
+    verify_code: string;
+}
+
+export interface EmailVerifyCheckSuccessResponse {
+    isSuccess: boolean;
+    message: string;
+}
+
+export interface EmailVerifyCheckErrorResponse {
+    isSuccess: boolean;
+    errorCode: string;
+    message: string;
+}
