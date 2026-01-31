@@ -5,54 +5,24 @@ import EmailBoxIcon from "../../components/icons/EmailBoxIcon";
 import QuestionIcon from "../../components/icons/QuestionIcon";
 import { findIdStyles as s } from "../../styles/auth/findIdStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
+import { useMutation } from "@tanstack/react-query";
+import {
+  postEmailVerifyCodeCheck,
+  postEmailVerifyCodeSend,
+} from "../../api/auth/auth";
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-type LocationState = {
-  email?: string;
-};
-
-/**
- * mock: 인증번호 발송
- * 실제 연동 시: POST /auth/email/verification-codes 등으로 교체
- */
-const mockSendCodeApi = (
-  _email: string,
-): Promise<{ success: boolean; message: string }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true, message: "인증번호가 전송되었습니다." });
-    }, 500);
-  });
-};
-
-/**
- * mock: 인증번호 검증
- * 실제 연동 시: POST /auth/email/verification-codes/verify 등으로 교체
- */
-const mockVerifyCodeApi = (
-  _email,
-  code: string,
-): Promise<{ success: boolean; message: string }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (code === "123456") resolve({ success: true, message: "인증 성공" });
-      else resolve({ success: false, message: "잘못된 인증번호입니다." });
-    }, 500);
-  });
-};
-
 export default function FindPasswordVerifyPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = (location.state as LocationState) || {};
+  const state = (location.state) || {};
 
   const [email, setEmail] = useState(state.email ?? "");
   const [code, setCode] = useState("");
 
-  const [isLoading, setIsLoading] = useState(false);
   const [sendLocked, setSendLocked] = useState(false);
   const [remainSec, setRemainSec] = useState<number>(0);
 
@@ -77,6 +47,53 @@ export default function FindPasswordVerifyPage() {
   useEffect(() => {
     if (remainSec === 0) setSendLocked(false);
   }, [remainSec]);
+
+  const verifiCodeSendMutation = useMutation({
+    mutationFn: () => postEmailVerifyCodeSend({ email: email.trim() }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        setSendLocked(true);
+        setRemainSec(60);
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        setErrorMsg("이메일 형식을 확인해 주세요.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+      console.error("이메일 인증코드 발송 에러 상세:", error.response?.data);
+    },
+  });
+
+  const verifiCodeCheckMutation = useMutation({
+    mutationFn: () =>
+      postEmailVerifyCodeCheck({
+        email: email.trim(),
+        "verify-code": code.trim(),
+      }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        navigate("/login/find-password/done", { replace: true });
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        setErrorMsg("잘못된 인증번호입니다.")
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.")
+      }
+      console.error("이메일 인증코드 확인 에러 상세:", error.response?.data);
+    },
+  });
+
+  const isLoading = verifiCodeSendMutation.isPending || verifiCodeCheckMutation.isPending;
 
   const canSend = useMemo(() => {
     if (isLoading) return false;
@@ -123,24 +140,7 @@ export default function FindPasswordVerifyPage() {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      // 실제 연동 시 여기 교체
-      // await fetch("/auth/email/verification-codes", { ... })
-      const res = await mockSendCodeApi(email.trim());
-
-      if (res.success) {
-        setSendLocked(true);
-        setRemainSec(60);
-      } else {
-        setErrorMsg(res.message || "인증번호 전송에 실패했습닏다.");
-      }
-    } catch (e) {
-      console.error(e);
-      setErrorMsg("서버와의 연결 실패");
-    } finally {
-      setIsLoading(false);
-    }
+    verifiCodeSendMutation.mutate();
   }
 
   async function handleNext(e: React.FormEvent) {
@@ -153,25 +153,7 @@ export default function FindPasswordVerifyPage() {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      // 실제 연동 시 여기 교체
-      // await fetch("/auth/email/verification-codes/verify", { ... })
-      const res = await mockVerifyCodeApi(email.trim(), code.trim());
-
-      if (res.success) {
-        navigate("/login/find-password/done", {
-          replace: true,
-        });
-      } else {
-        setErrorMsg(res.message || "잘못된 인증번호입니다.");
-      }
-    } catch (e) {
-      console.error(e);
-      setErrorMsg("서버와의 연결에 실패");
-    } finally {
-      setIsLoading(false);
-    }
+    verifiCodeCheckMutation.mutate();
   }
 
   return (
