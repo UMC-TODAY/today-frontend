@@ -7,8 +7,8 @@ import { findIdStyles as s } from "../../styles/auth/findIdStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMutation } from "@tanstack/react-query";
 import {
-  postEmailVerifyCodeCheck,
-  postEmailVerifyCodeSend,
+  postPasswordVerifyCodeCheck,
+  postPasswordVerifyCodeSend,
 } from "../../api/auth/auth";
 
 function isValidEmail(email: string) {
@@ -49,7 +49,7 @@ export default function FindPasswordVerifyPage() {
   }, [remainSec]);
 
   const verifiCodeSendMutation = useMutation({
-    mutationFn: () => postEmailVerifyCodeSend({ email: email.trim() }),
+    mutationFn: () => postPasswordVerifyCodeSend({ email: email.trim() }),
     onSuccess: (result) => {
       if (result.isSuccess) {
         setSendLocked(true);
@@ -71,7 +71,7 @@ export default function FindPasswordVerifyPage() {
 
   const verifiCodeCheckMutation = useMutation({
     mutationFn: () =>
-      postEmailVerifyCodeCheck({
+      postPasswordVerifyCodeCheck({
         email: email.trim(),
         "verify-code": code.trim(),
       }),

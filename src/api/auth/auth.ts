@@ -3,10 +3,10 @@ import {
     type EmailLoginRequest,
     type EmailCheckRequest,
     type EmailCheckResponse,
-    type EmailVerifyRequest,
-    type EmailVerifyResponse,
-    type EmailVerifyCheckRequest,
-    type EmailVerifyCheckResponse
+    type VerifyRequest,
+    type VerifyResponse,
+    type VerifyCheckRequest,
+    type VerifyCheckResponse
 } from "../../types/auth";
 import { axiosInstance } from "../core/axiosInstance";
 
@@ -22,14 +22,26 @@ export const postEmailCheck = async (body: EmailCheckRequest) => {
     return res.data;
 }
 
+// 비밀번호 재설정 인증코드 발송
+export const postPasswordVerifyCodeSend = async (body: VerifyRequest) => {
+    const res = await axiosInstance.post<VerifyResponse>("/api/auth/password/verification-codes", body);
+    return res.data;
+}
+
+// 비밀번호 재설정 인증코드 확인
+export const postPasswordVerifyCodeCheck = async (body: VerifyCheckRequest) => {
+    const res = await axiosInstance.post<VerifyCheckResponse>("/api/auth/password/verification-codes/verify", body);
+    return res.data;
+}
+
 // 이메일 인증코드 발송
-export const postEmailVerifyCodeSend = async (body: EmailVerifyRequest) => {
-    const res = await axiosInstance.post<EmailVerifyResponse>("/api/auth/email/verification-codes", body);
+export const postEmailVerifyCodeSend = async (body: VerifyRequest) => {
+    const res = await axiosInstance.post<VerifyResponse>("/api/auth/email/verification-codes", body);
     return res.data;
 }
 
 // 이메일 인증코드 확인
-export const postEmailVerifyCodeCheck = async (body: EmailVerifyCheckRequest) => {
-    const res = await axiosInstance.post<EmailVerifyCheckResponse>("/api/auth/email/verification-codes/verify", body);
+export const postEmailVerifyCodeCheck = async (body: VerifyCheckRequest) => {
+    const res = await axiosInstance.post<VerifyCheckResponse>("/api/auth/email/verification-codes/verify", body);
     return res.data;
 }
