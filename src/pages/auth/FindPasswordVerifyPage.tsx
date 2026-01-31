@@ -73,7 +73,7 @@ export default function FindPasswordVerifyPage() {
     mutationFn: () =>
       postEmailVerifyCodeCheck({
         email: email.trim(),
-        verify_code: code.trim(),
+        "verify-code": code.trim(),
       }),
     onSuccess: (result) => {
       if (result.isSuccess) {

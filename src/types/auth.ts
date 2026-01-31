@@ -55,7 +55,7 @@ export type EmailVerifyResponse = EmailVerifySuccessResonponse | EmailVerifyErro
 // 이메일 인증코드 확인
 export interface EmailVerifyCheckRequest {
     email: string;
-    verify_code: string;
+    "verify-code": string;
 }
 
 export interface EmailVerifyCheckSuccessResponse {
