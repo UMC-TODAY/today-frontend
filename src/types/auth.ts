@@ -68,3 +68,5 @@ export interface EmailVerifyCheckErrorResponse {
     errorCode: string;
     message: string;
 }
+
+export type EmailVerifyCheckResponse = EmailVerifyCheckSuccessResponse | EmailVerifyCheckErrorResponse;
