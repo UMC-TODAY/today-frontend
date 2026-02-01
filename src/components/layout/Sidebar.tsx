@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import logoSvg from '../../assets/icons/logo.svg';
 import DashboardIcon from '../icons/DashboardIcon';
 import CalendarIcon from '../icons/CalendarIcon';
@@ -7,7 +7,6 @@ import CommunityIcon from '../icons/CommunityIcon';
 import AnalyticsIcon from '../icons/AnalyticsIcon';
 
 export default function Sidebar() {
-  const location = useLocation();
   const menuItems = [
     { path: '/dashboard', label: '대시보드', iconType: 'dashboard' },
     { path: '/calendar', label: '캘린더', iconType: 'calendar' },
@@ -16,12 +15,10 @@ export default function Sidebar() {
     { path: '/analytics', label: '분석 및 추천', iconType: 'analytics' },
   ];
 
-  const isAnyMenuActive = menuItems.some(item => location.pathname === item.path);
-
   return (
     <aside style={{
-      width: '220px',
-      minWidth: '220px',
+      width: '180px',
+      minWidth: '180px',
       background: '#fff',
       height: '100vh',
       padding: '20px 0',
@@ -29,10 +26,10 @@ export default function Sidebar() {
     }}>
       {/* 로고 */}
       <div style={{
-        padding: '0 20px 30px',
+        padding: '0 16px 30px',
         fontSize: '20px',
         fontWeight: 'bold',
-        color: isAnyMenuActive ? '#6987D2' : '#000',
+        color: '#000',
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
@@ -51,12 +48,13 @@ export default function Sidebar() {
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              padding: '12px 20px',
+              gap: '10px',
+              padding: '12px 16px',
               textDecoration: 'none',
               color: isActive ? '#111827' : '#6b7280',
               background: 'transparent',
               fontWeight: isActive ? '600' : '400',
+              fontSize: '14px',
             })}
           >
             {({ isActive }) => (
@@ -79,11 +77,11 @@ export default function Sidebar() {
       <div style={{
         position: 'fixed',
         bottom: '20px',
-        left: '20px',
+        left: '16px',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
-        fontSize: '14px',
+        gap: '8px',
+        fontSize: '13px',
         color: '#6b7280'
       }}>
         <div style={{

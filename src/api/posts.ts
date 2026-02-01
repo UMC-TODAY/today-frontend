@@ -39,3 +39,34 @@ export const reportPost = async (postId: number, reason: string): Promise<void> 
     { reason }
   );
 };
+
+// 내 피드 목록 조회
+export interface MyPostsStats {
+  totalPosts: number;
+  totalLikes: number;
+  totalComments: number;
+}
+
+export interface MyPostsResponse {
+  stats: MyPostsStats;
+  posts: Post[];
+  hasNext: boolean;
+  nextCursor?: number;
+}
+
+export const getMyPosts = async (cursor?: number): Promise<MyPostsResponse> => {
+  const response = await axiosInstance.get<ApiResponse<MyPostsResponse>>(
+    "/api/v1/posts/my",
+    {
+      params: cursor ? { cursor } : undefined,
+    }
+  );
+  return response.data.data;
+};
+
+// 특정 사용자 글 차단
+export const blockUserPosts = async (userId: number): Promise<void> => {
+  await axiosInstance.post<ApiResponse<null>>(
+    `/api/v1/users/${userId}/block`
+  );
+};
