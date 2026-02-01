@@ -8,7 +8,7 @@ import {
     type VerifyCheckRequest,
     type VerifyCheckResponse,
     type EmailSignupRequest,
-    EmailSignupResponse
+    type EmailSignupResponse
 } from "../../types/auth";
 import { axiosInstance } from "../core/axiosInstance";
 
