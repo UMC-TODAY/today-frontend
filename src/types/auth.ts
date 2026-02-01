@@ -29,7 +29,7 @@ export interface EmailCheckRequest {
 
 export interface EmailCheckSuccessResponse {
     isSuccess: boolean;
-    messaeg: string;
+    message: string;
 }
 
 export interface EmailCheckErrorResponse {
@@ -96,3 +96,22 @@ export interface EmailSignupErrorResponse {
 }
 
 export type EmailSignupResponse = EmailSignupSuccessResponse | EmailSignupErrorResponse;
+
+// 비밀번호 재설정
+export interface ResetPasswordRequest {
+    email: string;
+    password: string;
+}
+
+export interface ResetPasswordSuccessResponse {
+    isSuccess: boolean;
+    message: string;
+}
+
+export interface ResetPasswordErrorResponse {
+    isSuccess: boolean;
+    errorCode: string;
+    message: string;
+}
+
+export type ResetPasswordResponse = ResetPasswordSuccessResponse | ResetPasswordErrorResponse;
