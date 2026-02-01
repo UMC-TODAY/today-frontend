@@ -5,6 +5,32 @@ import { getTextStyle } from "../../styles/auth/loginStyles";
 import QuestionIcon from "../../components/icons/QuestionIcon";
 import EmailBoxIcon from "../../components/icons/EmailBoxIcon";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
+import { useMutation } from "@tanstack/react-query";
+import {
+  postEmailCheck,
+  postEmailVerifyCodeCheck,
+  postEmailVerifyCodeSend,
+} from "../../api/auth/auth";
+
+function dateFormatFromRRN(birth: string, rr1: string) {
+  if (birth.length !== 6 || rr1.length !== 1) return "";
+
+  const yy = birth.slice(0, 2);
+  const mm = birth.slice(2, 4);
+  const dd = birth.slice(4, 6);
+
+  const n = rr1;
+  let century = "19";
+  if (["3", "4", "7", "8"].includes(n)) century = "20";
+  else if (["9", "0"].includes(n)) century = "18";
+
+  const m = Number(mm);
+  const d = Number(dd);
+  if (m < 1 || m > 12) return "";
+  if (d < 1 || d > 31) return "";
+
+  return `${century}${yy}-${mm}-${dd}`;
+}
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -13,30 +39,6 @@ function isValidEmail(email: string) {
 function onlyDigits(v: string) {
   return v.replace(/\D/g, "");
 }
-
-// mock: 백엔드 연동 전
-const EXISTING_EMAILS = ["kei@naver.com", "test@gmail.com"];
-
-const mockSendEmailCode = async (email: string) => {
-  await new Promise((r) => setTimeout(r, 500));
-
-  if (EXISTING_EMAILS.includes(email)) {
-    return {
-      success: false,
-      message: "이미 가입된 이메일입니다.",
-    };
-  }
-
-  return { success: true, message: "요청이 성공적으로 처리되었습니다." };
-};
-
-const mockVerifyEmailCode = async (_email: string, code: string) => {
-  await new Promise((r) => setTimeout(r, 500));
-  const ok = code === "123456";
-  return ok
-    ? { success: true as const, message: "인증이 완료되었습니다." }
-    : { success: false as const, message: "인증번호가 올바르지 않습니다." };
-};
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -70,11 +72,55 @@ export default function SignupPage() {
     if (remainSec === 0) setSendLocked(false);
   }, [remainSec]);
 
-  // states
-  const [isSending, setIsSending] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [verified, setVerified] = useState(false);
+  const emailCodeSendMutation = useMutation({
+    mutationFn: () => postEmailVerifyCodeSend({ email: email.trim() }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        setRemainSec(60);
+        setSendLocked(true);
+        setCode("");
+        setOkMsg(null);
+        setErrorMsg(null);
+        emailCodeCheckMutation.reset();
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        setErrorMsg("이메일 형식을 확인해 주세요.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+
+      console.error("이메일 인증코드 발송 에러 상세:", error.response?.data);
+    },
+  });
+
+  const emailCodeCheckMutation = useMutation({
+    mutationFn: () =>
+      postEmailVerifyCodeCheck({
+        email: email.trim(),
+        "verify-code": code.trim(),
+      }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        setOkMsg("인증이 완료되었습니다.");
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        setErrorMsg("잘못된 인증번호입니다.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+      console.error("이메일 인증코드 확인 에러 상세:", error.response?.data);
+    },
+  });
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
@@ -82,6 +128,11 @@ export default function SignupPage() {
   const birthOk = useMemo(() => birth.length === 6, [birth]);
   const rr1Ok = useMemo(() => rr1.length === 1, [rr1]);
   const emailOk = useMemo(() => isValidEmail(email.trim()), [email]);
+
+  const isSending = emailCodeSendMutation.isPending;
+  const isVerifying = emailCodeCheckMutation.isPending;
+  const sent = emailCodeSendMutation.isSuccess;
+  const verified = emailCodeCheckMutation.isSuccess;
 
   const canSend = emailOk && !isSending;
   const canVerify = sent && code.length === 6 && !isVerifying;
@@ -117,26 +168,25 @@ export default function SignupPage() {
       return;
     }
 
-    setIsSending(true);
+    if (sendLocked && remainSec > 0) return;
+
     try {
-      // 실제 연동 시:
-      // 연동 후 await fetch("/members/email/check", { ... })로 교체해야 함!
-      const res = await mockSendEmailCode(email.trim());
-      if (res.success) {
-        setRemainSec(60);
-        setSendLocked(true);
-        setSent(true);
-        setVerified(false);
-        setCode("");
-        setOkMsg("인증번호를 전송했습니다.");
-      } else {
+      const checkRes = await postEmailCheck({ email: email.trim() });
+
+      if (checkRes.isSuccess) {
+        emailCodeSendMutation.mutate();
+      } 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const status = error.response?.status;
+
+      if (status === 400) {
         setErrorMsg("이미 회원가입되어 있습니다. 로그인을 시도해주세요.");
+        return;
       }
-    } catch (e) {
-      console.error(e);
-      setErrorMsg("전송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      setIsSending(false);
+
+      setErrorMsg("서버와의 연결에 실패했습니다.");
+      console.error("이메일 중복 확인 에러 상세:", error.response?.data);
     }
   }
 
@@ -153,24 +203,7 @@ export default function SignupPage() {
       return;
     }
 
-    setIsVerifying(true);
-    try {
-      // 실제 연동 시:
-      // await fetch("/auth/verify/email/check", { ... })
-      const res = await mockVerifyEmailCode(email.trim(), code);
-      if (res.success) {
-        setVerified(true);
-        setOkMsg("인증이 완료되었습니다.");
-      } else {
-        setVerified(false);
-        setErrorMsg("잘못된 인증번호입니다.");
-      }
-    } catch (e) {
-      console.error(e);
-      setErrorMsg("인증 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      setIsVerifying(false);
-    }
+    emailCodeCheckMutation.mutate();
   }
 
   function handleNext(e: React.FormEvent) {
@@ -190,7 +223,17 @@ export default function SignupPage() {
       setErrorMsg("이메일 인증을 완료해 주세요.");
       return;
     }
-    navigate("/signup/password");
+
+    const dateFormatBirth = dateFormatFromRRN(birth, rr1);
+    if (!dateFormatBirth) {
+      setErrorMsg("생년월일을 다시 확인해 주세요.");
+      return;
+    }
+
+    navigate("/signup/password", {
+      replace: true,
+      state: { email: email.trim(), birth: dateFormatBirth },
+    });
   }
 
   return (
@@ -285,9 +328,13 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    setSent(false);
-                    setVerified(false);
                     setCode("");
+                    setOkMsg(null);
+                    setErrorMsg(null);
+                    emailCodeSendMutation.reset();
+                    emailCodeCheckMutation.reset();
+                    setRemainSec(0);
+                    setSendLocked(false);
                   }}
                   placeholder="example@naver.com"
                   autoComplete="email"
