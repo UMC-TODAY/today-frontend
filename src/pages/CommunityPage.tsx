@@ -414,16 +414,14 @@ export default function CommunityPage() {
             <h1 className="text-left mb-4 text-[#0F1724]" style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}>할일 찾기</h1>
 
             {/* Filter Buttons - 2x4 그리드 */}
-            <div className="grid grid-cols-4 gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-6">
               {categories.slice(0, 8).map((category) => (
                 <button
                   key={category.categoryKey}
                   onClick={() => handleCategoryClick(category.categoryKey)}
                   className={`
-                      h-[32px]
-                      rounded-[12px]
-                      flex items-center justify-center gap-1.5
-                      text-[14px] font-medium
+                      flex items-center justify-center gap-1
+                      text-[12px] font-medium
                       transition
                       shadow-[0_0_1px_rgba(0,0,0,0.08),0_0_1px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.12)]
                       ${selectedCategory === category.categoryKey
@@ -431,7 +429,7 @@ export default function CommunityPage() {
                       : "bg-white text-[#0F1724]"
                     }
       `}
-                  style={{ fontFamily: "Pretendard" }}
+                  style={{ fontFamily: "Pretendard", width: '75px', height: '25px', borderRadius: '12px' }}
                 >
                   <CategoryIcon category={category.categoryKey} />
                   <span className="leading-none">{category.categoryKey}</span>
@@ -534,8 +532,8 @@ export default function CommunityPage() {
                                           key={subIndex}
                                           className="flex gap-3 items-start bg-white rounded-lg px-4 py-3"
                                         >
-                                          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                            <CategoryIcon category={category.categoryKey} />
+                                          <div className={`w-6 h-6 ${color} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-xs`}>
+                                            {emoji}
                                           </div>
                                           <p
                                             className="text-[#0F1724] flex-1 text-left"
@@ -642,99 +640,99 @@ export default function CommunityPage() {
           <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border overflow-hidden flex flex-col relative" style={{ width: '480px', height: '1006px' }}>
             {/* Header */}
             <div className="bg-white border-b border-gray-200">
-              <div className="flex items-center justify-between p-5">
-                <div>
-                  <h2
-                    className="text-[#0F1724]"
-                    style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}
+              {showPostModal ? (
+                /* 게시글 작성 모드 헤더 */
+                <div className="flex items-center justify-between p-5">
+                  <button onClick={() => setShowPostModal(false)} className="text-gray-500 hover:text-gray-700">
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <h3 className="text-base font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>게시글</h3>
+                  <button
+                    onClick={handleCreatePost}
+                    disabled={newPostContent.trim().length < 5}
+                    className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                    style={{ fontFamily: 'Pretendard' }}
                   >
-                    오늘
-                  </h2>
-                  <p
-                    className="text-[#0F1724]"
-                    style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}
-                  >
-                    피드
-                  </p>
+                    작성
+                  </button>
                 </div>
-                <button
-                  onClick={() => setShowNotificationModal(true)}
-                  className="relative"
-                >
-                  <img
-                    src={hasUnreadNotifications ? bell2Svg : bell1Svg}
-                    alt="알림"
-                    className="w-6 h-6"
-                  />
-                </button>
-              </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between p-5">
+                    <div>
+                      <h2
+                        className="text-[#0F1724]"
+                        style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}
+                      >
+                        오늘
+                      </h2>
+                      <p
+                        className="text-[#0F1724]"
+                        style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}
+                      >
+                        피드
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowNotificationModal(true)}
+                      className="relative"
+                    >
+                      <img
+                        src={hasUnreadNotifications ? bell2Svg : bell1Svg}
+                        alt="알림"
+                        className="w-6 h-6"
+                      />
+                    </button>
+                  </div>
 
-              {/* Tabs */}
-              <div className="flex justify-between px-5">
-                <button
-                  onClick={() => setActiveTab("recent")}
-                  className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === "recent"
-                      ? "border-b-2 border-blue-500 text-blue-500"
-                      : "text-gray-400 hover:text-gray-600"
-                    }`}
-                  style={{ fontFamily: 'Pretendard' }}
-                >
-                  최신
-                </button>
-                <button
-                  onClick={() => setActiveTab("friends")}
-                  className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === "friends"
-                      ? "border-b-2 border-blue-500 text-blue-500"
-                      : "text-gray-400 hover:text-gray-600"
-                    }`}
-                  style={{ fontFamily: 'Pretendard' }}
-                >
-                  친구 관리
-                </button>
-                <button
-                  onClick={() => setActiveTab("activity")}
-                  className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === "activity"
-                      ? "border-b-2 border-blue-500 text-blue-500"
-                      : "text-gray-400 hover:text-gray-600"
-                    }`}
-                  style={{ fontFamily: 'Pretendard' }}
-                >
-                  내 활동
-                </button>
-              </div>
+                  {/* Tabs */}
+                  <div className="flex justify-between px-5">
+                    <button
+                      onClick={() => setActiveTab("recent")}
+                      className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === "recent"
+                          ? "border-b-2 border-blue-500 text-blue-500"
+                          : "text-gray-400 hover:text-gray-600"
+                        }`}
+                      style={{ fontFamily: 'Pretendard' }}
+                    >
+                      최신
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("friends")}
+                      className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === "friends"
+                          ? "border-b-2 border-blue-500 text-blue-500"
+                          : "text-gray-400 hover:text-gray-600"
+                        }`}
+                      style={{ fontFamily: 'Pretendard' }}
+                    >
+                      친구 관리
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("activity")}
+                      className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === "activity"
+                          ? "border-b-2 border-blue-500 text-blue-500"
+                          : "text-gray-400 hover:text-gray-600"
+                        }`}
+                      style={{ fontFamily: 'Pretendard' }}
+                    >
+                      내 활동
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Tab Content */}
             <div className="flex-1 overflow-y-auto relative">
               {/* 게시글 작성 모드 */}
               {showPostModal ? (
-                <div className="p-5">
-                  {/* 헤더 */}
-                  <div className="flex items-center justify-between mb-4">
-                    <button onClick={() => setShowPostModal(false)} className="text-gray-500 hover:text-gray-700">
-                      <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <h3 className="text-base font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>게시글</h3>
-                    <button
-                      onClick={handleCreatePost}
-                      disabled={newPostContent.trim().length < 5}
-                      className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-                      style={{ fontFamily: 'Pretendard' }}
-                    >
-                      작성
-                    </button>
-                  </div>
-
-                  {/* 입력 영역 */}
-                  <p className="text-xs text-gray-400 mb-4" style={{ fontFamily: 'Pretendard' }}>
-                    최소 5자 이상 입력해주세요. 연락처 교환 등 부적절한 글은 삭제될 수 있으며, 등록한 글은 수정과 삭제가 어려우니 참고해주세요.
-                  </p>
+                <div className="p-5 h-full">
                   <textarea
-                    placeholder="내용을 입력하세요..."
+                    placeholder="최소 5자 이상 입력해주세요. 연락처 교환 등 부적절한 글은 삭제될 수 있으며, 등록한 글은 수정과 삭제가 어려우니 참고해주세요."
                     value={newPostContent}
                     onChange={(e) => setNewPostContent(e.target.value)}
-                    className="w-full h-[400px] resize-none focus:outline-none text-sm border border-gray-200 rounded-lg p-4"
-                    style={{ fontFamily: 'Pretendard' }}
+                    className="w-full h-full resize-none focus:outline-none text-sm p-0"
+                    style={{ fontFamily: 'Pretendard', color: newPostContent ? '#0F1724' : '#9CA3AF' }}
                   />
                 </div>
               ) : (
@@ -1077,17 +1075,15 @@ export default function CommunityPage() {
               )}
             </div>
 
-            {/* 글쓰기 버튼 - 고정 (카드 하단에 항상 표시) */}
+            {/* 글쓰기 버튼 - 플로팅 */}
             {!showPostModal && (activeTab === "recent" || activeTab === "activity") && (
-              <div className="flex-shrink-0 p-4 flex justify-end bg-white border-t border-gray-100">
-                <button
-                  onClick={() => setShowPostModal(true)}
-                  className="px-5 py-2.5 bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition shadow-lg flex items-center gap-2"
-                  style={{ fontFamily: 'Pretendard', borderRadius: '8px' }}
-                >
-                  글쓰기
-                </button>
-              </div>
+              <button
+                onClick={() => setShowPostModal(true)}
+                className="absolute bottom-6 right-6 px-5 py-2.5 bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition shadow-lg flex items-center gap-2 z-10"
+                style={{ fontFamily: 'Pretendard', borderRadius: '8px' }}
+              >
+                글쓰기
+              </button>
             )}
           </div>
         </div>
@@ -1258,12 +1254,12 @@ export default function CommunityPage() {
         </div>
       )}
 
-      {/* 알림 패널 - 토글 드롭다운 */}
+      {/* 알림 패널 - 오른쪽 */}
       {showNotificationModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-start justify-center pt-20 z-50" onClick={() => setShowNotificationModal(false)}>
+        <div className="fixed inset-0 bg-black/40 flex justify-end z-50" onClick={() => setShowNotificationModal(false)}>
           <div
-            className="bg-white shadow-xl w-[480px] max-h-[600px] overflow-hidden flex flex-col"
-            style={{ borderRadius: '16px' }}
+            className="bg-white shadow-xl overflow-hidden flex flex-col"
+            style={{ width: '649px', height: '1006px', borderRadius: '16px', margin: '20px' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* 헤더 */}
