@@ -65,7 +65,7 @@ export default function FindPasswordVerifyPage() {
       } else {
         setErrorMsg("서버와의 연결에 실패했습니다.");
       }
-      console.error("이메일 인증코드 발송 에러 상세:", error.response?.data);
+      console.error("비밀번호 인증코드 발송 에러 상세:", error.response?.data);
     },
   });
 
@@ -89,7 +89,7 @@ export default function FindPasswordVerifyPage() {
       } else {
         setErrorMsg("서버와의 연결에 실패했습니다.")
       }
-      console.error("이메일 인증코드 확인 에러 상세:", error.response?.data);
+      console.error("비밀번호 인증코드 확인 에러 상세:", error.response?.data);
     },
   });
 
