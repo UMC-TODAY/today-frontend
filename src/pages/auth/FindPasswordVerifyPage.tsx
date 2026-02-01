@@ -77,7 +77,7 @@ export default function FindPasswordVerifyPage() {
       }),
     onSuccess: (result) => {
       if (result.isSuccess) {
-        navigate("/login/find-password/done", { replace: true });
+        navigate("/login/find-password/done", { replace: true, state: { email: email.trim() } });
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
