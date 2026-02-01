@@ -27,12 +27,18 @@ export interface EmailCheckRequest {
     email: string;
 }
 
-export interface EmailCheckResponse {
+export interface EmailCheckSuccessResponse {
+    isSuccess: boolean;
+    messaeg: string;
+}
+
+export interface EmailCheckErrorResponse {
     isSuccess: boolean;
     errorCode: string;
     message: string;
-    data: Record<string, never>;
 }
+
+export type EmailCheckResponse = EmailCheckSuccessResponse | EmailCheckErrorResponse;
 
 // 이메일 인증코드 발송 + 비밀번호 재설정 인증코드 발송
 export interface VerifyRequest {
