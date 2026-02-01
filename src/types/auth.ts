@@ -95,4 +95,4 @@ export interface EmailSignupErrorResponse {
     message: string;
 }
 
-export type EmailSignResponse = EmailSignupSuccessResponse | EmailSignupErrorResponse;
+export type EmailSignupResponse = EmailSignupSuccessResponse | EmailSignupErrorResponse;
