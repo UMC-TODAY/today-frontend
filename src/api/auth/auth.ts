@@ -8,7 +8,9 @@ import {
     type VerifyCheckRequest,
     type VerifyCheckResponse,
     type EmailSignupRequest,
-    type EmailSignupResponse
+    type EmailSignupResponse,
+    type ResetPasswordRequest,
+    type ResetPasswordResponse,
 } from "../../types/auth";
 import { axiosInstance } from "../core/axiosInstance";
 
@@ -51,5 +53,11 @@ export const postEmailVerifyCodeCheck = async (body: VerifyCheckRequest) => {
 // 이메일 회원가입
 export const postEmailSignup = async (body: EmailSignupRequest) => {
     const res = await axiosInstance.post<EmailSignupResponse>("/api/auth/signup/email", body);
+    return res.data;
+}
+
+// 비밀번호 재설정
+export const patchResetPassword = async (body: ResetPasswordRequest) => {
+    const res = await axiosInstance.patch<ResetPasswordResponse>("/api/members/password/reset", body);
     return res.data;
 }

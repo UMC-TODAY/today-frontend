@@ -1,9 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { findIdStyles as s } from "../../styles/auth/findIdStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 
 export default function FindPasswordDonePage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = (location.state) || {};
+  const email = state.email || "";
 
   const primaryBtnStyle: React.CSSProperties = {
     ...s.submitBase,
@@ -57,7 +60,7 @@ export default function FindPasswordDonePage() {
           <button
             type="button"
             style={primaryBtnStyle}
-            onClick={() => navigate("/login/reset-password")}
+            onClick={() => navigate("/login/reset-password", { state: { email: email.trim() }} )}
           >
             <div style={getTextStyle(600, 14, "#FFFFFF")}>비밀번호 재설정</div>
           </button>

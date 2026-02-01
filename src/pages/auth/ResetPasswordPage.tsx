@@ -1,9 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
 import QuestionIcon from "../../components/icons/QuestionIcon";
 import { findIdStyles as s } from "../../styles/auth/findIdStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMemo, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { patchResetPassword } from "../../api/auth/auth";
 
 function isValidPassword(pw: string) {
   // 8~32자 검증
@@ -23,7 +25,10 @@ function isValidPassword(pw: string) {
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state;
 
+  const email = state.email ?? "";
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [isPwInvalid, setIsPwInvalid] = useState(false);
@@ -41,6 +46,30 @@ export default function ResetPasswordPage() {
     cursor: "pointer",
     marginTop: "18px",
   };
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: () =>
+      patchResetPassword({ email: email.trim(), password: pw.trim() }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        navigate("/login");
+      } else {
+        setErrorMsg("비밀번호 재설정에 실패했습니다.");
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        setErrorMsg("비밀번호 재설정에 실패했습니다.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+
+      console.error("비밀번호 재설정 에러 상세:", error.response?.data);
+    },
+  });
 
   function handleClose() {
     navigate("/login", { replace: true });
@@ -61,10 +90,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // 백엔드 연동하면 비밀번호 초기화 후 해당 입력된 비밀번호로 변경
-    // (나중에 실제 API 붙이면 여기서 fetch로 비밀번호 변경 요청)
-    // 그 후 1. 로그인(/login)으로 이동
-    navigate("/login");
+    resetPasswordMutation.mutate();
   }
 
   const infoTextStyle: React.CSSProperties = {
