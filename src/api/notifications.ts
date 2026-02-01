@@ -1,0 +1,39 @@
+import { axiosInstance } from "./core/axiosInstance";
+import type { ApiResponse } from "../types/common";
+import type { NotificationsResponse } from "../types/notification";
+
+// 알림 목록 조회
+export const getNotifications = async (): Promise<NotificationsResponse> => {
+  const response = await axiosInstance.get<ApiResponse<NotificationsResponse>>(
+    "/api/v1/notifications"
+  );
+  return response.data.data;
+};
+
+// 친구 요청 수락
+export const acceptFriendRequest = async (notificationId: number): Promise<void> => {
+  await axiosInstance.post<ApiResponse<null>>(
+    `/api/v1/notifications/${notificationId}/accept`
+  );
+};
+
+// 친구 요청 거절
+export const rejectFriendRequest = async (notificationId: number): Promise<void> => {
+  await axiosInstance.post<ApiResponse<null>>(
+    `/api/v1/notifications/${notificationId}/reject`
+  );
+};
+
+// 알림 읽음 처리
+export const markNotificationAsRead = async (notificationId: number): Promise<void> => {
+  await axiosInstance.patch<ApiResponse<null>>(
+    `/api/v1/notifications/${notificationId}/read`
+  );
+};
+
+// 모든 알림 읽음 처리
+export const markAllNotificationsAsRead = async (): Promise<void> => {
+  await axiosInstance.patch<ApiResponse<null>>(
+    "/api/v1/notifications/read-all"
+  );
+};

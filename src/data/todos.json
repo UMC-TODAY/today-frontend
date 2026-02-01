@@ -136,7 +136,8 @@
           "difficulty": 2,
           "tags": ["우선순위", "집중", "생산성"],
           "template": { "recommendedTimes": ["09:10"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 5234
         },
         {
           "taskId": "WK-002",
@@ -154,7 +155,8 @@
           "difficulty": 3,
           "tags": ["문서", "보고", "정리"],
           "template": { "recommendedTimes": ["15:00"], "minPerSession": 45 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1876
         },
         {
           "taskId": "WK-003",
@@ -172,7 +174,8 @@
           "difficulty": 2,
           "tags": ["회의", "커뮤니케이션", "정리"],
           "template": { "recommendedTimes": ["10:00"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3421
         },
         {
           "taskId": "WK-004",
@@ -190,7 +193,8 @@
           "difficulty": 2,
           "tags": ["정리", "마무리", "루틴"],
           "template": { "recommendedTimes": ["16:30"], "minPerSession": 25 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2567
         },
         {
           "taskId": "WK-005",
@@ -208,7 +212,8 @@
           "difficulty": 2,
           "tags": ["문서화", "협업", "정리"],
           "template": { "recommendedTimes": ["18:10"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1923
         }
       ]
     },
@@ -231,7 +236,8 @@
           "difficulty": 1,
           "tags": ["루틴", "케어", "건강"],
           "template": { "recommendedTimes": ["08:00", "19:00"], "minPerSession": 5 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 4521
         },
         {
           "taskId": "PT-002",
@@ -249,7 +255,8 @@
           "difficulty": 2,
           "tags": ["산책", "행동", "케어"],
           "template": { "recommendedTimes": ["07:30", "21:00"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3876
         },
         {
           "taskId": "PT-003",
@@ -267,7 +274,8 @@
           "difficulty": 2,
           "tags": ["그루밍", "피부", "위생"],
           "template": { "recommendedTimes": ["20:00"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2134
         },
         {
           "taskId": "PT-004",
@@ -285,7 +293,8 @@
           "difficulty": 2,
           "tags": ["청소", "위생", "루틴"],
           "template": { "recommendedTimes": ["19:30"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2987
         },
         {
           "taskId": "PT-005",
@@ -303,7 +312,8 @@
           "difficulty": 1,
           "tags": ["놀이", "훈련", "유대감"],
           "template": { "recommendedTimes": ["18:30"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3654
         }
       ]
     },
@@ -326,7 +336,8 @@
           "difficulty": 1,
           "tags": ["루틴", "아침", "준비"],
           "template": { "recommendedTimes": ["07:40"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 4123
         },
         {
           "taskId": "CM-002",
@@ -344,7 +355,8 @@
           "difficulty": 1,
           "tags": ["정리", "퇴근", "루틴"],
           "template": { "recommendedTimes": ["19:30"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3567
         },
         {
           "taskId": "CM-003",
@@ -362,7 +374,8 @@
           "difficulty": 1,
           "tags": ["이동", "시간관리", "습관"],
           "template": { "recommendedTimes": ["08:30", "18:00"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2789
         },
         {
           "taskId": "CM-004",
@@ -380,7 +393,8 @@
           "difficulty": 1,
           "tags": ["마음관리", "호흡", "스트레스"],
           "template": { "recommendedTimes": ["08:10", "18:20"], "minPerSession": 5 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3234
         },
         {
           "taskId": "CM-005",
@@ -398,7 +412,8 @@
           "difficulty": 2,
           "tags": ["교통", "비용", "최적화"],
           "template": { "recommendedTimes": ["12:30"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1456
         }
       ]
     },
@@ -421,7 +436,8 @@
           "difficulty": 2,
           "tags": ["공부", "루틴", "집중"],
           "template": { "recommendedTimes": ["21:30"], "minPerSession": 20 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 4892
         },
         {
           "taskId": "ST-002",
@@ -439,7 +455,8 @@
           "difficulty": 2,
           "tags": ["복습", "오답", "시험"],
           "template": { "recommendedTimes": ["19:00"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2345
         },
         {
           "taskId": "ST-003",
@@ -457,7 +474,8 @@
           "difficulty": 2,
           "tags": ["영어", "말하기", "훈련"],
           "template": { "recommendedTimes": ["08:50", "22:00"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3678
         },
         {
           "taskId": "ST-004",
@@ -475,7 +493,8 @@
           "difficulty": 3,
           "tags": ["코딩", "문제풀이", "루틴"],
           "template": { "recommendedTimes": ["20:30"], "minPerSession": 25 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2901
         },
         {
           "taskId": "ST-005",
@@ -493,7 +512,8 @@
           "difficulty": 2,
           "tags": ["정리", "필기", "복습"],
           "template": { "recommendedTimes": ["22:20"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1789
         }
       ]
     },
@@ -516,7 +536,8 @@
           "difficulty": 2,
           "tags": ["운동", "근력", "루틴"],
           "template": { "recommendedTimes": ["07:10", "21:10"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 5123
         },
         {
           "taskId": "HL-002",
@@ -534,7 +555,8 @@
           "difficulty": 1,
           "tags": ["수분", "습관", "건강"],
           "template": { "recommendedTimes": ["09:00", "12:00", "15:00", "18:00"], "minPerSession": 2 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 4567
         },
         {
           "taskId": "HL-003",
@@ -552,7 +574,8 @@
           "difficulty": 2,
           "tags": ["걷기", "활동량", "유산소"],
           "template": { "recommendedTimes": ["12:40", "19:40"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3789
         },
         {
           "taskId": "HL-004",
@@ -570,7 +593,8 @@
           "difficulty": 1,
           "tags": ["스트레칭", "자세", "통증예방"],
           "template": { "recommendedTimes": ["11:00", "16:00", "22:00"], "minPerSession": 5 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2456
         },
         {
           "taskId": "HL-005",
@@ -588,7 +612,8 @@
           "difficulty": 2,
           "tags": ["수면", "루틴", "회복"],
           "template": { "recommendedTimes": ["23:30"], "minPerSession": 20 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3012
         }
       ]
     },
@@ -611,7 +636,8 @@
           "difficulty": 1,
           "tags": ["사진", "산책", "감성"],
           "template": { "recommendedTimes": ["17:30"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2678
         },
         {
           "taskId": "HB-002",
@@ -629,7 +655,8 @@
           "difficulty": 2,
           "tags": ["요리", "레시피", "기록"],
           "template": { "recommendedTimes": ["19:00"], "minPerSession": 30 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1567
         },
         {
           "taskId": "HB-003",
@@ -647,7 +674,8 @@
           "difficulty": 2,
           "tags": ["그림", "스케치", "창작"],
           "template": { "recommendedTimes": ["22:10"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1234
         },
         {
           "taskId": "HB-004",
@@ -665,7 +693,8 @@
           "difficulty": 1,
           "tags": ["음악", "감상", "휴식"],
           "template": { "recommendedTimes": ["21:00"], "minPerSession": 20 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2890
         },
         {
           "taskId": "HB-005",
@@ -683,7 +712,8 @@
           "difficulty": 1,
           "tags": ["카페", "기록", "힐링"],
           "template": { "recommendedTimes": ["14:30"], "minPerSession": 45 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1987
         }
       ]
     },
@@ -706,7 +736,8 @@
           "difficulty": 2,
           "tags": ["창작", "아이디어", "글쓰기"],
           "template": { "recommendedTimes": ["22:40"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1456
         },
         {
           "taskId": "NV-002",
@@ -724,7 +755,8 @@
           "difficulty": 3,
           "tags": ["캐릭터", "설정", "서사"],
           "template": { "recommendedTimes": ["20:40"], "minPerSession": 25 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 987
         },
         {
           "taskId": "NV-003",
@@ -742,7 +774,8 @@
           "difficulty": 2,
           "tags": ["집필", "습관", "단편"],
           "template": { "recommendedTimes": ["23:00"], "minPerSession": 20 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1234
         },
         {
           "taskId": "NV-004",
@@ -760,7 +793,8 @@
           "difficulty": 2,
           "tags": ["대사", "연습", "캐릭터"],
           "template": { "recommendedTimes": ["21:50"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 876
         },
         {
           "taskId": "NV-005",
@@ -778,7 +812,8 @@
           "difficulty": 3,
           "tags": ["시놉시스", "구성", "플롯"],
           "template": { "recommendedTimes": ["16:00"], "minPerSession": 30 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 765
         }
       ]
     },
@@ -801,7 +836,8 @@
           "difficulty": 2,
           "tags": ["여행", "체크리스트", "준비"],
           "template": { "recommendedTimes": ["20:00"], "minPerSession": 20 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3456
         },
         {
           "taskId": "PR-002",
@@ -819,7 +855,8 @@
           "difficulty": 3,
           "tags": ["면접", "발표", "준비"],
           "template": { "recommendedTimes": ["19:30"], "minPerSession": 25 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2123
         },
         {
           "taskId": "PR-003",
@@ -837,7 +874,8 @@
           "difficulty": 2,
           "tags": ["서류", "체크", "제출"],
           "template": { "recommendedTimes": ["11:30"], "minPerSession": 10 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 1789
         },
         {
           "taskId": "PR-004",
@@ -855,7 +893,8 @@
           "difficulty": 2,
           "tags": ["모임", "준비", "일정"],
           "template": { "recommendedTimes": ["18:00"], "minPerSession": 15 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 2567
         },
         {
           "taskId": "PR-005",
@@ -873,7 +912,8 @@
           "difficulty": 1,
           "tags": ["장보기", "식단", "준비"],
           "template": { "recommendedTimes": ["10:30"], "minPerSession": 8 },
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "usageCount": 3234
         }
       ]
     }
