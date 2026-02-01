@@ -76,3 +76,23 @@ export interface VerifyCheckErrorResponse {
 }
 
 export type VerifyCheckResponse = VerifyCheckSuccessResponse | VerifyCheckErrorResponse;
+
+// 이메일 회원가입
+export interface EmailSignupRequest {
+    email: string;
+    password: string;
+    birth: string;
+}
+
+export interface EmailSignupSuccessResponse {
+    isSuccess: boolean;
+    message: string;
+}
+
+export interface EmailSignupErrorResponse {
+    isSuccess: boolean;
+    errorCode: string;
+    message: string;
+}
+
+export type EmailSignupResponse = EmailSignupSuccessResponse | EmailSignupErrorResponse;

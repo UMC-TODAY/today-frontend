@@ -6,7 +6,9 @@ import {
     type VerifyRequest,
     type VerifyResponse,
     type VerifyCheckRequest,
-    type VerifyCheckResponse
+    type VerifyCheckResponse,
+    type EmailSignupRequest,
+    type EmailSignupResponse
 } from "../../types/auth";
 import { axiosInstance } from "../core/axiosInstance";
 
@@ -43,5 +45,11 @@ export const postEmailVerifyCodeSend = async (body: VerifyRequest) => {
 // 이메일 인증코드 확인
 export const postEmailVerifyCodeCheck = async (body: VerifyCheckRequest) => {
     const res = await axiosInstance.post<VerifyCheckResponse>("/api/auth/email/verification-codes/verify", body);
+    return res.data;
+}
+
+// 이메일 회원가입
+export const postEmailSignup = async (body: EmailSignupRequest) => {
+    const res = await axiosInstance.post<EmailSignupResponse>("/api/auth/signup/email", body);
     return res.data;
 }

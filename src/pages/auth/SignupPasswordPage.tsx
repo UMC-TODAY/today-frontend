@@ -1,9 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
 import QuestionIcon from "../../components/icons/QuestionIcon";
 import { findIdStyles as s } from "../../styles/auth/findIdStyles";
-import { AUTH_KEY, getTextStyle } from "../../styles/auth/loginStyles";
+import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMemo, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { postEmailSignup } from "../../api/auth/auth";
 
 function isValidPassword(pw: string) {
   // 8~32자 검증
@@ -21,47 +23,52 @@ function isValidPassword(pw: string) {
   return isCombined && !has3Reapting;
 }
 
-/**
- * 개발 중 mock:
- * - 회원가입 성공 처리 -> 이어서 바로 로그인 처리
- *
- * 실제 연동 시:
- * 1) /auth/signup/email
- * 2) /auth/login/email 
- * 순서로 fetch
- */
-type SignupMockResponse = {
-  success: boolean;
-  message: string;
-  data?: { id: number };
-};
-
-const mockSignupAndLogin = (): Promise<SignupMockResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        message: "요청이 성공적으로 처리되었습니다.",
-        data: { id: 1 },
-      });
-    }, 500);
-  });
-};
-
 export default function SignupPasswordPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state || {};
+
+  const email = state.email;
+  const birth = state.birth;
 
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [isPwInvalid, setIsPwInvalid] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const pwOk = useMemo(() => isValidPassword(pw.trim()), [pw]);
   const sameOk = useMemo(
     () => pw.trim() !== "" && pw.trim() === pw2.trim(),
     [pw, pw2],
   );
+
+  const signupMutation = useMutation({
+    mutationFn: () =>
+      postEmailSignup({
+        email: email.trim(),
+        password: pw.trim(),
+        birth: birth.trim(),
+      }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        setErrorMsg(result.message ?? "회원가입에 실패했습니다.");
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const status = error.response?.status;
+
+      if (status === 400) {
+        setErrorMsg("회원가입에 실패했습니다.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+
+      console.error("이메일 회원가입 에러 상세:", error.response?.data);
+    },
+  });
 
   const submitStyle: React.CSSProperties = {
     ...s.submitBase,
@@ -89,36 +96,7 @@ export default function SignupPasswordPage() {
       return;
     }
 
-    // 백엔드 연동 시 
-    // 조건 만족 -> 회원가입 진행 -> 바로 로그인 -> 캘린더로 이동
-    setIsLoading(true);
-    try {
-        // 실제 연동 시 
-        // const res = await fetch("/auth/signup/email", { ... });
-        // if (!res.success) throw new Error("signup failed");
-        // const loginRes = await fetch("/auth/login/email", { ... });
-        // const result = await loginRes.json(); 
-        // ...
-
-        const result = await mockSignupAndLogin();
-
-        if (result.success && result.data) {
-          const payload = {
-            userId: result.data.id,
-            loggedInAt: Date.now(),
-          };
-          window.localStorage.setItem(AUTH_KEY, JSON.stringify(payload));
-
-          navigate("/dashboard", { replace: true });
-        } else {
-          setErrorMsg(result.message || "회원가입에 실패했습니다.");
-        }
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("서버와의 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      setIsLoading(false);
-    }
+    signupMutation.mutate();
   }
 
   const infoTextStyle: React.CSSProperties = {
