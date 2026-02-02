@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
 import QuestionIcon from "../../components/icons/QuestionIcon";
-import { findIdStyles as s } from "../../styles/auth/findIdStyles";
+import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -115,7 +115,7 @@ export default function ResetPasswordPage() {
         </button>
 
         {/* 타이틀 */}
-        <div style={getTextStyle(700, 24, "#000000")}>
+        <div style={{ ...getTextStyle(700, 24, "#000000"), ...s.title }}>
           새 비밀번호를 입력하세요
         </div>
 

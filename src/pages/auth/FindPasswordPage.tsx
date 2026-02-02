@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
 import EmailBoxIcon from "../../components/icons/EmailBoxIcon";
 import QuestionIcon from "../../components/icons/QuestionIcon";
-import { findIdStyles as s } from "../../styles/auth/findIdStyles";
+import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMutation } from "@tanstack/react-query";
 import { postEmailCheck } from "../../api/auth/auth";
@@ -89,7 +89,7 @@ export default function FindPasswordPage() {
         </button>
 
         {/* 타이틀/설명 (사진대로 문구만 맞추면 됨) */}
-        <div style={getTextStyle(650, 28, "#000000")}>이메일 주소 입력</div>
+        <div style={{ ...getTextStyle(650, 28, "#000000"), ...s.title }}>이메일 주소 입력</div>
         <div style={s.subtitle}>
           계정을 복구하려면 계정에 연동된
           <br />

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { findIdStyles as s } from "../../styles/auth/findIdStyles";
+import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 
 export default function FindPasswordDonePage() {
