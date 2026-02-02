@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
 import EmailBoxIcon from "../../components/icons/EmailBoxIcon";
-import { findIdStyles as s } from "../../styles/auth/findIdStyles";
+import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import QuestionIcon from "../../components/icons/QuestionIcon";
 import { useMutation } from "@tanstack/react-query";
@@ -85,7 +85,7 @@ export default function FindIdPage() {
         </button>
 
         {/* 타이틀/설명 */}
-        <div style={getTextStyle(650, 28, "#000000")}>이메일 주소 입력</div>
+        <div style={{ ...getTextStyle(650, 28, "#000000"), ...s.title }}>이메일 주소 입력</div>
         <div style={s.subtitle}>
           해당 이메일로 가입 여부를
           <br />

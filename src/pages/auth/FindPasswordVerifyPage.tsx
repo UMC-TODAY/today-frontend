@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
 import EmailBoxIcon from "../../components/icons/EmailBoxIcon";
 import QuestionIcon from "../../components/icons/QuestionIcon";
-import { findIdStyles as s } from "../../styles/auth/findIdStyles";
+import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -112,7 +112,7 @@ export default function FindPasswordVerifyPage() {
 
   const sendBtnStyle: React.CSSProperties = {
     ...s.submitBase,
-    width: canSend ? "80px" : "60px",
+    width:"80px",
     height: "36px",
     borderRadius: "10px",
     padding: "0 14px",
@@ -171,7 +171,7 @@ export default function FindPasswordVerifyPage() {
         </button>
 
         {/* 타이틀/설명 */}
-        <div style={getTextStyle(700, 28, "#000000")}>이메일 주소 입력</div>
+        <div style={{ ...getTextStyle(700, 28, "#000000"), ...s.title }}>이메일 주소 입력</div>
 
         <form onSubmit={handleNext}>
           {/* 이메일 */}

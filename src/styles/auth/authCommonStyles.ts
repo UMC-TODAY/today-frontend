@@ -1,6 +1,6 @@
 export const FIND_ID_EMAIL_KEY = "today_find_id_email";
 
-export const findIdStyles = {
+export const authCommenStyles = {
   page: {
     width: "100%",
     height: "100vh",
@@ -22,6 +22,11 @@ export const findIdStyles = {
     borderRadius: "12px",
     padding: "105px 45px 26px",
     position: "relative",
+  } as const,
+
+  title: {
+    display: "flex",
+    justifyContent: "center",
   } as const,
 
   closeBtn: {
@@ -88,6 +93,8 @@ export const findIdStyles = {
   } as const,
 
   error: {
+    display: "flex",
+    justifyContent: "center",
     marginTop: "18px",
     fontSize: "13px",
     color: "#d93025",
