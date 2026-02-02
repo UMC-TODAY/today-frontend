@@ -106,7 +106,7 @@ export default function LoginPage() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-        <div style={getTextStyle(700, 28, "#000000")}>로그인하기</div>
+        <div style={{ ...getTextStyle(700, 28, "#000000"), ...s.title }}>로그인하기</div>
         <div style={s.subtitle}>멤버십 무료 체험 14일 지원중!</div>
 
         <form onSubmit={handleLogin}>
