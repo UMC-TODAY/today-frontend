@@ -18,6 +18,7 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import ModalTestPage from "./pages/setting/ModalTestPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,6 +73,9 @@ function App() {
             <Route path="goal-tracker" element={<GoalTrackerPage />} />
             <Route path="community" element={<CommunityPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
+
+            {/* 설정 모달 테스트 페이지 (임시!! 나중에 삭제할 예정) */}
+            <Route path="modal-test" element={<ModalTestPage />} />
           </Route>
 
           {/* 404 페이지 등 - 홈으로 리다이렉트 */}
