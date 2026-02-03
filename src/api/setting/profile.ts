@@ -16,17 +16,33 @@ export const postNicknameCheck = async (body: NicknameCheckRequest) => {
 
 // 회원 탈퇴
 export const patchWithdraw = async (token: string) => {
-    const res = await axiosInstance.patch<WithdrawResponse>("/api/members/withdraw", {
-        headers: {
-            Authorization: `Bearer ${token}`,
+    const res = await axiosInstance.patch<WithdrawResponse>(
+        "/api/members/withdraw",
+        null,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         },
-    });
+    );
     return res.data;
 }
 
 // 프로필 정보 수정
 export const patchEditProfile = async (body: EditProfileRequest) => {
-    const res = await axiosInstance.patch<EditProfileResponse>("/api/members/profile", body);
+    const form = new FormData();
+    if (body.profileImage) form.append("profileImage", body.profileImage);
+    if (body.nickName !== undefined) form.append("nickName", body.nickName);
+
+    const res = await axiosInstance.patch<EditProfileResponse>(
+        "/api/members/profile",
+        form,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        },
+    );
     return res.data;
 }
 
