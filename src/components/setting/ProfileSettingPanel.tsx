@@ -420,7 +420,7 @@ export default function ProfileSettingPanel() {
             height: "38px",
             width: "100px",
             borderRadius: "12px",
-            background: canCheckName ? "#3182F6" : "#5C92FF",
+            background: canSave ? "#3182F6" : "#5C92FF",
             color: "#FFFFFF",
             fontWeight: 600,
             fontSize: "14px",
