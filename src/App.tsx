@@ -19,6 +19,7 @@ import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ModalTestPage from "./pages/setting/ModalTestPage";
+import WithdrawPage from "./pages/setting/WithdrawPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,6 +74,9 @@ function App() {
             <Route path="goal-tracker" element={<GoalTrackerPage />} />
             <Route path="community" element={<CommunityPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
+
+            {/* 설정 -> 탈퇴 페이지 */}
+            <Route path="/setting/withdraw" element={<WithdrawPage />} />
 
             {/* 설정 모달 테스트 페이지 (임시!! 나중에 삭제할 예정) */}
             <Route path="modal-test" element={<ModalTestPage />} />
