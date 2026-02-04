@@ -48,6 +48,13 @@ export default function ProfileSettingPanel() {
   // 닉네임 중복 확인 버튼 클릭 가능 여부
   const canCheckName = useMemo(() => nickname.trim().length >= 1, [nickname]);
 
+  // 저장 가능 여부
+  const canSave = useMemo(() => {
+    if (nickname.trim().length === 0) return false;
+    if (nameCheckStatus !== "ok") return false;
+    return true;
+  }, [nickname, nameCheckStatus]);
+
   const nicknameCheckMutation = useMutation({
     mutationFn: () => postNicknameCheck({ nickname: nickname.trim() }),
     onSuccess: (result) => {
@@ -238,7 +245,14 @@ export default function ProfileSettingPanel() {
       </div>
 
       {/* 프로필 이름 */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "15px", marginBottom: "25px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+          marginBottom: "25px",
+        }}
+      >
         <div
           style={{
             display: "grid",
@@ -401,7 +415,7 @@ export default function ProfileSettingPanel() {
         <button
           type="button"
           onClick={onClickSave}
-          disabled={isLoading}
+          disabled={!canSave}
           style={{
             height: "38px",
             width: "100px",
@@ -416,12 +430,6 @@ export default function ProfileSettingPanel() {
           저장
         </button>
       </div>
-
-      {saveErrorMsg && (
-        <div style={{ marginTop: 8, fontSize: 12, color: "#D93025" }}>
-          {saveErrorMsg}
-        </div>
-      )}
     </div>
   );
 }
