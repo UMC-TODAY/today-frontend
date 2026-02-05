@@ -16,7 +16,7 @@ export default function MainLayout() {
       <main style={{
         flex: 1,
         background: '#ffffff',
-        padding: '40px',
+        padding: '14px',
         overflowY: 'auto',
         minWidth: 0
       }}>

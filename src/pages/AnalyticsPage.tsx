@@ -317,24 +317,34 @@ export default function AnalyticsPage() {
   const todayIndex = difficultyDays.findIndex((d) => d.date === todayStr);
 
   return (
-    <div className="h-screen bg-white flex justify-center overflow-hidden" style={{ fontFamily: "Pretendard" }}>
-      <div className="w-full max-w-[1440px] h-full bg-gray-100 p-4" style={{ borderRadius: "16px" }}>
-        {/* ===================== 상단 영역 (Grid 고정 배치) ===================== */}
-        <div className="grid grid-cols-[380px_380px_1fr] grid-rows-[240px_240px] gap-3 mb-3">
+    <div
+      className="w-full bg-gray-100 flex flex-col overflow-hidden"
+      style={{
+        fontFamily: "Pretendard",
+        borderRadius: "16px",
+        height: "calc(100vh - 28px)", // MainLayout padding (14px * 2) 제외
+      }}
+    >
+      <div className="w-full h-full p-4 flex flex-col overflow-hidden">
+        {/* ===================== 상단 영역 (Grid 반응형 배치) ===================== */}
+        <div
+          className="grid grid-cols-[1fr_1fr_1.3fr] gap-3 mb-3"
+          style={{ height: "clamp(300px, 58vh, 500px)" }}
+        >
           {/* 1) 요일별 계획 대비 완료율 (좌측, row-span 2) */}
           <div
-            className={`bg-white shadow-sm border ${cardHoverStyle} row-span-2 overflow-hidden`}
+            className={`bg-white shadow-sm border ${cardHoverStyle} row-span-2 overflow-hidden flex flex-col`}
             style={{ borderRadius: "16px", padding: "20px" }}
           >
-            <h2 className="text-[#0F1724] mb-4 text-left" style={titleStyle}>
+            <h2 className="text-[#0F1724] mb-4 text-left flex-shrink-0" style={titleStyle}>
               요일별 계획 대비 완료율
             </h2>
 
-            <div className="space-y-2">
+            <div className="space-y-2 flex-shrink-0">
               {weeklyCompletionData.map((item) => (
                 <div key={item.day} className="flex items-center gap-3">
                   <span
-                    className={`text-xs w-10 text-left ${
+                    className={`text-xs w-10 text-left flex-shrink-0 ${
                       item.day === "일요일" || item.day === "토요일" ? "text-red-500" : "text-gray-600"
                     }`}
                   >
@@ -346,138 +356,144 @@ export default function AnalyticsPage() {
                       style={{ width: `${item.rate}%`, backgroundColor: "#8B5CF6" }}
                     />
                   </div>
-                  <span className="text-xs text-gray-500 w-10 text-right">{item.rate}%</span>
+                  <span className="text-xs text-gray-500 w-10 text-right flex-shrink-0">{item.rate}%</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-4 text-[11px] text-gray-500 space-y-1 text-left">
+            <div className="mt-4 text-[11px] text-gray-500 space-y-1 text-left flex-1 overflow-auto">
               {analysisMessages.map((msg, idx) => (
                 <p key={idx}>{msg}</p>
               ))}
             </div>
           </div>
 
-          {/* 2) TO:DAY 와 함께하고 있어요 (가운데 위) */}
-          <div className={`bg-white shadow-sm border ${cardHoverStyle}`} style={{ borderRadius: "16px", padding: "20px" }}>
-            <h2 className="text-[#0F1724] mb-4 text-left" style={titleStyle}>
-              TO:DAY 와 함께하고 있어요.
-            </h2>
+          {/* 가운데+오른쪽 영역을 2행으로 나눔 */}
+          <div className="col-span-2 grid grid-rows-2 gap-3">
+            {/* 상단 행: TO:DAY + 난이도 */}
+            <div className="grid grid-cols-[1fr_1.3fr] gap-3">
+              {/* 2) TO:DAY 와 함께하고 있어요 */}
+              <div className={`bg-white shadow-sm border ${cardHoverStyle} flex flex-col overflow-hidden`} style={{ borderRadius: "16px", padding: "16px" }}>
+                <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
+                  TO:DAY 와 함께하고 있어요.
+                </h2>
 
-            <div className="flex gap-3 justify-center">
-              {/* 총 일수 */}
-              <div
-                className="flex flex-col items-center justify-center transition-transform duration-300 hover:scale-105"
-                style={{
-                  width: "140px",
-                  height: "140px",
-                  borderRadius: "16px",
-                  background: "linear-gradient(180deg, #FFFFFF 0%, #F8FCFF 64.44%, #B9DCFE 100%)",
-                  boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)",
-                }}
-              >
-                <span className="text-2xl font-bold text-[#0F1724]">{totalDays}</span>
-                <span className="text-xs text-gray-400 mt-1">총 일수</span>
-              </div>
-
-              {/* 연속 일수 */}
-              <div
-                className="flex flex-col items-center justify-center transition-transform duration-300 hover:scale-105"
-                style={{
-                  width: "140px",
-                  height: "140px",
-                  borderRadius: "16px",
-                  background: "linear-gradient(180deg, #FFFFFF 0%, #DAE1E8 100%)",
-                  boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)",
-                }}
-              >
-                <span className="text-2xl font-bold text-[#0F1724]">{consecutiveDays}</span>
-                <span className="text-xs text-gray-400 mt-1">연속 일수</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 3) 일정 소화 난이도 성찰하기 (오른쪽 위) */}
-          <div className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden`} style={{ borderRadius: "16px", padding: "16px" }}>
-            <h2 className="text-[#0F1724] mb-3 text-left" style={titleStyle}>
-              일정 소화 난이도 성찰하기
-            </h2>
-
-            <div className="flex justify-between gap-1">
-              {difficultyDays.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center gap-1 cursor-pointer transition-transform duration-200 hover:scale-105"
-                  onClick={() => handleDayClick(index)}
-                >
+                <div className="flex gap-3 justify-center flex-1 items-center min-h-0">
+                  {/* 총 일수 */}
                   <div
-                    className={`flex items-center justify-center border-2 ${
-                      index === todayIndex ? "border-blue-400" : "border-gray-200"
-                    }`}
+                    className="flex flex-col items-center justify-center transition-transform duration-300 hover:scale-105 aspect-square"
                     style={{
-                      width: "70px",
-                      height: "130px",
-                      borderRadius: "12px",
-                      background: item.emoji ? getDifficultyGradient(item.label) : index === todayIndex ? "#EBF5FF" : "#FFFFFF",
+                      height: "100%",
+                      maxHeight: "120px",
+                      borderRadius: "16px",
+                      background: "linear-gradient(180deg, #FFFFFF 0%, #F8FCFF 64.44%, #B9DCFE 100%)",
+                      boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)",
                     }}
                   >
-                    {item.emoji ? (
-                      <div className="flex flex-col items-center">
-                        <span className="text-xl">{item.emoji}</span>
-                        <span className="text-[8px] text-gray-600 mt-1" style={{ fontFamily: "Pretendard" }}>
-                          {item.label}
-                        </span>
-                      </div>
-                    ) : (
-                      <Plus className="w-4 h-4 text-gray-300" />
-                    )}
+                    <span className="text-2xl font-bold text-[#0F1724]">{totalDays}</span>
+                    <span className="text-xs text-gray-400 mt-1">총 일수</span>
                   </div>
-                  <span className={`text-xs ${index === todayIndex ? "text-blue-500 font-medium" : "text-gray-500"}`}>
-                    {item.day}
-                  </span>
+
+                  {/* 연속 일수 */}
+                  <div
+                    className="flex flex-col items-center justify-center transition-transform duration-300 hover:scale-105 aspect-square"
+                    style={{
+                      height: "100%",
+                      maxHeight: "120px",
+                      borderRadius: "16px",
+                      background: "linear-gradient(180deg, #FFFFFF 0%, #DAE1E8 100%)",
+                      boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)",
+                    }}
+                  >
+                    <span className="text-2xl font-bold text-[#0F1724]">{consecutiveDays}</span>
+                    <span className="text-xs text-gray-400 mt-1">연속 일수</span>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              {/* 3) 일정 소화 난이도 성찰하기 */}
+              <div className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden flex flex-col`} style={{ borderRadius: "16px", padding: "16px" }}>
+                <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
+                  일정 소화 난이도 성찰하기
+                </h2>
+
+                {/* 7등분 grid로 변경 */}
+                <div className="grid grid-cols-7 gap-1 flex-1 min-h-0">
+                  {difficultyDays.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col items-center gap-1 cursor-pointer transition-transform duration-200 hover:scale-105 min-h-0"
+                      onClick={() => handleDayClick(index)}
+                    >
+                      <div
+                        className={`flex items-center justify-center border-2 w-full flex-1 min-h-0 ${
+                          index === todayIndex ? "border-blue-400" : "border-gray-200"
+                        }`}
+                        style={{
+                          borderRadius: "12px",
+                          background: item.emoji ? getDifficultyGradient(item.label) : index === todayIndex ? "#EBF5FF" : "#FFFFFF",
+                        }}
+                      >
+                        {item.emoji ? (
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg">{item.emoji}</span>
+                            <span className="text-[7px] text-gray-600 mt-0.5" style={{ fontFamily: "Pretendard" }}>
+                              {item.label}
+                            </span>
+                          </div>
+                        ) : (
+                          <Plus className="w-4 h-4 text-gray-300" />
+                        )}
+                      </div>
+                      <span className={`text-xs flex-shrink-0 ${index === todayIndex ? "text-blue-500 font-medium" : "text-gray-500"}`}>
+                        {item.day}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* 4) 몰입을 방해하는 잡념 (가운데+오른쪽 아래, col-span 2) */}
-          <div
-            className={`bg-white shadow-sm border relative ${cardHoverStyle} col-span-2 overflow-hidden`}
-            style={{ borderRadius: "16px", padding: "20px" }}
-          >
-            <h2 className="text-[#0F1724] mb-3 text-left" style={titleStyle}>
-              몰입을 방해하는 잡념과 할 일들을 적어보세요.
-            </h2>
+            {/* 하단 행: 몰입을 방해하는 잡념 */}
+            <div
+              className={`bg-white shadow-sm border relative ${cardHoverStyle} overflow-hidden flex flex-col`}
+              style={{ borderRadius: "16px", padding: "20px" }}
+            >
+              <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
+                몰입을 방해하는 잡념과 할 일들을 적어보세요.
+              </h2>
 
-            <textarea
-            
-              className="w-full p-3 text-sm text-gray-600 bg-gray-50 rounded-xl text-left"
-              style={{ fontFamily: "Pretendard", height: "120px" }}
-              placeholder="몰입을 방해하는 생각이나 할 일들을 자유롭게 적어보세요..."
-            />
-
-            <div className="absolute bottom-5 right-5">
-              <button
-                onClick={handleDistractionSubmit}
-                className="relative px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 hover:shadow-md transition-all duration-200"
+              <textarea
+                value={distractionText}
+                onChange={(e) => setDistractionText(e.target.value)}
+                className="w-full flex-1 p-3 text-sm text-gray-600 bg-gray-50 rounded-xl text-left resize-none min-h-0"
                 style={{ fontFamily: "Pretendard" }}
-              >
-                등록하기
-              </button>
+                placeholder="몰입을 방해하는 생각이나 할 일들을 자유롭게 적어보세요..."
+              />
+
+              <div className="absolute bottom-4 right-5">
+                <button
+                  onClick={handleDistractionSubmit}
+                  className="relative px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 hover:shadow-md transition-all duration-200"
+                  style={{ fontFamily: "Pretendard" }}
+                >
+                  등록하기
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* ===================== 하단 영역 (2:1 Grid) ===================== */}
-        <div className="grid grid-cols-[2fr_1fr] gap-3" style={{ height: "calc(100% - 240px - 240px - 12px - 12px)" }}>
+        <div className="grid grid-cols-[2fr_1fr] gap-3 flex-1 min-h-0">
           {/* 잔디맵 */}
-          <div className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden`} style={{ borderRadius: "16px", padding: "16px" }}>
-            <h2 className="text-[#0F1724] mb-2 text-left" style={titleStyle}>
+          <div className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden flex flex-col`} style={{ borderRadius: "16px", padding: "16px" }}>
+            <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
               {nickname}님의 잔디, 이만큼 자랐어요!
             </h2>
 
             {/* Month labels */}
-            <div className="flex mb-1 ml-4">
+            <div className="flex mb-1 ml-4 flex-shrink-0">
               {months.map((month, idx) => (
                 <span key={idx} className="text-[10px] text-gray-400 flex-1" style={{ fontFamily: "Pretendard" }}>
                   {month}
@@ -486,17 +502,19 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Grass grid */}
-            <div className="flex gap-[2px] overflow-hidden">
+            <div className="flex gap-[2px] overflow-hidden flex-1 min-h-0">
               {grassWeeks.map((week, weekIdx) => (
-                <div key={weekIdx} className="flex flex-col gap-[2px]">
+                <div key={weekIdx} className="flex flex-col gap-[2px] flex-1">
                   {week.map((day, dayIdx) => (
                     <div
                       key={dayIdx}
-                      className="rounded-sm transition-transform duration-150 hover:scale-150"
+                      className="rounded-sm transition-transform duration-150 hover:scale-150 flex-1"
                       style={{
-                        width: "10px",
-                        height: "10px",
                         backgroundColor: getGrassColor(day.count),
+                        minWidth: "6px",
+                        minHeight: "6px",
+                        maxWidth: "14px",
+                        maxHeight: "14px",
                       }}
                       title={`${day.date}: ${day.count}개`}
                     />
@@ -505,34 +523,35 @@ export default function AnalyticsPage() {
               ))}
             </div>
 
-            {/* Legend */}
-            <div className="flex items-center justify-end gap-2 mt-2">
-              <span className="text-[10px] text-gray-400">적음</span>
-              {[0, 2, 4, 7, 10].map((count, idx) => (
-                <div key={idx} className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: getGrassColor(count) }} />
-              ))}
-              <span className="text-[10px] text-gray-400">많음</span>
+            {/* Legend & Summary */}
+            <div className="flex items-center justify-between mt-2 flex-shrink-0">
+              <p className="text-xs text-blue-500" style={{ fontFamily: "Pretendard" }}>
+                1년간 {totalCompletedTasks.toLocaleString()}개의 일정을 처리하셨어요!
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-gray-400">적음</span>
+                {[0, 2, 4, 7, 10].map((count, idx) => (
+                  <div key={idx} className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: getGrassColor(count) }} />
+                ))}
+                <span className="text-[10px] text-gray-400">많음</span>
+              </div>
             </div>
-
-            <p className="text-center text-xs text-blue-500 mt-2" style={{ fontFamily: "Pretendard" }}>
-              1년간 {totalCompletedTasks.toLocaleString()}개의 일정을 처리하셨어요!
-            </p>
           </div>
 
           {/* 몰입 준비 체크리스트 */}
-          <div className={`bg-white shadow-sm border relative ${cardHoverStyle} overflow-hidden`} style={{ borderRadius: "16px", padding: "16px" }}>
-            <h2 className="text-[#0F1724] mb-3 text-left" style={titleStyle}>
+          <div className={`bg-white shadow-sm border relative ${cardHoverStyle} overflow-hidden flex flex-col`} style={{ borderRadius: "16px", padding: "16px" }}>
+            <h2 className="text-[#0F1724] mb-3 text-left flex-shrink-0" style={titleStyle}>
               몰입 준비 체크리스트
             </h2>
 
-            <div className="space-y-2">
+            <div className="space-y-2 flex-1 overflow-auto min-h-0">
               {checklist.map((item) => (
                 <label
                   key={item.id}
                   className="flex items-center gap-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 hover:shadow-sm transition-all duration-200 px-3 py-2"
                 >
                   <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition ${
+                    className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition ${
                       item.checked ? "bg-blue-500 border-blue-500" : "border-gray-300 bg-white"
                     }`}
                     onClick={() => handleChecklistToggle(item.id)}
@@ -549,7 +568,7 @@ export default function AnalyticsPage() {
               ))}
             </div>
 
-            <p className="absolute bottom-3 right-4 text-gray-400" style={{ fontFamily: "Pretendard", fontSize: "9px" }}>
+            <p className="absolute bottom-3 right-4 text-gray-400 flex-shrink-0" style={{ fontFamily: "Pretendard", fontSize: "9px" }}>
               매일 오전 6시에 갱신됩니다.
             </p>
           </div>

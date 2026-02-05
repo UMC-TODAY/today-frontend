@@ -51,10 +51,11 @@ export default function Sidebar() {
               gap: '10px',
               padding: '12px 16px',
               textDecoration: 'none',
-              color: isActive ? '#111827' : '#6b7280',
+              color: isActive ? '#6987D2' : '#8F92A5',
               background: 'transparent',
-              fontWeight: isActive ? '600' : '400',
-              fontSize: '14px',
+              fontWeight: '350',
+              fontSize: '18px',
+              fontStyle: 'regular',
             })}
           >
             {({ isActive }) => (

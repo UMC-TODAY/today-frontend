@@ -402,13 +402,18 @@ export default function CommunityPage() {
   const hasUnreadNotifications = notificationsData?.hasUnread ?? false;
 
   return (
-    <div className="min-h-screen bg-white flex justify-center">
-      <div className="w-full max-w-[1440px] min-h-screen bg-gray-100 rounded-lg p-6">
-        <div className="flex gap-6">
+    <div className="h-screen overflow-hidden bg-white flex justify-center">
+      <div
+        className="w-full max-w-[1440px] bg-gray-100 rounded-lg p-4 overflow-hidden"
+        style={{
+           height: "calc(100vh - 28px)", 
+           borderRadius: "16px",
+        }}
+      >
+        <div className="flex gap-4 h-full overflow-hidden">
           {/* Left Card - 할일 찾기 */}
           <div
-            className="bg-white rounded-2xl shadow-sm border p-6 overflow-y-auto scrollbar-hide"
-            style={{ width: '860px', height: '1006px' }}
+            className="bg-white rounded-2xl shadow-sm border p-6 overflow-y-auto scrollbar-hide flex-1 min-w-0"
           >
             {/* Header */}
             <h1 className="text-left mb-4 text-[#0F1724]" style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}>할일 찾기</h1>
@@ -637,9 +642,9 @@ export default function CommunityPage() {
           </div>
 
           {/* Right Card - 오늘 피드 */}
-          <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border overflow-hidden flex flex-col relative" style={{ width: '480px', height: '1006px' }}>
+          <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border overflow-hidden flex flex-col relative" style={{ width: '480px' }}>
             {/* Header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-white border-b border-gray-200 flex-shrink-0">
               {showPostModal ? (
                 /* 게시글 작성 모드 헤더 */
                 <div className="flex items-center justify-between p-5">
@@ -723,7 +728,7 @@ export default function CommunityPage() {
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto relative">
+            <div className="flex-1 min-h-0 overflow-y-auto relative">
               {/* 게시글 작성 모드 */}
               {showPostModal ? (
                 <div className="p-5 h-full">
