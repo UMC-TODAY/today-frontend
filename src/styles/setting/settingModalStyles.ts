@@ -12,7 +12,7 @@ export const settingsModalStyles = {
 
     modal: {
         width: "860px",
-        height: "520px",
+        height: "550px",
         background: "#FFFFFF",
         borderRadius: "8px",
         display: "flex",
