@@ -124,7 +124,8 @@ const cardHoverStyle =
 const titleStyle: React.CSSProperties = {
   fontFamily: "Pretendard",
   fontWeight: 700,
-  fontSize: "20px",
+  fontSize: "24px",
+  fontStyle: "Bold",
 };
 
 export default function AnalyticsPage() {
@@ -318,17 +319,12 @@ export default function AnalyticsPage() {
 
   return (
     <div
-      className="w-full bg-gray-100 flex flex-col overflow-hidden"
-      style={{
-        fontFamily: "Pretendard",
-        borderRadius: "16px",
-        height: "calc(100vh - 28px)", // MainLayout padding (14px * 2) 제외
-      }}
+      className="w-full h-full flex flex-col overflow-hidden"
+      style={{ fontFamily: "Pretendard" }}
     >
-      <div className="w-full h-full p-4 flex flex-col overflow-hidden">
         {/* ===================== 상단 영역 (Grid 반응형 배치) ===================== */}
         <div
-          className="grid grid-cols-[1fr_1fr_1.3fr] gap-3 mb-3"
+          className="grid grid-cols-[380px_1fr_2fr] gap-3 mb-3"
           style={{ height: "clamp(300px, 58vh, 500px)" }}
         >
           {/* 1) 요일별 계획 대비 완료율 (좌측, row-span 2) */}
@@ -336,7 +332,8 @@ export default function AnalyticsPage() {
             className={`bg-white shadow-sm border ${cardHoverStyle} row-span-2 overflow-hidden flex flex-col`}
             style={{ borderRadius: "16px", padding: "20px" }}
           >
-            <h2 className="text-[#0F1724] mb-4 text-left flex-shrink-0" style={titleStyle}>
+            <h2 className="text-[#0F1724] mb-4 text-left flex-shrink-0" 
+            style={titleStyle}>
               요일별 계획 대비 완료율
             </h2>
 
@@ -370,8 +367,8 @@ export default function AnalyticsPage() {
 
           {/* 가운데+오른쪽 영역을 2행으로 나눔 */}
           <div className="col-span-2 grid grid-rows-2 gap-3">
-            {/* 상단 행: TO:DAY + 난이도 */}
-            <div className="grid grid-cols-[1fr_1.3fr] gap-3">
+            {/* 상단 행: TO:DAY + 난이도 (비율 1:2) */}
+            <div className="grid grid-cols-[1fr_2fr] gap-3">
               {/* 2) TO:DAY 와 함께하고 있어요 */}
               <div className={`bg-white shadow-sm border ${cardHoverStyle} flex flex-col overflow-hidden`} style={{ borderRadius: "16px", padding: "16px" }}>
                 <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
@@ -456,7 +453,7 @@ export default function AnalyticsPage() {
 
             {/* 하단 행: 몰입을 방해하는 잡념 */}
             <div
-              className={`bg-white shadow-sm border relative ${cardHoverStyle} overflow-hidden flex flex-col`}
+              className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden flex flex-col h-full`}
               style={{ borderRadius: "16px", padding: "20px" }}
             >
               <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
@@ -471,10 +468,10 @@ export default function AnalyticsPage() {
                 placeholder="몰입을 방해하는 생각이나 할 일들을 자유롭게 적어보세요..."
               />
 
-              <div className="absolute bottom-4 right-5">
+              <div className="flex justify-end mt-3 flex-shrink-0">
                 <button
                   onClick={handleDistractionSubmit}
-                  className="relative px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 hover:shadow-md transition-all duration-200"
+                  className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 hover:shadow-md transition-all duration-200"
                   style={{ fontFamily: "Pretendard" }}
                 >
                   등록하기
@@ -573,7 +570,6 @@ export default function AnalyticsPage() {
             </p>
           </div>
         </div>
-      </div>
 
       {/* ===================== 이모지 선택 모달 ===================== */}
       {showEmojiModal && (
