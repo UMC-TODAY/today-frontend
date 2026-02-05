@@ -5,7 +5,7 @@ import {
     type EditProfileRequest,
     type EditProfileResponse,
     type MyInfoResponse
-} from "../../types/profile";
+} from "../../types/setting/profile";
 import { axiosInstance } from "../core/axiosInstance";
 
 // 닉네임 중복 확인
