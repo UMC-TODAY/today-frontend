@@ -1,13 +1,16 @@
-// TODO: 코드 분리하기
-
 import { createPortal } from "react-dom";
 import { useState } from "react";
 import TodoDesignPicker from "./TodoDesignPicker";
 import EmojiCircle from "./EmojiCircle";
 import { useCreateSchedule } from "../../hooks/queries/useSchedule";
 import type { CreateScheduleRequest } from "../../types/event.ts";
+import {
+  DatePickerModal,
+  DurationPickerModal,
+  RepeatPickerModal,
+  TimePickerModal,
+} from "./Modals.tsx";
 
-// 스타일
 const inputStyle = {
   width: "100%",
   padding: "8px",
@@ -17,11 +20,16 @@ const inputStyle = {
   borderRadius: "6px",
   boxSizing: "border-box" as const,
 };
-
 const labelStyle = {
   fontSize: "12px",
   fontWeight: "bold",
   color: "#555",
+};
+const pickerButtonStyle = {
+  ...inputStyle,
+  textAlign: "left" as const,
+  backgroundColor: "#fff",
+  cursor: "pointer",
 };
 
 interface TodoModalProps {
@@ -30,115 +38,93 @@ interface TodoModalProps {
 
 export default function TodoModal({ onClose }: TodoModalProps) {
   const { mutate: createSchedule, isPending } = useCreateSchedule();
-
-  // 모달 상태
   const [isWorkTypeModalOpen, setIsWorkTypeModalOpen] = useState(false);
   const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
-
-  // 선택 상태
+  const [activePicker, setActivePicker] = useState<
+    | "date"
+    | "startDate"
+    | "endDate"
+    | "startTime"
+    | "endTime"
+    | "duration"
+    | "repeat"
+    | null
+  >(null);
   const [selectedType, setSelectedType] = useState("TASK");
   const [selectedMode, setSelectedMode] = useState("CUSTOM");
-
-  // 하위 작업 입력용 상태
   const [subTaskInput, setSubTaskInput] = useState("");
-
-  // EmojiCircle 컴포넌트 title / subTask 누구 수정중인지 식별 위한 상태
   const [editingTarget, setEditingTarget] = useState<"MAIN" | number>("MAIN");
-
-  // 폼 입력 상태
+  const todayStr = new Date().toISOString().split("T")[0];
   const [inputs, setInputs] = useState({
     title: "",
-    date: "2026-01-01",
+    date: todayStr,
     duration: "60",
     repeat: "",
     subTasks: [] as { subTitle: string; subColor: string; subEmoji: string }[],
     memo: "",
     emoji: "📹",
     bgColor: "#F0EFC4",
-
-    // 이벤트 용
-    startDate: "2026-01-01",
-    endDate: "2026-01-02",
+    startDate: todayStr,
+    endDate: todayStr,
     startTime: "09:00",
     endTime: "10:00",
   });
-
-  // 핸들러들
   const toggleModal = () => setIsWorkTypeModalOpen(!isWorkTypeModalOpen);
-
   const handleClick = (type: string, mode: string) => {
     setSelectedType(type);
     setSelectedMode(mode);
     setIsWorkTypeModalOpen(false);
   };
-
-  // 하위 작업 추가 함수
   const handleAddSubTask = () => {
     if (!subTaskInput.trim()) return;
-
     const newSubTask = {
       subTitle: subTaskInput,
       subColor: inputs.bgColor,
       subEmoji: "📹",
     };
-
-    setInputs({
-      ...inputs,
-      subTasks: [...inputs.subTasks, newSubTask],
-    });
-    setSubTaskInput(""); // 입력창 비우기
+    setInputs({ ...inputs, subTasks: [...inputs.subTasks, newSubTask] });
+    setSubTaskInput("");
   };
-
-  // 하위 작업 삭제 함수
   const removeSubTask = (indexToRemove: number) => {
     setInputs({
       ...inputs,
       subTasks: inputs.subTasks.filter((_, index) => index !== indexToRemove),
     });
   };
-
   const handleEmojiChange = (newEmoji: string) => {
     if (editingTarget === "MAIN") {
-      // title 수정일 떄
       setInputs({ ...inputs, emoji: newEmoji });
     } else {
-      // subTask 수정일 때
       const index = editingTarget;
       const newSubTasks = [...inputs.subTasks];
       newSubTasks[index] = { ...newSubTasks[index], subEmoji: newEmoji };
       setInputs({ ...inputs, subTasks: newSubTasks });
     }
   };
-
   const handleColorChange = (newColor: string) => {
     if (editingTarget === "MAIN") {
-      // title 수정일 때
-      setInputs({
-        ...inputs,
-        bgColor: newColor,
-      });
+      setInputs({ ...inputs, bgColor: newColor });
     } else {
-      // subTask 수정일 떄
       const index = editingTarget;
       const newSubTasks = [...inputs.subTasks];
       newSubTasks[index] = { ...newSubTasks[index], subColor: newColor };
       setInputs({ ...inputs, subTasks: newSubTasks });
     }
   };
-
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setInputs({ ...inputs, [name]: value });
   };
-
-  // 등록 로직
+  const handlePickerChange = (name: string, value: string) => {
+    setInputs({ ...inputs, [name]: value });
+    setActivePicker(null);
+  };
   const handleRegister = () => {
     if (isPending) return;
     if (!inputs.title.trim()) {
       alert("일정 제목을 입력해주세요.");
       return;
     }
-
     const baseFields = {
       title: inputs.title,
       memo: inputs.memo,
@@ -146,43 +132,26 @@ export default function TodoModal({ onClose }: TodoModalProps) {
       bgColor: inputs.bgColor,
       subSchedules: inputs.subTasks,
     };
-
     let requestData: CreateScheduleRequest;
-
-    // CASE A: 일정 (EVENT)
     if (selectedType === "EVENT") {
       requestData = {
         ...baseFields,
         scheduleType: "EVENT",
         mode: "CUSTOM",
-        startAt: `${inputs.startDate} ${inputs.startTime}`, // "2026-01-10 14:00"
+        startAt: `${inputs.startDate} ${inputs.startTime}`,
         endAt: `${inputs.endDate} ${inputs.endTime}`,
-        repeatType: (inputs.repeat || "NONE") as
-          | "NONE"
-          | "DAILY"
-          | "WEEKLY"
-          | "MONTHLY"
-          | "YEARLY",
+        repeatType: (inputs.repeat || "NONE") as any,
       };
-    }
-    // CASE B: 할 일 - 사용자 지정
-    else if (selectedType === "TASK" && selectedMode === "CUSTOM") {
+    } else if (selectedType === "TASK" && selectedMode === "CUSTOM") {
       requestData = {
         ...baseFields,
         scheduleType: "TASK",
         mode: "CUSTOM",
         date: inputs.date,
         duration: Number(inputs.duration) || 0,
-        repeatType: (inputs.repeat || "NONE") as
-          | "NONE"
-          | "DAILY"
-          | "WEEKLY"
-          | "MONTHLY"
-          | "YEARLY",
+        repeatType: (inputs.repeat || "NONE") as any,
       };
-    }
-    // CASE C: 할 일 - 언제든지
-    else {
+    } else {
       requestData = {
         ...baseFields,
         scheduleType: "TASK",
@@ -190,7 +159,6 @@ export default function TodoModal({ onClose }: TodoModalProps) {
         duration: Number(inputs.duration) || 0,
       };
     }
-
     createSchedule(requestData, {
       onSuccess: () => {
         alert("일정이 등록되었습니다.");
@@ -198,137 +166,107 @@ export default function TodoModal({ onClose }: TodoModalProps) {
       },
       onError: (error: any) => {
         console.log("등록 실패: ", error);
-        alert(
-          error.response?.data?.message ||
-            "등록에 실패했습니다. 입력값을 확인해주세요.",
-        );
+        alert(error.response?.data?.message || "등록에 실패했습니다.");
       },
     });
   };
-
-  // 조건부 렌더링 함수
   const renderDynamicInputs = () => {
-    // 1. 이벤트 (EVENT)
     if (selectedType === "EVENT") {
       return (
         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
           <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>시작</label>
-              <input
-                type="date"
-                name="startDate"
-                value={inputs.startDate}
-                onChange={handleChange}
-                style={inputStyle}
-              />
-              <input
-                type="time"
-                name="startTime"
-                value={inputs.startTime}
-                onChange={handleChange}
-                style={inputStyle}
-              />
+              <div
+                style={pickerButtonStyle}
+                onClick={() => setActivePicker("startDate")}
+              >
+                {inputs.startDate}
+              </div>
+              <div
+                style={pickerButtonStyle}
+                onClick={() => setActivePicker("startTime")}
+              >
+                {inputs.startTime}
+              </div>
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>마감</label>
-              <input
-                type="date"
-                name="endDate"
-                value={inputs.endDate}
-                onChange={handleChange}
-                style={inputStyle}
-              />
-              <input
-                type="time"
-                name="endTime"
-                value={inputs.endTime}
-                onChange={handleChange}
-                style={inputStyle}
-              />
+              <div
+                style={pickerButtonStyle}
+                onClick={() => setActivePicker("endDate")}
+              >
+                {inputs.endDate}
+              </div>
+              <div
+                style={pickerButtonStyle}
+                onClick={() => setActivePicker("endTime")}
+              >
+                {inputs.endTime}
+              </div>
             </div>
           </div>
           <div>
             <label style={labelStyle}>반복</label>
-            <select
-              name="repeat"
-              value={inputs.repeat}
-              onChange={handleChange}
-              style={inputStyle}
+            <div
+              style={pickerButtonStyle}
+              onClick={() => setActivePicker("repeat")}
             >
-              <option value="">반복 없음</option>
-              <option value="WEEKLY">매주</option>
-              <option value="MONTHLY">매월</option>
-              <option value="YEARLY">매년</option>
-            </select>
+              {inputs.repeat || "반복 없음"}
+            </div>
           </div>
         </div>
       );
     }
-
-    // 2. 할 일 (TASK) - 사용자 지정
     if (selectedType === "TASK" && selectedMode === "CUSTOM") {
       return (
         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
           <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>날짜</label>
-              <input
-                type="date"
-                name="date"
-                value={inputs.date}
-                onChange={handleChange}
-                style={inputStyle}
-              />
+              <div
+                style={pickerButtonStyle}
+                onClick={() => setActivePicker("date")}
+              >
+                {inputs.date}
+              </div>
             </div>
             <div style={{ flex: 1 }}>
-              <label style={labelStyle}>소요시간(분)</label>
-              <input
-                type="number"
-                name="duration"
-                value={inputs.duration}
-                onChange={handleChange}
-                placeholder="60"
-                style={inputStyle}
-              />
+              <label style={labelStyle}>소요시간</label>
+              <div
+                style={pickerButtonStyle}
+                onClick={() => setActivePicker("duration")}
+              >
+                {inputs.duration}분
+              </div>
             </div>
           </div>
           <div>
             <label style={labelStyle}>반복</label>
-            <select
-              name="repeat"
-              value={inputs.repeat}
-              onChange={handleChange}
-              style={inputStyle}
+            <div
+              style={pickerButtonStyle}
+              onClick={() => setActivePicker("repeat")}
             >
-              <option value="">반복 없음</option>
-              <option value="DAILY">매일</option>
-              <option value="WEEKLY">매주</option>
-              <option value="MONTHLY">매월</option>
-            </select>
+              {inputs.repeat || "반복 없음"}
+            </div>
           </div>
         </div>
       );
     }
-
-    // 3. 할 일 (TASK) - 언제든지
     if (selectedType === "TASK" && selectedMode === "ANYTIME") {
       return (
         <div>
-          <label style={labelStyle}>소요시간(분)</label>
-          <input
-            type="number"
-            name="duration"
-            value={inputs.duration}
-            onChange={handleChange}
-            placeholder="예상 소요시간"
-            style={inputStyle}
-          />
+          <label style={labelStyle}>소요시간</label>
+          <div
+            style={pickerButtonStyle}
+            onClick={() => setActivePicker("duration")}
+          >
+            {inputs.duration}분
+          </div>
         </div>
       );
     }
   };
-
   const modalContent = (
     <div
       style={{
@@ -380,8 +318,6 @@ export default function TodoModal({ onClose }: TodoModalProps) {
             등록
           </button>
         </div>
-
-        {/* 1. 이모지 & 제목 */}
         <div
           style={{
             display: "flex",
@@ -398,25 +334,23 @@ export default function TodoModal({ onClose }: TodoModalProps) {
               setIsDesignModalOpen(true);
             }}
           />
-
           {isDesignModalOpen && (
             <TodoDesignPicker
               selectedEmoji={
                 editingTarget === "MAIN"
                   ? inputs.emoji
-                  : inputs.subTasks[editingTarget]?.subEmoji
+                  : inputs.subTasks[editingTarget as number]?.subEmoji
               }
               selectedColor={
                 editingTarget === "MAIN"
                   ? inputs.bgColor
-                  : inputs.subTasks[editingTarget]?.subColor
+                  : inputs.subTasks[editingTarget as number]?.subColor
               }
               onEmojiChange={handleEmojiChange}
               onColorChange={handleColorChange}
               onClose={() => setIsDesignModalOpen(false)}
             />
           )}
-
           <input
             name="title"
             value={inputs.title}
@@ -431,8 +365,6 @@ export default function TodoModal({ onClose }: TodoModalProps) {
             }}
           />
         </div>
-
-        {/* 2. 작업 유형 선택 버튼 */}
         <div style={{ marginBottom: "15px" }}>
           <button
             onClick={toggleModal}
@@ -448,7 +380,6 @@ export default function TodoModal({ onClose }: TodoModalProps) {
             {selectedMode === "CUSTOM" ? "사용자 지정" : "언제든지"} ▼
           </button>
         </div>
-
         {isWorkTypeModalOpen && (
           <div
             style={{
@@ -479,14 +410,9 @@ export default function TodoModal({ onClose }: TodoModalProps) {
             </div>
           </div>
         )}
-
-        {/* 3. 동적 입력창 */}
         <div style={{ marginBottom: "20px" }}>{renderDynamicInputs()}</div>
-
-        {/* 4. ★ 하위작업 */}
         <div style={{ marginBottom: "20px" }}>
           <label style={labelStyle}>하위 작업</label>
-
           {inputs.subTasks.map((sub: any, index: number) => (
             <div
               key={index}
@@ -510,9 +436,7 @@ export default function TodoModal({ onClose }: TodoModalProps) {
                 size="28px"
                 fontSize="14px"
               />
-
               <span>{sub.subTitle}</span>
-
               <button
                 onClick={() => removeSubTask(index)}
                 style={{
@@ -526,8 +450,6 @@ export default function TodoModal({ onClose }: TodoModalProps) {
               </button>
             </div>
           ))}
-
-          {/* 입력창 & 버튼 */}
           <div style={{ display: "flex", gap: "5px", marginTop: "5px" }}>
             <input
               value={subTaskInput}
@@ -550,8 +472,6 @@ export default function TodoModal({ onClose }: TodoModalProps) {
             </button>
           </div>
         </div>
-
-        {/* 5. 메모 */}
         <div>
           <label style={labelStyle}>메모</label>
           <input
@@ -563,8 +483,54 @@ export default function TodoModal({ onClose }: TodoModalProps) {
           />
         </div>
       </div>
+      {activePicker === "date" && (
+        <DatePickerModal
+          value={inputs.date}
+          onChange={(v) => handlePickerChange("date", v)}
+          onClose={() => setActivePicker(null)}
+        />
+      )}
+      {activePicker === "startDate" && (
+        <DatePickerModal
+          value={inputs.startDate}
+          onChange={(v) => handlePickerChange("startDate", v)}
+          onClose={() => setActivePicker(null)}
+        />
+      )}
+      {activePicker === "endDate" && (
+        <DatePickerModal
+          value={inputs.endDate}
+          onChange={(v) => handlePickerChange("endDate", v)}
+          onClose={() => setActivePicker(null)}
+        />
+      )}
+      {activePicker === "startTime" && (
+        <TimePickerModal
+          value={inputs.startTime}
+          onChange={(v) => handlePickerChange("startTime", v)}
+          onClose={() => setActivePicker(null)}
+        />
+      )}
+      {activePicker === "endTime" && (
+        <TimePickerModal
+          value={inputs.endTime}
+          onChange={(v) => handlePickerChange("endTime", v)}
+          onClose={() => setActivePicker(null)}
+        />
+      )}
+      {activePicker === "duration" && (
+        <DurationPickerModal
+          onChange={(v) => handlePickerChange("duration", v)}
+          onClose={() => setActivePicker(null)}
+        />
+      )}
+      {activePicker === "repeat" && (
+        <RepeatPickerModal
+          onChange={(v) => handlePickerChange("repeat", v)}
+          onClose={() => setActivePicker(null)}
+        />
+      )}
     </div>
   );
-
   return createPortal(modalContent, document.body);
 }

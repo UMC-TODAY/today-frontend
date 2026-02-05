@@ -1,11 +1,21 @@
 import { axiosInstance } from "./core/axiosInstance";
 import type { ApiResponse } from "../types/common";
 import type {
+  BulkDeleteRequest,
   CreateScheduleRequest,
   GetMonthlyScheduleResponse,
+  GetWeeklyResponse,
+  ScheduleCompletionParams,
+  ScheduleCompletionResponse,
+  ScheduleDetail,
   ScheduleParams,
   SearchScheduleParams,
   SearchScheduleResponse,
+  TodoCompletionParams,
+  TodoCompletionResponse,
+  TodoParams,
+  UpdateScheduleRequest,
+  UpdateStatusRequest,
 } from "../types/event.ts";
 
 // 할일 필터링 및 검색 (조회)
@@ -34,5 +44,70 @@ export const getMonthlySchedule = async (params: ScheduleParams) => {
   >("/api/v1/schedules/events", {
     params: params,
   });
+  return response.data;
+};
+
+// 주간(기간) 별 투두 조회
+export const getWeeklyTodo = async (params: TodoParams) => {
+  const response = await axiosInstance.get<ApiResponse<GetWeeklyResponse>>(
+    "api/v1/schedules/todos",
+    {
+      params: params,
+    },
+  );
+  return response.data;
+};
+
+// 투두 컴플리션 조회
+export const getTodoCompletion = async (params: TodoCompletionParams) => {
+  const response = await axiosInstance.get<ApiResponse<TodoCompletionResponse>>(
+    "/api/v1/schedules/todos/completion",
+    { params },
+  );
+  return response.data;
+};
+
+// 스케쥴 컴플리션 조회
+export const getScheduleCompletion = async (
+  params: ScheduleCompletionParams,
+) => {
+  const response = await axiosInstance.get<
+    ApiResponse<ScheduleCompletionResponse>
+  >("/api/v1/schedules/events/completion", {
+    params,
+  });
+  return response.data;
+};
+
+// 상태 변경
+export const updateScheduleStatus = async (
+  id: number,
+  data: UpdateStatusRequest,
+) => {
+  const response = await axiosInstance.patch<ApiResponse<any>>(
+    `/api/v1/schedules/${id}/status`,
+    data,
+  );
+  return response.data;
+};
+
+// 일괄삭제
+export const deleteSchedulesBulk = async (data: BulkDeleteRequest) => {
+  const response = await axiosInstance.delete<ApiResponse<any>>(
+    `/api/v1/schedules/bulk`,
+    { data },
+  );
+  return response.data;
+};
+
+// 할일/일정 수정
+export const updateSchedule = async (
+  scheduleId: number,
+  data: UpdateScheduleRequest,
+) => {
+  const response = await axiosInstance.patch<ApiResponse<ScheduleDetail>>(
+    `/api/v1/schedules/${scheduleId}`,
+    data,
+  );
   return response.data;
 };

@@ -27,6 +27,10 @@ export default function CalendarView() {
       color: ev.color || "#4F85F8",
       startedAt: ev.startedAt,
       endedAt: ev.endedAt,
+      hasTime:
+        ev.startedAt &&
+        ev.startedAt.includes(" ") &&
+        ev.startedAt.split(" ")[1] !== "00:00:00",
     },
   }));
   const handlePrev = () => {
@@ -59,31 +63,31 @@ export default function CalendarView() {
             ▶
           </button>
         </div>
-        <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none">
-          <option>모두 보기</option>
-          <option>Google 캘린더</option>
-          <option>iCloud 캘린더</option>
-          <option>CSV파일 업로드</option>
-          <option>Notion</option>
-        </select>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-5 py-2 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 transition"
-        >
-          + 일정 등록
-        </button>
+        <div className="flex gap-2">
+          <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none">
+            <option>모두 보기</option>
+            <option>Google 캘린더</option>
+            <option>iCloud 캘린더</option>
+            <option>CSV파일 업로드</option>
+            <option>Notion</option>
+          </select>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-5 py-2 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 transition"
+          >
+            + 일정 등록
+          </button>
+        </div>
       </div>
       {isModalOpen && <TodoModal onClose={() => setIsModalOpen(false)} />}
       <div
         className="flex-grow w-full overflow-hidden
-
         [&_.fc]:font-sans
         [&_.fc-theme-standard_td]:border-gray-100 [&_.fc-theme-standard_th]:border-gray-100
         [&_.fc-col-header-cell-cushion]:text-gray-400 [&_.fc-col-header-cell-cushion]:text-xs [&_.fc-col-header-cell-cushion]:no-underline
         [&_.fc-daygrid-day-number]:text-sm [&_.fc-daygrid-day-number]:text-gray-700 [&_.fc-daygrid-day-number]:no-underline
-        [&_.fc-day-today]:bg-yellow-50/50
+        [&_.fc-day-today]:bg-transparent
         [&_.fc-daygrid-event-dot]:hidden
-
         [&_.fc-event]:shadow-none [&_.fc-event]:bg-transparent [&_.fc-event]:my-[1px]
       "
       >
@@ -93,45 +97,42 @@ export default function CalendarView() {
           initialView="dayGridMonth"
           locale="ko"
           headerToolbar={false}
-          dayMaxEvents={3}
+          dayMaxEvents={4}
           events={calendarEvents}
           height="100%"
           dayCellContent={(args) => args.dayNumberText.replace("일", "")}
           eventContent={(info) => {
-            const props = info.event.extendedProps;
-            const title = info.event.title;
-            const startStr = props.startedAt || "";
-            const endStr = props.endedAt;
+            const { title, extendedProps: props } = info.event;
+            const hasTime = props.hasTime;
             let timeText = "";
-            try {
-              if (startStr.includes(":") || startStr.includes("T")) {
-                timeText = format(new Date(startStr), "h a");
+            if (hasTime) {
+              try {
+                const dateObj = new Date(props.startedAt.replace(/-/g, "/"));
+                timeText = format(dateObj, "h:mm a");
+              } catch (e) {
+                console.error("Date parsing error", e);
               }
-            } catch (e) {}
-            const isSingleDay =
-              !endStr || startStr.split(" ")[0] === endStr.split(" ")[0];
+            }
             return (
               <div
                 className={`
-                  w-full px-2 py-[2px] text-[11px] font-medium rounded-sm flex items-center justify-between cursor-pointer transition hover:opacity-80
+                  w-full px-2 py-[2px] text-[11px] font-medium flex items-center justify-between cursor-pointer transition hover:opacity-80
                   ${
-                    isSingleDay
-                      ? "bg-white text-gray-800 border-l-[3px] shadow-sm"
-                      : "text-white rounded shadow-sm"
+                    hasTime
+                      ? "bg-white text-gray-800 border-l-[3px] shadow-sm rounded-sm"
+                      : "text-white rounded-full px-3"
                   }
                 `}
                 style={{
-                  borderColor: isSingleDay ? props.color : "transparent",
-                  backgroundColor: isSingleDay ? "white" : props.color,
+                  borderColor: hasTime ? props.color : "transparent",
+                  backgroundColor: hasTime ? "white" : props.color,
                 }}
               >
                 <div className="flex items-center gap-1 overflow-hidden">
                   <span className="truncate">{title}</span>
                 </div>
-                {timeText && (
-                  <span
-                    className={`text-[10px] ml-1 whitespace-nowrap ${isSingleDay ? "text-gray-400" : "text-white/90"}`}
-                  >
+                {hasTime && (
+                  <span className="text-[9px] ml-1 text-gray-400 shrink-0 uppercase">
                     {timeText}
                   </span>
                 )}

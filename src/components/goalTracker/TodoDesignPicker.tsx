@@ -19,177 +19,94 @@ export default function TodoDesignPicker({
   onColorChange,
   onClose,
 }: TodoDesignPickerProps) {
-  const [isBgColorOpen, setIsBgColorOpen] = useState(true);
-  const [isEmojiOpen, setIsEmojiOpen] = useState(false);
+  const [tab, setTab] = useState<"color" | "emoji">("color");
 
   return (
-    // 배경
     <div
       onClick={onClose}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 10000,
-      }}
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/30 p-4"
     >
-      {/* 내용물 */}
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{
-          backgroundColor: "white",
-          borderRadius: "12px",
-          width: "340px",
-          height: "480px",
-          display: "flex",
-          flexDirection: "column",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-        }}
+        className="relative flex h-[520px] w-[440px] flex-col items-center rounded-[24px] bg-white px-6 pb-8 pt-10 shadow-xl"
       >
-        {/* 닫기 버튼 */}
-        <div
-          style={{
-            padding: "15px 20px 10px",
-            display: "flex",
-            justifyContent: "flex-end",
-            borderBottom: "1px solid #f0f0f0",
-          }}
+        <button
+          onClick={onClose}
+          className="absolute right-6 top-6 z-20 text-gray-400 hover:text-gray-600"
         >
-          <span
-            onClick={onClose}
-            style={{
-              cursor: "pointer",
-              fontSize: "18px",
-              fontWeight: "bold",
-              color: "#999",
-            }}
+          <span className="text-3xl font-light">✕</span>
+        </button>
+
+        <div className="mb-8 flex shrink-0 justify-center">
+          <div
+            className="flex h-32 w-32 items-center justify-center rounded-full text-5xl transition-colors duration-300"
+            style={{ backgroundColor: selectedColor }}
           >
-            ✕
-          </span>
+            <span>{selectedEmoji}</span>
+          </div>
         </div>
 
-        {/* 하단 */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: "20px",
-          }}
-        >
-          {/* 배경색 섹션 */}
-          <div style={{ marginBottom: "25px" }}>
+        <div className="mb-8 flex shrink-0 justify-center">
+          <div className="flex w-[260px] rounded-full border border-blue-400 p-0.5">
             <button
-              onClick={() => setIsBgColorOpen(!isBgColorOpen)}
-              style={{
-                width: "100%",
-                textAlign: "left",
-                padding: "5px 0",
-                cursor: "pointer",
-                border: "none",
-                background: "none",
-                fontWeight: "bold",
-                fontSize: "15px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+              onClick={() => setTab("color")}
+              className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${
+                tab === "color"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-blue-500"
+              }`}
             >
-              <span>배경색</span>
-              <span style={{ fontSize: "12px", color: "#999" }}></span>
+              배경색
             </button>
-
-            {isBgColorOpen && (
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "10px",
-                  marginTop: "10px",
-                }}
-              >
-                {SCHEDULE_EMOJI_BACKGROUND_COLORS.map((color) => (
-                  <div
-                    key={color}
-                    onClick={() => onColorChange(color)}
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "50%",
-                      cursor: "pointer",
-                      backgroundColor: color,
-                      border:
-                        selectedColor === color
-                          ? "3px solid #333"
-                          : "1px solid #eee",
-                      boxSizing: "border-box",
-                      transition: "all 0.1s",
-                    }}
-                  />
-                ))}
-              </div>
-            )}
+            <button
+              onClick={() => setTab("emoji")}
+              className={`flex-1 rounded-full py-2 text-sm font-medium transition-all ${
+                tab === "emoji"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-blue-500"
+              }`}
+            >
+              이모지
+            </button>
           </div>
+        </div>
 
-          {/* 이모지 섹션 */}
-          <div>
-            <button
-              onClick={() => setIsEmojiOpen(!isEmojiOpen)}
-              style={{
-                width: "100%",
-                textAlign: "left",
-                padding: "5px 0",
-                cursor: "pointer",
-                border: "none",
-                background: "none",
-                fontWeight: "bold",
-                fontSize: "15px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <span>아이콘</span>
-              <span style={{ fontSize: "12px", color: "#999" }}></span>
-            </button>
-
-            {isEmojiOpen && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(5, 1fr)",
-                  gap: "8px",
-                  marginTop: "10px",
-                }}
-              >
-                {SCHEDULE_EMOJIS.map((emoji) => (
+        <div className="custom-scrollbar w-full flex-1 overflow-y-auto px-1">
+          {tab === "color" && (
+            <div className="grid grid-cols-12 gap-x-2 gap-y-4 pt-2">
+              {SCHEDULE_EMOJI_BACKGROUND_COLORS.map((color, index) => (
+                <div key={`color-${index}`} className="flex justify-center">
                   <button
-                    key={emoji}
-                    onClick={() => onEmojiChange(emoji)}
-                    style={{
-                      fontSize: "24px",
-                      padding: "10px",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      border:
-                        selectedEmoji === emoji
-                          ? "2px solid #2196F3"
-                          : "1px solid transparent",
-                      backgroundColor:
-                        selectedEmoji === emoji ? "#E3F2FD" : "#f9f9f9",
-                    }}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                    onClick={() => onColorChange(color)}
+                    className={`h-6 w-6 rounded-full transition-all ${
+                      selectedColor === color
+                        ? "ring-2 ring-gray-400 ring-offset-2"
+                        : "hover:scale-110"
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {tab === "emoji" && (
+            <div className="grid grid-cols-8 gap-x-2 gap-y-4 pt-2">
+              {SCHEDULE_EMOJIS.map((emoji, index) => (
+                <button
+                  key={`emoji-${index}`}
+                  onClick={() => onEmojiChange(emoji)}
+                  className={`flex aspect-square items-center justify-center rounded-lg text-2xl transition-all ${
+                    selectedEmoji === emoji
+                      ? "bg-blue-50 ring-1 ring-blue-300"
+                      : "hover:bg-gray-50"
+                  }`}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

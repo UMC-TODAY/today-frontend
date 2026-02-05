@@ -1,5 +1,5 @@
 import TodoView from "../components/goalTracker/TodoView.tsx";
-import MonthlyTodoSummary from "../components/goalTracker/MonthlyTodoSummary.tsx";
+import WeeklyTodoSummary from "../components/goalTracker/WeeklyTodoSummary.tsx";
 import TodoList from "../components/goalTracker/TodoList.tsx";
 
 const cardStyle: React.CSSProperties = {
@@ -68,14 +68,13 @@ export default function GoalTrackerPage() {
               display: "flex",
             }}
           >
-            <MonthlyTodoSummary />
+            <WeeklyTodoSummary />
           </div>
 
           {/* 일정 리스트 */}
           <div
             style={{
               ...cardStyle,
-              padding: "24px",
               flex: 1,
               alignItems: "center",
               justifyContent: "center",

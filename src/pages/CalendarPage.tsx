@@ -75,7 +75,6 @@ export default function CalendarPage() {
           <div
             style={{
               ...cardStyle,
-              padding: "24px",
               flex: 1,
               alignItems: "center",
               justifyContent: "center",
