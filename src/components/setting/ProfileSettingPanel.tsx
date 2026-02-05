@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
   getMyInfo,
@@ -13,6 +13,7 @@ type NameCheckStatus = "idle" | "ok" | "dup";
 
 export default function ProfileSettingPanel() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: me } = useQuery({
     queryKey: ["me", "profile"],
@@ -30,7 +31,7 @@ export default function ProfileSettingPanel() {
   const [nameCheckStatus, setNameCheckStatus] =
     useState<NameCheckStatus>("idle");
   const [nameCheckMsg, setNameCheckMsg] = useState<string | null>(null);
-  const [saveErrorMsg, setSaveErrorMsg] = useState<string | null>(null);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
 
   // 사용자 정보를 가져온 순간 초기값 세팅
   useEffect(() => {
@@ -42,11 +43,23 @@ export default function ProfileSettingPanel() {
     setNewImageUrl(null);
     setNameCheckStatus("idle");
     setNameCheckMsg(null);
-    setSaveErrorMsg(null);
+    setSaveMsg(null);
   }, [me?.isSuccess, me?.data.nickname, me?.data.email, me?.data.profileImage]);
 
   // 닉네임 중복 확인 버튼 클릭 가능 여부
   const canCheckName = useMemo(() => nickname.trim().length >= 1, [nickname]);
+
+  const isNicknameChanged =
+    nickname.trim() !== (me?.isSuccess ? (me.data.nickname ?? "").trim() : "");
+  const isImageChanged = !!selectedFile;
+
+  // 저장 가능 여부
+  const canSave = useMemo(() => {
+    if (!me?.isSuccess) return false;
+    if (!isNicknameChanged && !isImageChanged) return false;
+    if (isNicknameChanged && nameCheckStatus !== "ok") return false;
+    return true;
+  }, [me?.isSuccess, isNicknameChanged, isImageChanged, nameCheckStatus]);
 
   const nicknameCheckMutation = useMutation({
     mutationFn: () => postNicknameCheck({ nickname: nickname.trim() }),
@@ -61,13 +74,14 @@ export default function ProfileSettingPanel() {
       if (error?.response.data.errorCode === "MEMBER400_2") {
         setNameCheckStatus("dup");
         setNameCheckMsg(
-          "이미 중복된 프로필 이름입니다. 다른 프로필 이름을 사용해주세요.",
+          "이미 중복된 프로필 이름입니다.\n다른 프로필 이름을 사용해주세요.",
         );
+      } else {
+        setNameCheckStatus("idle");
+        setNameCheckMsg("서버와의 연결에 실패했습니다.");
       }
 
       console.error("닉네임 중복 확인 에러 상세:", error?.response.data);
-      setNameCheckStatus("idle");
-      setNameCheckMsg("서버와의 연결에 실패했습니다.");
     },
   });
 
@@ -77,14 +91,21 @@ export default function ProfileSettingPanel() {
         profileImage: payload.profileImage ?? null,
         nickName: payload.nickName,
       }),
-    onSuccess: (result) => {
-      if (result.isSuccess) {
-        setSaveErrorMsg(null);
-      }
+    onSuccess: async (result) => {
+      if (!result.isSuccess) return;
+
+      setSaveMsg("저장되었습니다.");
+
+      // 변경 플래그 리셋
+      setSelectedFile(null);
+      setNewImageUrl(null);
+      setNameCheckStatus("idle");
+      setNameCheckMsg(null);
+
+      await queryClient.invalidateQueries({ queryKey: ["me", "profile"] });
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
-      setSaveErrorMsg("저장에 실패했습니다.");
       console.error("프로필 정보 수정 에러 상세:", error?.response.data);
     },
   });
@@ -103,7 +124,7 @@ export default function ProfileSettingPanel() {
     setSelectedFile(f);
     setNameCheckStatus("idle");
     setNameCheckMsg(null);
-    setSaveErrorMsg(null);
+    setSaveMsg(null);
 
     const url = URL.createObjectURL(f);
     setNewImageUrl(url);
@@ -118,35 +139,36 @@ export default function ProfileSettingPanel() {
   }
 
   async function onClickSave() {
-    setSaveErrorMsg(null);
+    setSaveMsg(null);
 
     if (nickname.trim().length === 0) {
-      setSaveErrorMsg("프로필 이름을 입력해 주세요.");
       return;
     }
 
     try {
-      const checkRes = await postNicknameCheck({ nickname: nickname.trim() });
+      if (isNicknameChanged) {
+        const checkRes = await postNicknameCheck({ nickname: nickname.trim() });
 
-      if (!checkRes.isSuccess) {
-        setNameCheckStatus("dup");
-        setNameCheckMsg(
-          "이미 중복된 프로필 이름입니다. 다른 프로필 이름을 사용해주세요.",
-        );
-        return;
+        if (!checkRes.isSuccess) {
+          setNameCheckStatus("dup");
+          setNameCheckMsg(
+            "이미 중복된 프로필 이름입니다. 다른 프로필 이름을 사용해주세요.",
+          );
+          return;
+        }
+
+        setNameCheckStatus("ok");
+        setNameCheckMsg("변경 가능한 프로필 이름입니다.");
       }
-
-      setNameCheckStatus("ok");
-      setNameCheckMsg("변경 가능한 프로필 이름입니다.");
 
       editProfileMutaion.mutate({
         profileImage: selectedFile,
         nickName: nickname.trim(),
       });
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
-      setSaveErrorMsg("서버와의 연결에 실패했습니다.");
     }
   }
 
@@ -230,7 +252,7 @@ export default function ProfileSettingPanel() {
           <input
             ref={fileRef}
             type="file"
-            accept="/image/*"
+            accept="image/*"
             style={{ display: "none" }}
             onChange={onFileChange}
           />
@@ -238,7 +260,14 @@ export default function ProfileSettingPanel() {
       </div>
 
       {/* 프로필 이름 */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "15px", marginBottom: "25px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+          marginBottom: "25px",
+        }}
+      >
         <div
           style={{
             display: "grid",
@@ -257,7 +286,7 @@ export default function ProfileSettingPanel() {
               setNickname(e.target.value);
               setNameCheckStatus("idle");
               setNameCheckMsg(null);
-              setSaveErrorMsg(null);
+              setSaveMsg(null);
             }}
             disabled={isLoading}
             style={{
@@ -272,11 +301,11 @@ export default function ProfileSettingPanel() {
           <button
             type="button"
             onClick={() => nicknameCheckMutation.mutate()}
-            disabled={!canCheckName || isLoading}
+            disabled={!isNicknameChanged || isLoading}
             style={{
               height: "40px",
               borderRadius: "12px",
-              background: canCheckName ? "#3182F6" : "#5C92FF",
+              background: isNicknameChanged ? "#3182F6" : "#5C92FF",
               color: "#FFFFFF",
               fontWeight: 400,
               fontSize: "14px",
@@ -287,7 +316,7 @@ export default function ProfileSettingPanel() {
           </button>
         </div>
 
-        {nameCheckMsg && (
+        {nameCheckMsg && !saveMsg && (
           <div
             style={{
               marginLeft: "158px",
@@ -338,7 +367,7 @@ export default function ProfileSettingPanel() {
           gridTemplateColumns: "140px 1fr",
           gap: "10px",
           alignItems: "center",
-          marginBottom: "25px",
+          marginBottom: "15px",
           paddingLeft: "5px",
         }}
       >
@@ -362,6 +391,21 @@ export default function ProfileSettingPanel() {
           비밀번호 변경
         </button>
       </div>
+
+      {saveMsg && (
+        <div
+          style={{
+            textAlign: "right",
+            marginRight: "30px",
+            marginTop: "35px",
+            fontSize: "13px",
+            fontWeight: 600,
+            color: "#0066FF",
+          }}
+        >
+          {saveMsg}
+        </div>
+      )}
 
       {/* 하단 버튼 (회원탈퇴, 저장) */}
       <div
@@ -401,12 +445,12 @@ export default function ProfileSettingPanel() {
         <button
           type="button"
           onClick={onClickSave}
-          disabled={isLoading}
+          disabled={!canSave}
           style={{
             height: "38px",
             width: "100px",
             borderRadius: "12px",
-            background: canCheckName ? "#3182F6" : "#5C92FF",
+            background: canSave ? "#3182F6" : "#5C92FF",
             color: "#FFFFFF",
             fontWeight: 600,
             fontSize: "14px",
@@ -416,12 +460,6 @@ export default function ProfileSettingPanel() {
           저장
         </button>
       </div>
-
-      {saveErrorMsg && (
-        <div style={{ marginTop: 8, fontSize: 12, color: "#D93025" }}>
-          {saveErrorMsg}
-        </div>
-      )}
     </div>
   );
 }
