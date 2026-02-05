@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import GrayPageWrapper from './GrayPageWrapper';
 
 export default function MainLayout() {
   return (
@@ -17,10 +18,12 @@ export default function MainLayout() {
         flex: 1,
         background: '#ffffff',
         padding: '14px',
-        overflowY: 'auto',
+        overflow: 'hidden',
         minWidth: 0
       }}>
-        <Outlet />
+        <GrayPageWrapper>
+          <Outlet />
+        </GrayPageWrapper>
       </main>
     </div>
   );
