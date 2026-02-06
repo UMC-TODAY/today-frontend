@@ -20,6 +20,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ModalTestPage from "./pages/setting/ModalTestPage";
 import WithdrawPage from "./pages/setting/WithdrawPage";
+import CalendarIntegrationPage from "./pages/setting/CalendarIntegrationPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,7 +78,8 @@ function App() {
 
             {/* 설정 -> 탈퇴 페이지 */}
             <Route path="/setting/withdraw" element={<WithdrawPage />} />
-
+            <Route path="/setting/calendar/:provider" element={<CalendarIntegrationPage />} />
+            
             {/* 설정 모달 테스트 페이지 (임시!! 나중에 삭제할 예정) */}
             <Route path="modal-test" element={<ModalTestPage />} />
           </Route>
