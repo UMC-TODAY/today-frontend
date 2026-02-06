@@ -1,76 +1,27 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
-import GoogleCalendarIcon from "../../components/icons/GoogleCalendarIcon";
 import ICloudIcon from "../../components/icons/ICloudIcon";
-import CSVIcon from "../../components/icons/CSVIcon";
-import NotionIcon from "../../components/icons/NotionIcon";
 import { useMutation } from "@tanstack/react-query";
 import { postICloudIntegration } from "../../api/setting/calendar";
 
-type Provider = "google" | "icloud" | "csv" | "notion";
-
-type ProviderConfig = {
-  key: Provider;
-  title: string;
-  Icon: React.ComponentType;
-  linkLabel: string;
-  guidelines: string[];
-};
-
-const Providers: ProviderConfig[] = [
-  {
-    key: "google",
-    title: "google 연동",
-    Icon: GoogleCalendarIcon,
-    linkLabel: "ICS 링크",
-    guidelines: ["1. "],
-  },
-  {
-    key: "icloud",
-    title: "iCloud 연동",
-    Icon: ICloudIcon,
-    linkLabel: "ICS 링크",
-    guidelines: [
-      "1. 브라우저에서 https://www.icloud.com 접속",
-      "2. Apple ID로 로그인",
-      "3. 캘린더(Calendar) 선택",
-      "4. 왼쪽 캘린더 목록에서 연동할 캘린더 오른쪽 공유 아이콘(👤) 클릭",
-      "5. [공개 캘린더] 옵션을 ON",
-      "6. 공개 캘린더를 커먼 공유 링크(URL) 생성됨",
-      "7. [링크 복사] 클릭하여 복사",
-    ],
-  },
-  {
-    key: "csv",
-    title: "CSV 파일 연동",
-    Icon: CSVIcon,
-    linkLabel: "ICS 링크",
-    guidelines: ["1. "],
-  },
-  {
-    key: "notion",
-    title: "Notion 연동",
-    Icon: NotionIcon,
-    linkLabel: "ICS 링크",
-    guidelines: ["1. "],
-  },
-];
-
 export default function CalendarConnectPage() {
   const navigate = useNavigate();
-  const params = useParams();
-
-  const integrateTo = (params.provider || "") as Provider;
-
-  const description = useMemo(() => {
-    return Providers.find((d) => d.key === integrateTo) ?? null;
-  }, [integrateTo]);
 
   const [link, setLink] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const guidelines = [
+    "1. 브라우저에서 https://www.icloud.com 접속",
+    "2. Apple ID로 로그인",
+    "3. 캘린더(Calendar) 선택",
+    "4. 왼쪽 캘린더 목록에서 연동할 캘린더 오른쪽 공유 아이콘(👤) 클릭",
+    "5. [공개 캘린더] 옵션을 ON",
+    "6. 공개 캘린더를 커먼 공유 링크(URL) 생성됨",
+    "7. [링크 복사] 클릭하여 복사",
+  ];
 
   const iCloudMutation = useMutation({
     mutationFn: () => postICloudIntegration({ icsUrl: link.trim() }),
@@ -125,22 +76,13 @@ export default function CalendarConnectPage() {
   }
 
   function handleIntegrate() {
-    if (!description) return;
     if (!canSubmit) return;
 
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    if (integrateTo === "icloud") {
-        iCloudMutation.mutate();
-        return;
-    }
-
-    setErrorMsg("백엔드 api X");
+    iCloudMutation.mutate();
   }
-
-  if (!description) return;
-  const Icon = description.Icon;
 
   return (
     <div style={s.page}>
@@ -163,15 +105,15 @@ export default function CalendarConnectPage() {
             marginTop: "8px",
           }}
         >
-          <Icon />
+          <ICloudIcon />
           <div
             style={{ ...getTextStyle(650, 20, "#000000"), marginTop: "5px" }}
           >
-            {description.title}
+            iCloud 연동
           </div>
         </div>
 
-        {/* 입력 영역 */}
+        {/* ICS 링크 입력 */}
         <div
           style={{
             display: "flex",
@@ -181,9 +123,7 @@ export default function CalendarConnectPage() {
             marginTop: "120px",
           }}
         >
-          <div style={getTextStyle(500, 14, "#000000")}>
-            {description.linkLabel}
-          </div>
+          <div style={getTextStyle(500, 14, "#000000")}>ICS 링크</div>
           <input
             value={link}
             onChange={(e) => {
@@ -214,23 +154,23 @@ export default function CalendarConnectPage() {
             whiteSpace: "pre-line",
           }}
         >
-          {description.guidelines.map((line) => line).join("\n")}
+          {guidelines.join("\n")}
         </div>
 
         {/* 저장 or 에러 메시지 */}
-          <div
-            style={{
-              marginTop: "50px",
-              textAlign: "center",
-              fontSize: "13px",
-              fontWeight: 600,
-              color: successMsg ? "#0066FF" : "#D93025",
-              whiteSpace: "pre-line",
-              minHeight: "22px",
-            }}
-          >
-            {successMsg || errorMsg || ""}
-          </div>
+        <div
+          style={{
+            marginTop: "50px",
+            textAlign: "center",
+            fontSize: "13px",
+            fontWeight: 600,
+            color: successMsg ? "#0066FF" : "#D93025",
+            whiteSpace: "pre-line",
+            minHeight: "22px",
+          }}
+        >
+          {successMsg || errorMsg || ""}
+        </div>
 
         {/* 버튼 */}
         <div
@@ -264,3 +204,4 @@ export default function CalendarConnectPage() {
     </div>
   );
 }
+
