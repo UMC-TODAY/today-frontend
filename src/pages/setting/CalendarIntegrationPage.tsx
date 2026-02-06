@@ -6,6 +6,8 @@ import GoogleCalendarIcon from "../../components/icons/GoogleCalendarIcon";
 import ICloudIcon from "../../components/icons/ICloudIcon";
 import CSVIcon from "../../components/icons/CSVIcon";
 import NotionIcon from "../../components/icons/NotionIcon";
+import { useMutation } from "@tanstack/react-query";
+import { postICloudIntegration } from "../../api/setting/calendar";
 
 type Provider = "google" | "icloud" | "csv" | "notion";
 
@@ -68,7 +70,31 @@ export default function CalendarConnectPage() {
 
   const [link, setLink] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const iCloudMutation = useMutation({
+    mutationFn: () => postICloudIntegration({ icsUrl: link.trim() }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        setErrorMsg(null);
+        setSuccessMsg("iCloud 캘린더가 연동되었습니다.");
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      setSuccessMsg(null);
+
+      if (!error.response.data.isSuccess) {
+        setErrorMsg("ICS 링크를 다시 확인해주세요.");
+        return;
+      }
+
+      setErrorMsg("서버와의 연결에 실패했습니다.");
+      console.error("iCloud 연동 에러 상세:", error?.response.data);
+    },
+  });
+
+  const isLoading = iCloudMutation.isPending;
 
   const canSubmit = useMemo(
     () => link.trim().length > 0 && !isLoading,
@@ -98,21 +124,19 @@ export default function CalendarConnectPage() {
     navigate(-1);
   }
 
-  async function handleIntegrate() {
+  function handleIntegrate() {
     if (!description) return;
     if (!canSubmit) return;
 
     setErrorMsg(null);
-    setIsLoading(true);
+    setSuccessMsg(null);
 
-    try {
-      alert("백엔드 연동 예정");
-    } catch (e) {
-      console.error(e);
-      setErrorMsg("연동에 실패했습니다. 다시 시도해 주세요.");
-    } finally {
-      setIsLoading(false);
+    if (integrateTo === "icloud") {
+        iCloudMutation.mutate();
+        return;
     }
+
+    setErrorMsg("백엔드 api X");
   }
 
   if (!description) return;
@@ -193,20 +217,20 @@ export default function CalendarConnectPage() {
           {description.guidelines.map((line) => line).join("\n")}
         </div>
 
-        {/* 에러 메시지 */}
-        {errorMsg && (
+        {/* 저장 or 에러 메시지 */}
           <div
             style={{
-              marginTop: "12px",
-              color: "#D93025",
+              marginTop: "50px",
+              textAlign: "center",
               fontSize: "13px",
               fontWeight: 600,
-              textAlign: "center",
+              color: successMsg ? "#0066FF" : "#D93025",
+              whiteSpace: "pre-line",
+              minHeight: "22px",
             }}
           >
-            {errorMsg}
+            {successMsg || errorMsg || ""}
           </div>
-        )}
 
         {/* 버튼 */}
         <div
@@ -214,7 +238,6 @@ export default function CalendarConnectPage() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            marginTop: "60px",
           }}
         >
           <button
