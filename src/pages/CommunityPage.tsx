@@ -192,7 +192,7 @@ export default function CommunityPage() {
   });
 
   // 내 피드 조회
-  const { data: myPostsData, isLoading: isMyPostsLoading } = useQuery({
+  const { data: myPostsData, isLoading: isMyPostsLoading, isError: isMyPostsError } = useQuery({
     queryKey: ["myPosts"],
     queryFn: () => getMyPosts(),
     enabled: activeTab === "activity",
@@ -252,6 +252,9 @@ export default function CommunityPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", selectedPost?.postId] });
     },
+    onError: (error) => {
+      console.error("댓글 좋아요 에러:", error);
+    },
   });
 
   // 피드 작성 mutation
@@ -283,7 +286,6 @@ export default function CommunityPage() {
     onSuccess: () => {
       setShowReportModal(false);
       setReportPostId(null);
-      alert("신고가 정상적으로 접수되었습니다.\n운영진이 빠르게 확인하여 조치를 취하도록 하겠습니다. 감사합니다.");
     },
   });
 
@@ -409,7 +411,14 @@ export default function CommunityPage() {
             className="bg-white rounded-2xl shadow-sm border p-6 overflow-y-auto scrollbar-hide flex-1 min-w-0"
           >
             {/* Header */}
-            <h1 className="text-left mb-4 text-[#0F1724]" style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}>할일 찾기</h1>
+            <h1 className="text-left mb-4 text-[#0F1724]" 
+            style={{ 
+              fontFamily: 'Pretendard', 
+              fontSize: '24px', 
+              fontWeight: 400, 
+              lineHeight: '100%', 
+              letterSpacing: '0%' }}>
+                할일 찾기</h1>
 
             {/* Filter Buttons - 2x4 그리드 */}
             <div className="flex flex-wrap gap-2 mb-6">
@@ -660,13 +669,13 @@ export default function CommunityPage() {
                     <div>
                       <h2
                         className="text-[#0F1724]"
-                        style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}
+                        style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 400, lineHeight: '100%', letterSpacing: '0%' }}
                       >
                         오늘
                       </h2>
                       <p
                         className="text-[#0F1724]"
-                        style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}
+                        style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 400, lineHeight: '100%', letterSpacing: '0%' }}
                       >
                         피드
                       </p>
@@ -1153,6 +1162,10 @@ export default function CommunityPage() {
                     {isMyPostsLoading ? (
                       <div className="flex items-center justify-center py-10">
                         <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                      </div>
+                    ) : isMyPostsError ? (
+                      <div className="text-center py-10 text-gray-500" style={{ fontFamily: 'Pretendard' }}>
+                        내 활동을 불러오는데 실패했습니다.
                       </div>
                     ) : myPostsData?.posts && myPostsData.posts.length > 0 ? (
                       myPostsData.posts.map((post: ApiPost) => (
