@@ -11,7 +11,11 @@ import CameraIcon from "../icons/CameraIcon";
 
 type NameCheckStatus = "idle" | "ok" | "dup";
 
-export default function ProfileSettingPanel() {
+export default function ProfileSettingPanel({
+  goWithdraw,
+}: {
+  goWithdraw: () => void;
+}) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -135,7 +139,7 @@ export default function ProfileSettingPanel() {
   }
 
   function onClickWithdraw() {
-    navigate("/setting/withdraw");
+    goWithdraw();
   }
 
   async function onClickSave() {
