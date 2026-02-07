@@ -42,15 +42,15 @@ export default function TodoList() {
   const handleNextWeek = () => {
     setCurrentDate(new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
-  const handleToggleTodo = (e: React.MouseEvent, todo: any) => {
-    e.stopPropagation();
+  const handleToggleTodo = (todo: any) => {
     const currentStatus = todo.isDone ?? todo._done ?? todo.is_done;
     updateStatus({
       id: todo.id,
       data: { is_done: !currentStatus },
     });
   };
-  const handleEditClick = (todo: any) => {
+  const handleEditClick = (e: React.MouseEvent, todo: any) => {
+    e.stopPropagation();
     setSelectedTodo(todo);
     setIsEditModalOpen(true);
   };
@@ -154,7 +154,7 @@ export default function TodoList() {
                   {group.items.map((todo) => (
                     <div
                       key={todo.id}
-                      onClick={() => handleEditClick(todo)}
+                      onClick={() => handleToggleTodo(todo)}
                       className={`group flex items-center gap-3 rounded-2xl border px-4 py-3 transition-all duration-200 cursor-pointer ${
                         todo.calculatedIsDone
                           ? "bg-slate-50 border-transparent opacity-60"
@@ -165,11 +165,11 @@ export default function TodoList() {
                         type="checkbox"
                         checked={selectedIds.includes(todo.id)}
                         onChange={(e) => toggleSelect(todo.id, e)}
+                        onClick={(e) => e.stopPropagation()}
                         className="w-4 h-4 accent-slate-800 cursor-pointer"
                       />
-                      <div className="flex-1 flex items-center gap-3">
+                      <div className="flex-1 flex items-center gap-3 min-w-0">
                         <div
-                          onClick={(e) => handleToggleTodo(e, todo)}
                           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[18px] transition-colors hover:opacity-80"
                           style={{
                             backgroundColor: todo.calculatedIsDone
@@ -187,6 +187,12 @@ export default function TodoList() {
                           </div>
                         </div>
                       </div>
+                      <button
+                        onClick={(e) => handleEditClick(e, todo)}
+                        className="px-2 py-1 rounded-lg bg-slate-100 text-slate-500 text-[11px] font-medium hover:bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        일정 변경하기
+                      </button>
                     </div>
                   ))}
                 </div>

@@ -87,7 +87,6 @@ export const useGetScheduleCompletion = (params: ScheduleCompletionParams) => {
 };
 
 // 상태변경
-
 export const useUpdateScheduleStatus = () => {
   const queryClient = useQueryClient();
 
