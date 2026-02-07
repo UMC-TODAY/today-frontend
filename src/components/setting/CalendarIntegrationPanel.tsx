@@ -6,16 +6,24 @@ import CSVIcon from "../icons/CSVIcon";
 import NotionIcon from "../icons/NotionIcon";
 import LickIcon from "../icons/LinkIcon";
 import { useMutation } from "@tanstack/react-query";
-import { postGoogleIntegration, postNotionIntegration } from "../../api/setting/calendar";
+import {
+  postCsvUpload,
+  postGoogleIntegration,
+  postNotionIntegration,
+} from "../../api/setting/calendar";
+import { useRef, useState } from "react";
 
 export default function CalendarIntegrationPanel({
-  goWithdraw
+  goWithdraw,
 }: {
   goWithdraw: () => void;
 }) {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("accessToken") || "";
+
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [CSVMsg, setCSVMsg] = useState<string | null>(null);
 
   const btnStyle: React.CSSProperties = {
     height: "52px",
@@ -46,8 +54,22 @@ export default function CalendarIntegrationPanel({
     onSuccess: (result) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       window.location.href = (result as any).data.authorizeUrl;
-    }
-  })
+    },
+  });
+
+  const CSVMutation = useMutation({
+    mutationFn: (file: File) => postCsvUpload(token, file),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        setCSVMsg("CSV 일정 업로드가 완료되었습니다.");
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      setCSVMsg("CSV 업로드에 실패했습니다.");
+      console.error("CSV 업로드 에러 상세:", error?.response?.data);
+    },
+  });
 
   function onClickNotion() {
     notionMutation.mutate();
@@ -55,6 +77,23 @@ export default function CalendarIntegrationPanel({
 
   function onClickGoogle() {
     googleMutation.mutate();
+  }
+
+  function onClickCSV() {
+    setCSVMsg(null);
+
+    fileRef.current?.click();
+  }
+
+  function onChangeCSVFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCSVMsg(null);
+    CSVMutation.mutate(file);
+
+    // 같은 파일을 다시 선택할 수 있도록 함
+    e.target.value = "";
   }
 
   function onClickWithdraw() {
@@ -73,6 +112,14 @@ export default function CalendarIntegrationPanel({
         캘린더 연동 관리
       </div>
 
+      <input
+        type="file"
+        ref={fileRef}
+        accept=".csv"
+        style={{ display: "none" }}
+        onChange={onChangeCSVFile}
+      />
+
       {/* 연동 버튼들 */}
       <div
         style={{ position: "relative", height: "480px", overflow: "hidden" }}
@@ -87,11 +134,7 @@ export default function CalendarIntegrationPanel({
             }}
           >
             {/* 구글 */}
-            <button
-              type="button"
-              onClick={onClickGoogle}
-              style={btnStyle}
-            >
+            <button type="button" onClick={onClickGoogle} style={btnStyle}>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
@@ -149,11 +192,7 @@ export default function CalendarIntegrationPanel({
             </button>
 
             {/* CSV */}
-            <button
-              type="button"
-              onClick={() => navigate("/setting/calendar/csv")}
-              style={btnStyle}
-            >
+            <button type="button" onClick={onClickCSV} style={btnStyle}>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
@@ -205,6 +244,20 @@ export default function CalendarIntegrationPanel({
               </div>
               <LickIcon />
             </button>
+
+            {/* CSV 업로드 메시지 */}
+            {CSVMsg && (
+              <div
+                style={{
+                  marginTop: "6px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  color: CSVMsg.includes("완료") ? "#0066FF" : "#D93025",
+                }}
+              >
+                {CSVMsg}
+              </div>
+            )}
           </div>
         </div>
       </div>

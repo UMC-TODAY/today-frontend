@@ -42,7 +42,7 @@ export const getNotionCallback = async (token: string, code: string, state: stri
         {
             headers: {
                 Authorization: `Bearer ${token}`,
-            }, 
+            },
             params: { code, state }
         },
     );
@@ -70,9 +70,27 @@ export const getGoogleCallback = async (token: string, code: string) => {
         {
             headers: {
                 Authorization: `Bearer ${token}`,
-            }, 
+            },
             params: { code }
         },
     );
     return res.data;
 };
+
+// csv 연동
+export const postCsvUpload = async (token: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await axiosInstance.post(
+        "/api/v1/schedules/csv", 
+        formData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+            },
+        },
+    );
+    return res.data;
+}
