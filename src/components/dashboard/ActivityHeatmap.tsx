@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getGrassMap } from "../../api/analysis.ts";
+import { format, parseISO } from "date-fns";
 
 const getGrassColor = (level: number): string => {
   const lvl = Number(level) || 0;
@@ -10,12 +11,14 @@ const getGrassColor = (level: number): string => {
   if (lvl === 3) return "#6B4EFF";
   return "#3B0BBF";
 };
+
 export default function ActivityHeatmap() {
   const { data: response, isLoading } = useQuery({
     queryKey: ["grassMap"],
     queryFn: getGrassMap,
     retry: false,
   });
+
   const grassWeeks = useMemo(() => {
     const serverGrassData = response?.data?.grass || response?.grass;
     if (!serverGrassData || !Array.isArray(serverGrassData)) return [];
@@ -25,47 +28,57 @@ export default function ActivityHeatmap() {
     }
     return weeks;
   }, [response]);
+
   if (isLoading)
     return (
       <div className="p-8 text-center text-slate-400 text-sm">로딩 중...</div>
     );
-  const summary = response?.data?.summary || response?.summary;
+
   return (
-    <div className="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm w-full">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-[16px] font-bold text-slate-800">
+    <div className="w-full p-6 bg-white rounded-3xl overflow-hidden">
+      <div className="mb-6">
+        <h2 className="text-[22px] font-bold text-slate-800">
           최근 3달 일정 처리 집계
         </h2>
-        <div className="text-[12px] text-slate-500 font-medium bg-slate-50 px-2 py-1 rounded-lg">
-          총 {summary?.totalCompletedCount || 0}개 완료
-        </div>
       </div>
-      <div className="flex flex-row gap-[4px] overflow-x-auto pb-2 scrollbar-hide">
-        {grassWeeks.map((week: any[], weekIdx: number) => (
-          <div key={weekIdx} className="flex flex-col gap-[4px] shrink-0">
-            {week.map((day) => (
+
+      <div className="w-full overflow-x-auto scrollbar-hide">
+        <div className="flex min-w-max justify-center gap-[5px] pb-2">
+          {grassWeeks.map((week: any[], weekIdx: number) => {
+            const firstDayOfVisibleWeek = week[0]?.date;
+            const monthLabel = firstDayOfVisibleWeek
+              ? format(parseISO(firstDayOfVisibleWeek), "MMM")
+              : "";
+
+            const isNewMonth =
+              weekIdx === 0 ||
+              (grassWeeks[weekIdx - 1] &&
+                format(parseISO(grassWeeks[weekIdx - 1][0].date), "MMM") !==
+                  monthLabel);
+
+            return (
               <div
-                key={day.date}
-                title={`${day.date}: ${day.completedCount}개 완료`}
-                className="w-[12px] h-[12px] rounded-[2px] transition-all hover:bg-slate-200 cursor-help"
-                style={{ backgroundColor: getGrassColor(day.level) }}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className="mt-4 flex justify-end items-center gap-2 text-[11px] text-slate-400">
-        <span>Less</span>
-        <div className="flex gap-[3px]">
-          {[0, 1, 2, 3, 4].map((lvl) => (
-            <div
-              key={lvl}
-              className="w-[10px] h-[10px] rounded-[2px]"
-              style={{ backgroundColor: getGrassColor(lvl) }}
-            />
-          ))}
+                key={weekIdx}
+                className="relative flex shrink-0 flex-col gap-[5px] pt-7"
+              >
+                {isNewMonth && (
+                  <span className="absolute top-0 left-0 text-[12px] font-semibold text-slate-400">
+                    {monthLabel}
+                  </span>
+                )}
+
+                {week.map((day) => (
+                  <div
+                    key={day.date}
+                    title={`${day.date}: ${day.completedCount}개 완료`}
+                    className="h-[14px] w-[14px] rounded-[3px] transition-all hover:bg-slate-200 cursor-help"
+                    style={{ backgroundColor: getGrassColor(day.level) }}
+                  />
+                ))}
+              </div>
+            );
+          })}
         </div>
-        <span>More</span>
       </div>
     </div>
   );

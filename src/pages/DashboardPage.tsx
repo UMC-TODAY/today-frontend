@@ -79,7 +79,7 @@ export default function DashboardPage() {
               <div
                 style={{
                   ...cardStyle,
-                  flex: 13,
+                  flex: 9,
                   marginBottom: "12px",
                   alignItems: "center",
                   justifyContent: "center",
@@ -93,7 +93,7 @@ export default function DashboardPage() {
               <div
                 style={{
                   ...cardStyle,
-                  flex: 9,
+                  flex: 12,
                   alignItems: "center",
                   justifyContent: "center",
                   display: "flex",

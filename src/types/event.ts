@@ -90,6 +90,14 @@ export interface ScheduleCompletionResponse {
   completedCount: number;
 }
 
+// TODAY와 함께하고 있어요
+// 가입 경과 일수 타입 (Together Days)
+export interface TogetherDaysResponse {
+  togetherDays: number;
+  joinedAt: string;
+  message: string;
+}
+
 // 2. post
 // 일정/할 일 등록
 // 1. 공통으로 들어가는 필드
