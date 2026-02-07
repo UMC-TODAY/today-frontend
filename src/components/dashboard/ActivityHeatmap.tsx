@@ -1,89 +1,71 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { format, subDays, eachDayOfInterval } from "date-fns";
 import { getGrassMap } from "../../api/analysis.ts";
 
-// 잔디 색상 (보라색 5단계)
-const getGrassColor = (count: number): string => {
-  if (count === 0) return "#F1F1F1";
-  if (count <= 2) return "#EEEAFE";
-  if (count <= 5) return "#B9A7FF";
-  if (count <= 8) return "#6B4EFF";
+const getGrassColor = (level: number): string => {
+  const lvl = Number(level) || 0;
+  if (lvl === 0) return "#F1F1F1";
+  if (lvl === 1) return "#DDD6FE";
+  if (lvl === 2) return "#B9A7FF";
+  if (lvl === 3) return "#6B4EFF";
   return "#3B0BBF";
 };
-
 export default function ActivityHeatmap() {
-  // 1. API 데이터 가져오기
   const { data: response, isLoading } = useQuery({
     queryKey: ["grassMap"],
     queryFn: getGrassMap,
     retry: false,
   });
-
-  // 2. 최근 91일간의 데이터 가공
-  const grassData = useMemo(() => {
-    const today = new Date();
-    const ninetyDaysAgo = subDays(today, 90);
-
-    // 최근 91일간의 모든 날짜 생성 (데이터가 없는 날짜도 회색으로 표시하기 위함)
-    const allDays = eachDayOfInterval({
-      start: ninetyDaysAgo,
-      end: today,
-    });
-
-    const serverData = response?.grassMap || [];
-
-    // 서버 데이터를 날짜 키값으로 맵핑
-    const dataMap = new Map(
-      serverData.map((item: any) => [item.date, item.count]),
-    );
-
-    return allDays.map((date) => {
-      const dateStr = format(date, "yyyy-MM-dd");
-      return {
-        date: dateStr,
-        count: dataMap.get(dateStr) || 0,
-      };
-    });
-  }, [response]);
-
-  // 3. 주 단위(7일)로 묶기
   const grassWeeks = useMemo(() => {
+    const serverGrassData = response?.data?.grass || response?.grass;
+    if (!serverGrassData || !Array.isArray(serverGrassData)) return [];
     const weeks = [];
-    for (let i = 0; i < grassData.length; i += 7) {
-      weeks.push(grassData.slice(i, i + 7));
+    for (let i = 0; i < serverGrassData.length; i += 7) {
+      weeks.push(serverGrassData.slice(i, i + 7));
     }
     return weeks;
-  }, [grassData]);
-
+  }, [response]);
   if (isLoading)
     return (
-      <div className="p-8 text-center text-slate-400">
-        데이터를 불러오는 중...
-      </div>
+      <div className="p-8 text-center text-slate-400 text-sm">로딩 중...</div>
     );
-
+  const summary = response?.data?.summary || response?.summary;
   return (
     <div className="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm w-full">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-bold text-slate-800">
+        <h2 className="text-[16px] font-bold text-slate-800">
           최근 3달 일정 처리 집계
         </h2>
+        <div className="text-[12px] text-slate-500 font-medium bg-slate-50 px-2 py-1 rounded-lg">
+          총 {summary?.totalCompletedCount || 0}개 완료
+        </div>
       </div>
-
-      <div className="flex flex-row gap-[3px] overflow-x-auto pb-2 scrollbar-hide">
-        {grassWeeks.map((week, weekIdx) => (
-          <div key={weekIdx} className="flex flex-col gap-[3px] shrink-0">
+      <div className="flex flex-row gap-[4px] overflow-x-auto pb-2 scrollbar-hide">
+        {grassWeeks.map((week: any[], weekIdx: number) => (
+          <div key={weekIdx} className="flex flex-col gap-[4px] shrink-0">
             {week.map((day) => (
               <div
                 key={day.date}
-                title={`${day.date}: ${day.count}개 완료`}
-                className="w-[13px] h-[13px] rounded-sm transition-transform hover:scale-125 cursor-help"
-                style={{ backgroundColor: getGrassColor(day.count) }}
+                title={`${day.date}: ${day.completedCount}개 완료`}
+                className="w-[12px] h-[12px] rounded-[2px] transition-all hover:bg-slate-200 cursor-help"
+                style={{ backgroundColor: getGrassColor(day.level) }}
               />
             ))}
           </div>
         ))}
+      </div>
+      <div className="mt-4 flex justify-end items-center gap-2 text-[11px] text-slate-400">
+        <span>Less</span>
+        <div className="flex gap-[3px]">
+          {[0, 1, 2, 3, 4].map((lvl) => (
+            <div
+              key={lvl}
+              className="w-[10px] h-[10px] rounded-[2px]"
+              style={{ backgroundColor: getGrassColor(lvl) }}
+            />
+          ))}
+        </div>
+        <span>More</span>
       </div>
     </div>
   );

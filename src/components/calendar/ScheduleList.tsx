@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   useGetMonthlySchedule,
   useDeleteSchedules,
+  useUpdateScheduleStatus,
 } from "../../hooks/queries/useSchedule";
 import TodoEditModal from "../goalTracker/TodoEditModal.tsx";
 
@@ -17,6 +18,9 @@ type Schedule = {
   duration?: number;
   scheduleType?: string;
   mode?: string;
+  isDone?: boolean;
+  is_done?: boolean;
+  _done?: boolean;
 };
 export default function ScheduleList() {
   const [year, setYear] = useState(2026);
@@ -34,6 +38,7 @@ export default function ScheduleList() {
     hidePast: hidePast,
   });
   const { mutate: deleteSchedules } = useDeleteSchedules();
+  const { mutate: updateStatus } = useUpdateScheduleStatus();
   const scheduleList: Schedule[] = response?.data?.events || [];
   const handlePrevMonth = () => {
     if (month === 1) {
@@ -50,6 +55,18 @@ export default function ScheduleList() {
     } else {
       setMonth((prev) => prev + 1);
     }
+  };
+  const handleToggleStatus = (schedule: Schedule) => {
+    const currentStatus = schedule.isDone ?? schedule._done ?? schedule.is_done;
+    updateStatus({
+      id: schedule.id,
+      data: { is_done: !currentStatus },
+    });
+  };
+  const handleEditClick = (e: React.MouseEvent, schedule: Schedule) => {
+    e.stopPropagation();
+    setSelectedSchedule(schedule);
+    setIsEditModalOpen(true);
   };
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
@@ -68,16 +85,13 @@ export default function ScheduleList() {
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
-  const handleEditClick = (schedule: Schedule) => {
-    setSelectedSchedule(schedule);
-    setIsEditModalOpen(true);
-  };
   const grouped = useMemo(() => {
-    const map = new Map<string, Schedule[]>();
+    const map = new Map<string, any[]>();
     scheduleList.forEach((s) => {
+      const isDoneValue = !!(s.isDone ?? s._done ?? s.is_done);
       const date = (s.startedAt || "").split(" ")[0];
       const arr = map.get(date) ?? [];
-      arr.push(s);
+      arr.push({ ...s, calculatedIsDone: isDoneValue });
       map.set(date, arr);
     });
     const dates = Array.from(map.keys()).sort((a, b) => a.localeCompare(b));
@@ -154,32 +168,51 @@ export default function ScheduleList() {
                   {group.items.map((schedule) => (
                     <div
                       key={schedule.id}
-                      onClick={() => handleEditClick(schedule)}
-                      className="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-sm hover:border-slate-300 transition-all duration-200 cursor-pointer"
+                      onClick={() => handleToggleStatus(schedule)}
+                      className={`group flex items-center gap-3 rounded-2xl border px-4 py-3 transition-all duration-200 cursor-pointer ${
+                        schedule.calculatedIsDone
+                          ? "bg-slate-50 border-transparent opacity-60"
+                          : "bg-white border-slate-100 hover:border-slate-300 shadow-sm"
+                      }`}
                     >
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(Number(schedule.id))}
                         onChange={(e) => toggleSelect(Number(schedule.id), e)}
+                        onClick={(e) => e.stopPropagation()}
                         className="w-4 h-4 accent-slate-800 cursor-pointer"
                       />
-                      <div className="flex-1 flex items-center gap-3">
+                      <div className="flex-1 flex items-center gap-3 min-w-0">
                         <div
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[18px] bg-slate-100"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[18px] transition-colors"
                           style={{
-                            backgroundColor: schedule.color
-                              ? `${schedule.color}33`
-                              : undefined,
+                            backgroundColor: schedule.calculatedIsDone
+                              ? "#F1F5F9"
+                              : schedule.color
+                                ? `${schedule.color}33`
+                                : "#F1F5F9",
                           }}
                         >
                           {schedule.emoji || "📅"}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="truncate text-[14px] font-semibold text-slate-800">
+                          <div
+                            className={`truncate text-[14px] transition-all ${
+                              schedule.calculatedIsDone
+                                ? "text-slate-400 line-through decoration-slate-400"
+                                : "text-slate-800 font-semibold"
+                            }`}
+                          >
                             {schedule.title}
                           </div>
                         </div>
                       </div>
+                      <button
+                        onClick={(e) => handleEditClick(e, schedule)}
+                        className="px-2 py-1 rounded-lg bg-slate-100 text-slate-500 text-[11px] font-medium hover:bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        일정 변경하기
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -196,6 +229,7 @@ export default function ScheduleList() {
             ...selectedSchedule,
             startAt: selectedSchedule.startedAt,
             bgColor: selectedSchedule.color,
+            repeatType: selectedSchedule.repeatType || "NONE",
           }}
           onClose={() => {
             setIsEditModalOpen(false);
