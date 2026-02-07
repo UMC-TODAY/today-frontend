@@ -14,6 +14,7 @@ import type {
   TodoCompletionParams,
   TodoCompletionResponse,
   TodoParams,
+  TogetherDaysResponse,
   UpdateScheduleRequest,
   UpdateStatusRequest,
 } from "../types/event.ts";
@@ -108,6 +109,15 @@ export const updateSchedule = async (
   const response = await axiosInstance.patch<ApiResponse<ScheduleDetail>>(
     `/api/v1/schedules/${scheduleId}`,
     data,
+  );
+  return response.data;
+};
+
+// Today와 함께하고 있어요
+// 가입일로부터 경과 일수 조회
+export const getTogetherDays = async () => {
+  const response = await axiosInstance.get<ApiResponse<TogetherDaysResponse>>(
+    "/api/v1/analysis/together-days",
   );
   return response.data;
 };

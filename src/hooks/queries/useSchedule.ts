@@ -10,6 +10,7 @@ import {
   getSchedule,
   getScheduleCompletion,
   getTodoCompletion,
+  getTogetherDays,
   getWeeklyTodo,
   postSchedule,
   updateSchedule,
@@ -142,5 +143,14 @@ export const useUpdateSchedule = (scheduleId: number) => {
     onError: (error) => {
       console.error("일정 수정 중 오류 발생:", error);
     },
+  });
+};
+
+// TODAY와 함께하고있어요
+export const useGetTogetherDays = () => {
+  return useQuery({
+    queryKey: ["togetherDays"],
+    queryFn: getTogetherDays,
+    select: (response) => response.data,
   });
 };
