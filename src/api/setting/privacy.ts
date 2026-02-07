@@ -7,7 +7,7 @@ import { axiosInstance } from "../core/axiosInstance"
 // 개인정보 및 분석설정 보기
 export const getPrivacyInfo = async (token: string) => {
     const res = await axiosInstance.get<PrivacyInfoResponse>(
-        "/api/preferences/members/info",
+        "/api/v1/preferences/members/info",
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -20,7 +20,7 @@ export const getPrivacyInfo = async (token: string) => {
 // 개인정보 및 분석설정 수정
 export const patchEditPrivacyInfo = async (token: string, body: EditPrivacyInfoRequest) => {
     const res = await axiosInstance.patch(
-        "/api/preferences/members/info",
+        "/api/v1/preferences/members/info",
         null,
         {
             headers: { Authorization: `Bearer ${token}` },

@@ -16,48 +16,48 @@ import { axiosInstance } from "../core/axiosInstance";
 
 // 이메일 로그인
 export const postEmailLogin = async (body: EmailLoginRequest) => {
-    const res = await axiosInstance.post<EmailLoginResponse>("/api/auth/login/email", body);
+    const res = await axiosInstance.post<EmailLoginResponse>("/api/v1/auth/login/email", body);
     return res.data;
 }
 
 // 이메일 중복 확인
 export const postEmailCheck = async (body: EmailCheckRequest) => {
-    const res = await axiosInstance.post<EmailCheckResponse>("/api/auth/email/check", body);
+    const res = await axiosInstance.post<EmailCheckResponse>("/api/v1/auth/email/check", body);
     return res.data;
 }
 
 // 비밀번호 재설정 인증코드 발송
 export const postPasswordVerifyCodeSend = async (body: VerifyRequest) => {
-    const res = await axiosInstance.post<VerifyResponse>("/api/auth/password/verification-codes", body);
+    const res = await axiosInstance.post<VerifyResponse>("/api/v1/auth/password/verification-codes", body);
     return res.data;
 }
 
 // 비밀번호 재설정 인증코드 확인
 export const postPasswordVerifyCodeCheck = async (body: VerifyCheckRequest) => {
-    const res = await axiosInstance.post<VerifyCheckResponse>("/api/auth/password/verification-codes/verify", body);
+    const res = await axiosInstance.post<VerifyCheckResponse>("/api/v1/auth/password/verification-codes/verify", body);
     return res.data;
 }
 
 // 이메일 인증코드 발송
 export const postEmailVerifyCodeSend = async (body: VerifyRequest) => {
-    const res = await axiosInstance.post<VerifyResponse>("/api/auth/email/verification-codes", body);
+    const res = await axiosInstance.post<VerifyResponse>("/api/v1/auth/email/verification-codes", body);
     return res.data;
 }
 
 // 이메일 인증코드 확인
 export const postEmailVerifyCodeCheck = async (body: VerifyCheckRequest) => {
-    const res = await axiosInstance.post<VerifyCheckResponse>("/api/auth/email/verification-codes/verify", body);
+    const res = await axiosInstance.post<VerifyCheckResponse>("/api/v1/auth/email/verification-codes/verify", body);
     return res.data;
 }
 
 // 이메일 회원가입
 export const postEmailSignup = async (body: EmailSignupRequest) => {
-    const res = await axiosInstance.post<EmailSignupResponse>("/api/auth/signup/email", body);
+    const res = await axiosInstance.post<EmailSignupResponse>("/api/v1/auth/signup/email", body);
     return res.data;
 }
 
 // 비밀번호 재설정
 export const patchResetPassword = async (body: ResetPasswordRequest) => {
-    const res = await axiosInstance.patch<ResetPasswordResponse>("/api/members/password/reset", body);
+    const res = await axiosInstance.patch<ResetPasswordResponse>("/api/v1/members/password/reset", body);
     return res.data;
 }

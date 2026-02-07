@@ -10,14 +10,14 @@ import { axiosInstance } from "../core/axiosInstance";
 
 // 닉네임 중복 확인
 export const postNicknameCheck = async (body: NicknameCheckRequest) => {
-    const res = await axiosInstance.post<NicknameCheckResponse>("/api/members/nickname/check", body);
+    const res = await axiosInstance.post<NicknameCheckResponse>("/api/v1/members/nickname/check", body);
     return res.data;
 }
 
 // 회원 탈퇴
 export const patchWithdraw = async (token: string) => {
     const res = await axiosInstance.patch<WithdrawResponse>(
-        "/api/members/withdraw",
+        "/api/v1/members/withdraw",
         null,
         {
             headers: {
@@ -35,7 +35,7 @@ export const patchEditProfile = async (body: EditProfileRequest) => {
     if (body.nickName !== undefined) form.append("nickName", body.nickName);
 
     const res = await axiosInstance.patch<EditProfileResponse>(
-        "/api/members/profile",
+        "/api/v1/members/profile",
         form,
         {
             headers: {
@@ -48,6 +48,6 @@ export const patchEditProfile = async (body: EditProfileRequest) => {
 
 // 내 정보 보기
 export const getMyInfo = async () => {
-    const res = await axiosInstance.get<MyInfoResponse>("/api/members/me");
+    const res = await axiosInstance.get<MyInfoResponse>("/api/v1/members/me");
     return res.data;
 }

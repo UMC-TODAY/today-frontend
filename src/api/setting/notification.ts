@@ -8,7 +8,7 @@ import { axiosInstance } from "../core/axiosInstance"
 // 알림 설정 보기
 export const getNotificationPreference = async (token: string) => {
     const res = await axiosInstance.get<NotificationPreferenceResponse>(
-        "/api/preferences/members/notifications",
+        "/api/v1/preferences/members/notifications",
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -21,7 +21,7 @@ export const getNotificationPreference = async (token: string) => {
 // 알림 설정 수정
 export const patchEditNotification = async (token: string, body: EditNotificationRequest) => {
     const res = await axiosInstance.patch<EditNotificationResponse>(
-        "/api/preferences/members/notifications",
+        "/api/v1/preferences/members/notifications",
         null,
         {
             headers: { Authorization: `Bearer ${token}` },
