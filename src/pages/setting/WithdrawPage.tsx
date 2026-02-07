@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
@@ -7,6 +7,12 @@ import { getMyInfo, patchWithdraw } from "../../api/setting/profile";
 
 export default function WithdrawPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const fromPanel = useMemo(() => {
+    const qs = new URLSearchParams(location.search);
+    return qs.get("from") || "profile";
+  }, [location.search]);
 
   // 아이디(이메일) 표시용
   const { data: me } = useQuery({
@@ -71,7 +77,7 @@ export default function WithdrawPage() {
   };
 
   function handleBack() {
-    navigate(-1);
+    navigate(`/dashboard?settings=${fromPanel}`, { replace: true });
   }
 
   async function handleWithdraw() {

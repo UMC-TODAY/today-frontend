@@ -134,7 +134,11 @@ function isEditSuccess(
   return typeof (res as any)?.isSuccess === "boolean";
 }
 
-export default function PrivacyAnalyticsSettingPanel() {
+export default function PrivacyAnalyticsSettingPanel({
+  goWithdraw
+}: {
+  goWithdraw: () => void;
+}) {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("accessToken") || "";
@@ -211,7 +215,7 @@ export default function PrivacyAnalyticsSettingPanel() {
   const isLoading = isFetching || editPrivacyMutation.isPending;
 
   function onClickWithdraw() {
-    navigate("/setting/withdraw");
+    goWithdraw();
   }
 
   function onClickSave() {

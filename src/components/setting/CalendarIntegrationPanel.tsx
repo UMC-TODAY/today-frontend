@@ -5,47 +5,60 @@ import ICloudIcon from "../icons/ICloudIcon";
 import CSVIcon from "../icons/CSVIcon";
 import NotionIcon from "../icons/NotionIcon";
 import LickIcon from "../icons/LinkIcon";
+import { useMutation } from "@tanstack/react-query";
+import { postGoogleIntegration, postNotionIntegration } from "../../api/setting/calendar";
 
-type IntegrationCategory = "GOOGLE" | "ICLOUD" | "CSV" | "NOTION";
-
-type IntegrationItem = {
-  key: IntegrationCategory;
-  title: string;
-  Icon: React.ComponentType;
-  to: string;
-};
-
-const Integrations: IntegrationItem[] = [
-  {
-    key: "GOOGLE",
-    title: "구글 캘린더",
-    Icon: GoogleCalendarIcon,
-    to: "/setting/calendar/google",
-  },
-  {
-    key: "ICLOUD",
-    title: "iCloud 캘린더",
-    Icon: ICloudIcon,
-    to: "/setting/calendar/icloud",
-  },
-  { key: "CSV", 
-    title: "CSV 파일", 
-    Icon: CSVIcon, 
-    to: "/setting/calendar/csv" 
-  },
-  {
-    key: "NOTION",
-    title: "Notion",
-    Icon: NotionIcon,
-    to: "/setting/calendar/notion",
-  },
-];
-
-export default function CalendarIntegrationPanel() {
+export default function CalendarIntegrationPanel({
+  goWithdraw
+}: {
+  goWithdraw: () => void;
+}) {
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("accessToken") || "";
+
+  const btnStyle: React.CSSProperties = {
+    height: "52px",
+    borderRadius: "6px",
+    border: "1px solid #E6E7E9",
+    background: "#FFFFFF",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 18px",
+    cursor: "pointer",
+  };
+
+  const notionMutation = useMutation({
+    mutationFn: () => postNotionIntegration(token),
+    onSuccess: (result) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      window.location.href = (result as any).data.authorizeUrl;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      console.error("notion 연동 인가 URL 발급 에러:", error?.response?.data);
+    },
+  });
+
+  const googleMutation = useMutation({
+    mutationFn: () => postGoogleIntegration(token),
+    onSuccess: (result) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      window.location.href = (result as any).data.authorizeUrl;
+    }
+  })
+
+  function onClickNotion() {
+    notionMutation.mutate();
+  }
+
+  function onClickGoogle() {
+    googleMutation.mutate();
+  }
+
   function onClickWithdraw() {
-    navigate("/setting/withdraw");
+    goWithdraw();
   }
 
   return (
@@ -60,6 +73,7 @@ export default function CalendarIntegrationPanel() {
         캘린더 연동 관리
       </div>
 
+      {/* 연동 버튼들 */}
       <div
         style={{ position: "relative", height: "480px", overflow: "hidden" }}
       >
@@ -72,41 +86,125 @@ export default function CalendarIntegrationPanel() {
               width: "280px",
             }}
           >
-            {Integrations.map(({ key, title, Icon, to }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => navigate(to)}
-                style={{
-                  height: "52px",
-                  borderRadius: "6px",
-                  border: "1px solid #E6E7E9",
-                  background: "#FFFFFF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "0 18px",
-                  cursor: "pointer",
-                }}
+            {/* 구글 */}
+            <button
+              type="button"
+              onClick={onClickGoogle}
+              style={btnStyle}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
               >
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+                  style={{
+                    width: "22px",
+                    height: "22px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
-                  <div
-                    style={{
-                      width: "22px",
-                      height: "22px",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Icon />
-                  </div>
-                  <div style={{ ...getTextStyle(450, 14, "#525050"), marginTop: "2px" }}>{title}</div>
+                  <GoogleCalendarIcon />
                 </div>
-                <LickIcon />
-              </button>
-            ))}
+                <div
+                  style={{
+                    ...getTextStyle(450, 14, "#525050"),
+                    marginTop: "2px",
+                  }}
+                >
+                  구글 캘린더
+                </div>
+              </div>
+              <LickIcon />
+            </button>
+
+            {/* iCloud */}
+            <button
+              type="button"
+              onClick={() => navigate("/setting/calendar/iCloud")}
+              style={btnStyle}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <div
+                  style={{
+                    width: "22px",
+                    height: "22px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <ICloudIcon />
+                </div>
+                <div
+                  style={{
+                    ...getTextStyle(450, 14, "#525050"),
+                    marginTop: "2px",
+                  }}
+                >
+                  iCloud 캘린더
+                </div>
+              </div>
+              <LickIcon />
+            </button>
+
+            {/* CSV */}
+            <button
+              type="button"
+              onClick={() => navigate("/setting/calendar/csv")}
+              style={btnStyle}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <div
+                  style={{
+                    width: "22px",
+                    height: "22px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <CSVIcon />
+                </div>
+                <div
+                  style={{
+                    ...getTextStyle(450, 14, "#525050"),
+                    marginTop: "2px",
+                  }}
+                >
+                  CSV 파일
+                </div>
+              </div>
+              <LickIcon />
+            </button>
+
+            {/* Notion */}
+            <button type="button" onClick={onClickNotion} style={btnStyle}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <div
+                  style={{
+                    width: "22px",
+                    height: "22px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <NotionIcon />
+                </div>
+                <div
+                  style={{
+                    ...getTextStyle(450, 14, "#525050"),
+                    marginTop: "2px",
+                  }}
+                >
+                  Notion
+                </div>
+              </div>
+              <LickIcon />
+            </button>
           </div>
         </div>
       </div>
@@ -143,23 +241,6 @@ export default function CalendarIntegrationPanel() {
           }}
         >
           회원탈퇴
-        </button>
-
-        <button
-          type="button"
-          disabled
-          style={{
-            height: "38px",
-            width: "100px",
-            borderRadius: "12px",
-            background: "#5C92FF",
-            color: "#FFFFFF",
-            fontWeight: 600,
-            fontSize: "14px",
-            cursor: "pointer",
-          }}
-        >
-          저장
         </button>
       </div>
     </div>

@@ -71,7 +71,11 @@ function isEditSuccess(
   return typeof (res as any)?.isSuccess === "boolean";
 }
 
-export default function NotificationSettingPanel() {
+export default function NotificationSettingPanel({
+  goWithdraw,
+}: {
+  goWithdraw: () => void;
+}) {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("accessToken") || "";
@@ -154,7 +158,7 @@ export default function NotificationSettingPanel() {
   }
 
   function onClickWithdraw() {
-    navigate("/setting/withdraw");
+    goWithdraw();
   }
 
   function onClickSave() {
