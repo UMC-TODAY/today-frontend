@@ -8,9 +8,13 @@ import TodolistIcon from '../icons/TodolistIcon';
 import CommunityIcon from '../icons/CommunityIcon';
 import AnalyticsIcon from '../icons/AnalyticsIcon';
 import { getMyInfo } from '../../api/setting/profile';
+import { useState } from 'react';
+import SettingModal from '../setting/SettingModal';
 
 export default function Sidebar() {
   const navigate = useNavigate();
+
+  const [isOpen, setIsOpen] = useState(false);
 
   // 사용자 정보 조회
   const { data: userInfo } = useQuery({
@@ -151,7 +155,7 @@ export default function Sidebar() {
 
         {/* 유저 정보 버튼 */}
         <button
-          onClick={() => {/* TODO: 프로필 설정 모달 열기 */}}
+          onClick={() => setIsOpen(true)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -209,6 +213,11 @@ export default function Sidebar() {
           {/* 화살표 */}
           <ChevronRight size={18} color="#9CA3AF" />
         </button>
+
+        <SettingModal 
+          isOpen={isOpen} 
+          onClose={() => setIsOpen(false)} 
+        />
       </div>
     </aside>
   );
