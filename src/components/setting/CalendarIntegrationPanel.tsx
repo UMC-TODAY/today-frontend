@@ -244,21 +244,23 @@ export default function CalendarIntegrationPanel({
               </div>
               <LickIcon />
             </button>
-
-            {/* CSV 업로드 메시지 */}
-            {CSVMsg && (
-              <div
-                style={{
-                  marginTop: "6px",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  color: CSVMsg.includes("완료") ? "#0066FF" : "#D93025",
-                }}
-              >
-                {CSVMsg}
-              </div>
-            )}
           </div>
+
+          {/* CSV 업로드 메시지 */}
+          {CSVMsg && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: "70px",
+                fontSize: "13px",
+                fontWeight: 600,
+                color: CSVMsg.includes("완료") ? "#0066FF" : "#D93025",
+              }}
+            >
+              {CSVMsg}
+            </div>
+          )}
         </div>
       </div>
 
