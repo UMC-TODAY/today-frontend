@@ -12,6 +12,7 @@ import {
   getTodoCompletion,
   getTogetherDays,
   getWeeklyTodo,
+  postCsvUpload,
   postSchedule,
   updateSchedule,
   updateScheduleStatus,
@@ -152,5 +153,22 @@ export const useGetTogetherDays = () => {
     queryKey: ["togetherDays"],
     queryFn: getTogetherDays,
     select: (response) => response.data,
+  });
+};
+
+// CSV 업로드 Mutation 훅
+export const useCsvUpload = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: postCsvUpload,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      // queryClient.invalidateQueries({ queryKey: ["todos"] });
+      alert("일정이 성공적으로 업로드되었습니다.");
+    },
+    onError: (error) => {
+      console.error("CSV 업로드 실패:", error);
+      alert("파일 업로드 중 오류가 발생했습니다.");
+    },
   });
 };

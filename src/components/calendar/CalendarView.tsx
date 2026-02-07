@@ -4,8 +4,10 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import { format } from "date-fns";
 import { useGetMonthlySchedule } from "../../hooks/queries/useSchedule";
 import TodoModal from "../goalTracker/TodoModal";
+import { useCsvUpload } from "../../hooks/queries/useSchedule";
 
 export default function CalendarView() {
+  const { mutate: uploadCsv } = useCsvUpload();
   const [activeDate, setActiveDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const calendarRef = useRef<FullCalendar>(null);
@@ -14,6 +16,21 @@ export default function CalendarView() {
     month: activeDate.getMonth() + 1,
     filter: "ALL",
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadCsv(file);
+    }
+    e.target.value = "";
+  };
+
+  const onSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.value === "CSV파일 업로드") {
+      document.getElementById("csv-upload-input")?.click();
+    }
+  };
+
   const events = response?.data?.events || [];
   const calendarEvents = events.map((ev) => ({
     id: ev.id.toString(),
@@ -45,6 +62,13 @@ export default function CalendarView() {
   };
   return (
     <div className="w-full h-full flex flex-col p-5 bg-white rounded-2xl shadow-sm border border-gray-100 relative">
+      <input
+        id="csv-upload-input"
+        type="file"
+        accept=".csv"
+        className="hidden"
+        onChange={handleFileChange}
+      />
       <div className="flex justify-between items-center mb-4 flex-shrink-0">
         <div className="flex items-center gap-4">
           <button
@@ -64,11 +88,14 @@ export default function CalendarView() {
           </button>
         </div>
         <div className="flex gap-2">
-          <select className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none">
+          <select
+            onChange={onSelectChange}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none"
+          >
             <option>모두 보기</option>
             <option>Google 캘린더</option>
             <option>iCloud 캘린더</option>
-            <option>CSV파일 업로드</option>
+            <option value="CSV파일 업로드">CSV파일 업로드</option>
             <option>Notion</option>
           </select>
           <button
