@@ -9,6 +9,8 @@ import { postICloudIntegration } from "../../api/setting/calendar";
 export default function CalendarConnectPage() {
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("accessToken") || "";
+
   const [link, setLink] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export default function CalendarConnectPage() {
   ];
 
   const iCloudMutation = useMutation({
-    mutationFn: () => postICloudIntegration({ icsUrl: link.trim() }),
+    mutationFn: () => postICloudIntegration(token, { icsUrl: link.trim() }),
     onSuccess: (result) => {
       if (result.isSuccess) {
         setErrorMsg(null);
