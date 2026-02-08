@@ -47,7 +47,6 @@ export default function ProfileSettingPanel({
     setNewImageUrl(null);
     setNameCheckStatus("idle");
     setNameCheckMsg(null);
-    setSaveMsg(null);
   }, [me?.isSuccess, me?.data.nickname, me?.data.email, me?.data.profileImage]);
 
   // 닉네임 중복 확인 버튼 클릭 가능 여부
@@ -101,6 +100,10 @@ export default function ProfileSettingPanel({
       // sidebar에 있는 myInfo 쿼리 갱신
       queryClient.invalidateQueries({ queryKey: ["myInfo"] });
       setSaveMsg("저장되었습니다.");
+
+      setTimeout(() => {
+        setSaveMsg(null);
+      }, 4000);
 
       // 변경 플래그 리셋
       setSelectedFile(null);
@@ -403,7 +406,7 @@ export default function ProfileSettingPanel({
           style={{
             textAlign: "right",
             marginRight: "30px",
-            marginTop: "35px",
+            marginTop: "38px",
             fontSize: "13px",
             fontWeight: 600,
             color: "#0066FF",

@@ -1,7 +1,6 @@
-// src/components/setting/NotificationSettingPanel.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import {
   getNotificationPreference,
@@ -78,6 +77,7 @@ export default function NotificationSettingPanel({
   goWithdraw: () => void;
 }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const token = getAccessToken() || "";
   const [dto, setDto] = useState<EditNotificationRequest>({
@@ -112,7 +112,6 @@ export default function NotificationSettingPanel({
         kakaoAlert: data.data.kakaoAlert,
         emailAlert: data.data.emailAlert,
       });
-      setSaveMsg(null);
       setErrorMsg(null);
     } else {
       setErrorMsg("알림 설정을 불러오지 못했습니다.");
@@ -140,6 +139,14 @@ export default function NotificationSettingPanel({
       if (isEditSuccess(result) && result.isSuccess) {
         setErrorMsg(null);
         setSaveMsg("저장되었습니다.");
+
+        setTimeout(() => {
+          setSaveMsg(null);
+        }, 4000);
+
+        queryClient.invalidateQueries({
+          queryKey: ["me", "notificationPreference", token],
+        });
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,10 +237,10 @@ export default function NotificationSettingPanel({
         {(saveMsg || errorMsg) && (
           <div
             style={{
-              marginTop: 18,
-              marginRight: 30,
+              marginTop: "210px",
+              marginRight: "30px",
               textAlign: "right",
-              fontSize: 13,
+              fontSize: "13px",
               fontWeight: 600,
               color: saveMsg ? "#0066FF" : "#D93025",
               whiteSpace: "pre-line",
