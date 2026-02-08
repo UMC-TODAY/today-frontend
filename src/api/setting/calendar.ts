@@ -3,7 +3,8 @@ import {
     type ICloudIntegrationRequest,
     type NotionIntegrationResponse,
     type NotionCallbackResponse,
-    type GoogleIntegrationResponse
+    type GoogleIntegrationResponse,
+    type IntegrationStatusResponse,
 } from "../../types/setting/calendar";
 import { axiosInstance } from "../core/axiosInstance";
 
@@ -92,5 +93,11 @@ export const postCsvUpload = async (token: string, file: File) => {
             },
         },
     );
+    return res.data;
+}
+
+// 외부 연동 상태 조회
+export const getIntegrationStatus = async () => {
+    const res = await axiosInstance.get<IntegrationStatusResponse>("/api/v1/preferences/integrations/status");
     return res.data;
 }
