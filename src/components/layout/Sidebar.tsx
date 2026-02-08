@@ -82,7 +82,7 @@ export default function Sidebar() {
         onClick={() => navigate("/dashboard")}
         style={{
           padding: "0 16px 30px",
-          fontSize: "20px",
+          fontSize: "24px",
           fontWeight: "bold",
           color: "#000",
           display: "flex",
@@ -112,7 +112,7 @@ export default function Sidebar() {
               gap: "10px",
               padding: "12px 16px",
               textDecoration: "none",
-              color: isActive ? "#6987D2" : "#8F92A5",
+              color: isActive ? "#6d86c6ff" : "#acaeb7ff",
               background: "transparent",
               fontFamily: "Pretendard",
               fontWeight: 350,
@@ -159,69 +159,27 @@ export default function Sidebar() {
           gap: "12px",
         }}
       >
-        {/* 요금제 업그레이드 카드 */}
-        <div
-          style={{
-            backgroundColor: "#F8F9FC",
-            borderRadius: "12px",
-            padding: "16px",
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "Pretendard",
-              fontSize: "12px",
-              color: "#6B7280",
-              margin: "0 0 4px 0",
-              textAlign: "left",
-            }}
-          >
-            더 높은 수준에서 더 빠르게
-          </p>
-          <p
-            style={{
-              fontFamily: "Pretendard",
-              fontSize: "12px",
-              color: "#6B7280",
-              margin: "0 0 12px 0",
-              textAlign: "left",
-            }}
-          >
-            더 많은 서비스를 이용해보세요.
-          </p>
-          <button
-            style={{
-              width: "100%",
-              padding: "10px 16px",
-              backgroundColor: "#6987D2",
-              color: "#FFFFFF",
-              border: "none",
-              borderRadius: "8px",
-              fontFamily: "Pretendard",
-              fontWeight: 500,
-              fontSize: "14px",
-              cursor: "pointer",
-            }}
-            onClick={() => {
-              /* TODO: 결제 페이지 연결 */
-            }}
-          >
-            결제하기
-          </button>
-        </div>
+      
 
         {/* 유저 정보 버튼 */}
         <button
           onClick={() => setIsOpen(true)}
           style={{
+            marginTop: "auto",
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            padding: "8px 0",
+            padding: "0px 0",
             background: "transparent",
             border: "none",
             cursor: "pointer",
-            width: "100%",
+            width: "220px",
+            height: "60px",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "#E5E7EB",
+            borderRadius: "16px",
+            boxSizing: "border-box",
           }}
         >
           {/* 프로필 이미지 */}
@@ -239,10 +197,11 @@ export default function Sidebar() {
           ) : (
             <div
               style={{
-                width: "36px",
-                height: "36px",
+                width: "42px",
+                height: "42px",
+                marginLeft: "8px",
                 borderRadius: "50%",
-                backgroundColor: "#DDD6FE", // 연보라
+                backgroundColor: "#6d86c6ff", 
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -255,8 +214,8 @@ export default function Sidebar() {
             <div
               style={{
                 fontFamily: "Pretendard",
-                fontWeight: 500,
-                fontSize: "14px",
+                fontWeight: 400,
+                fontSize: "13px",
                 color: user?.nickname ? "#111827" : "#9CA3AF",
               }}
             >
@@ -265,11 +224,12 @@ export default function Sidebar() {
             <div
               style={{
                 fontFamily: "Pretendard",
-                fontSize: "12px",
-                color: "#6B7280",
+                fontWeight: 400,
+                fontSize: "13px",
+                color: user?.email ? "#111827" : "#9CA3AF",
               }}
             >
-              {user?.email || ""}
+              {user?.email || "이메일 정보 없음"}
             </div>
           </div>
 
