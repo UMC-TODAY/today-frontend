@@ -3,7 +3,7 @@ import { setupInterceptors } from "./interceptors.ts";
 
 export const axiosInstance = setupInterceptors(
   axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: "https://today-app.co.kr",
     timeout: 5000,
     headers: {
       "Content-Type": "application/json",
