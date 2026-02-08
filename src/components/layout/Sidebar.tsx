@@ -67,7 +67,7 @@ export default function Sidebar() {
   return (
     <aside
       style={{
-        width: "240px",
+        width: "280px",
         minWidth: "180px",
         background: "#fff",
         height: "100vh",
@@ -173,7 +173,7 @@ export default function Sidebar() {
             background: "transparent",
             border: "none",
             cursor: "pointer",
-            width: "220px",
+            width: "260px",
             height: "60px",
             borderStyle: "solid",
             borderWidth: "1px",
