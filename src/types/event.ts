@@ -110,6 +110,14 @@ export interface StatItem {
   rankingDirection: string;
 }
 
+// 내 정보 보기
+export interface MyInfoResponse {
+  memberId: number;
+  nickname: string;
+  profileImage: string;
+  email: string;
+}
+
 // 2. post
 // 일정/할 일 등록
 // 1. 공통으로 들어가는 필드

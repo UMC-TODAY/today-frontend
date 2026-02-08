@@ -8,6 +8,7 @@ import {
   deleteSchedulesBulk,
   getBadgeStatus,
   getMonthlySchedule,
+  getMyInfo,
   getSchedule,
   getScheduleCompletion,
   getTodoCompletion,
@@ -179,5 +180,13 @@ export const useBadgeStatus = () => {
   return useQuery({
     queryKey: ["badgeStats"],
     queryFn: getBadgeStatus,
+  });
+};
+
+// 내 정보 조회 훅
+export const useMyInfo = () => {
+  return useQuery({
+    queryKey: ["myInfo"],
+    queryFn: getMyInfo,
   });
 };
