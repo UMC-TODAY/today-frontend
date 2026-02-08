@@ -12,7 +12,7 @@ import {
   useGetWeeklyTodo,
   useUpdateScheduleStatus,
 } from "../../hooks/queries/useSchedule";
-import TodoModal from "../goalTracker/TodoModal";
+import TodoEditModal from "../Modals/TodoEditModal";
 
 export default function WeeklyTodoView() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -63,7 +63,7 @@ export default function WeeklyTodoView() {
           </button>
         </div>
       </div>
-      {isModalOpen && <TodoModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && <TodoEditModal onClose={() => setIsModalOpen(false)} />}
       <div className="flex-grow grid grid-cols-7 h-full border-t border-gray-100 min-h-0">
         {weekDays.map((day, index) => {
           const dateKey = format(day, "yyyy-MM-dd");

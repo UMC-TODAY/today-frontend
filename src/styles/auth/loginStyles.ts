@@ -22,8 +22,12 @@ export const loginStyles = {
     padding: "34px 45px 26px",
   } as const,
 
+  title: {
+    display: "flex", 
+    justifyContent: "center",
+  } as const,
+
   subtitle: {
-    fontFamily: "Pretendard, sans-serif",
     fontSize: "14px",
     color: "#000000",
     textAlign: "center" as const,
@@ -69,7 +73,6 @@ export const loginStyles = {
   } as const,
 
   input: {
-    fontFamily: "Pretendard, sans-serif",
     width: "100%",
     height: "42px",
     borderRadius: "10px",
@@ -115,7 +118,6 @@ export const loginStyles = {
   },
 
   link: {
-    fontFamily: "Pretendard, sans-serif",
     fontSize: "11px",
     color: "#4D4D4D",
     fontWeight: 400,
@@ -123,7 +125,6 @@ export const loginStyles = {
   },
 
   submitBase: {
-    fontFamily: "Pretendard, sans-serif",
     width: "100%",
     height: "44px",
     borderRadius: "12px",
@@ -134,6 +135,8 @@ export const loginStyles = {
   } as const,
 
   error: {
+    display: "flex",
+    justifyContent: "center",
     marginTop: "10px",
     fontSize: "13px",
     color: "#d93025",
@@ -191,7 +194,6 @@ export const loginStyles = {
   } as const,
 
   bottomLink: {
-    fontFamily: "Pretendard, sans-serif",
     display: "block",
     textAlign: "center" as const,
     marginTop: "10px",
@@ -203,7 +205,6 @@ export const loginStyles = {
 };
 
 export const getTextStyle = (weight: number, size: number, color: string) => ({
-  fontFamily: "Pretendard, sans-serif",
   fontWeight: weight,
   lineHeight: "100%",
   fontSize: `${size}px`,

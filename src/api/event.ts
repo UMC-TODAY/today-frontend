@@ -121,3 +121,17 @@ export const getTogetherDays = async () => {
   );
   return response.data;
 };
+
+// CSV 업로드 API 함수
+export const postCsvUpload = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await axiosInstance.post(
+    "/api/v1/testing/calendar/csv",
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
+  return response.data;
+};

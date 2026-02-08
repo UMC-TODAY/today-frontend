@@ -402,13 +402,11 @@ export default function CommunityPage() {
   const hasUnreadNotifications = notificationsData?.hasUnread ?? false;
 
   return (
-    <div className="min-h-screen bg-white flex justify-center">
-      <div className="w-full max-w-[1440px] min-h-screen bg-gray-100 rounded-lg p-6">
-        <div className="flex gap-6">
-          {/* Left Card - 할일 찾기 */}
+    <>
+      <div className="flex gap-4 h-full overflow-hidden">
+        {/* Left Card - 할일 찾기 */}
           <div
-            className="bg-white rounded-2xl shadow-sm border p-6 overflow-y-auto scrollbar-hide"
-            style={{ width: '860px', height: '1006px' }}
+            className="bg-white rounded-2xl shadow-sm border p-6 overflow-y-auto scrollbar-hide flex-1 min-w-0"
           >
             {/* Header */}
             <h1 className="text-left mb-4 text-[#0F1724]" style={{ fontFamily: 'Pretendard', fontSize: '24px', fontWeight: 500, lineHeight: '100%', letterSpacing: '0%' }}>할일 찾기</h1>
@@ -637,9 +635,9 @@ export default function CommunityPage() {
           </div>
 
           {/* Right Card - 오늘 피드 */}
-          <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border overflow-hidden flex flex-col relative" style={{ width: '480px', height: '1006px' }}>
+          <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border overflow-hidden flex flex-col relative" style={{ width: '480px' }}>
             {/* Header */}
-            <div className="bg-white border-b border-gray-200">
+            <div className="bg-white border-b border-gray-200 flex-shrink-0">
               {showPostModal ? (
                 /* 게시글 작성 모드 헤더 */
                 <div className="flex items-center justify-between p-5">
@@ -723,9 +721,166 @@ export default function CommunityPage() {
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto relative">
-              {/* 게시글 작성 모드 */}
-              {showPostModal ? (
+            <div className="flex-1 min-h-0 overflow-y-auto relative">
+              {/* 게시글 상세 뷰 (카드 내부) */}
+              {selectedPost && !showPostModal ? (
+                <div className="flex flex-col h-full">
+                  {/* 상세 헤더 */}
+                  <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100 flex-shrink-0">
+                    <button onClick={() => setSelectedPost(null)} className="text-gray-500 hover:text-gray-700">
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <span className="text-base font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>게시글</span>
+                  </div>
+
+                  {/* 게시글 내용 */}
+                  <div className="flex-1 overflow-y-auto p-5">
+                    {/* 원본 게시글 */}
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          {selectedPost.author?.profileImage ? (
+                            <img
+                              src={selectedPost.author.profileImage}
+                              alt={selectedPost.author?.nickname || "사용자"}
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                          )}
+                          <div>
+                            <p className="text-sm font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>
+                              {selectedPost.author?.nickname || "익명"}
+                            </p>
+                            <p className="text-xs text-gray-400" style={{ fontFamily: 'Pretendard' }}>
+                              {formatTime(selectedPost.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowMoreMenu(showMoreMenu === selectedPost.postId ? null : selectedPost.postId)}
+                            className="text-gray-300 hover:text-gray-500"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                          {showMoreMenu === selectedPost.postId && (
+                            <div className="absolute right-0 top-6 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10 min-w-[150px]">
+                              <button
+                                onClick={() => handleReport(selectedPost.postId)}
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                                style={{ fontFamily: 'Pretendard' }}
+                              >
+                                신고
+                              </button>
+                              <button
+                                onClick={() => handleBlock(selectedPost.author.id)}
+                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                                style={{ fontFamily: 'Pretendard' }}
+                              >
+                                이 친구의 모든 글 차단
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-[#0F1724] mb-3 whitespace-pre-line" style={{ fontFamily: 'Pretendard', fontSize: '14px', lineHeight: '1.6' }}>
+                        {selectedPost.content}
+                      </p>
+
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => handleLike(selectedPost.postId, selectedPost.isLiked)}
+                          className={`flex items-center gap-1 ${selectedPost.isLiked ? "text-red-500" : "text-gray-400 hover:text-red-500"}`}
+                        >
+                          <Heart className={`w-4 h-4 ${selectedPost.isLiked ? "fill-current" : ""}`} />
+                          <span className="text-xs font-medium">{selectedPost.likeCount}</span>
+                        </button>
+                        <span className="flex items-center gap-1 text-gray-400">
+                          <MessageCircle className="w-4 h-4" />
+                          <span className="text-xs font-medium">{selectedPost.commentCount}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* 댓글 목록 */}
+                    <div className="space-y-4">
+                      {isCommentsLoading ? (
+                        <div className="flex items-center justify-center py-6">
+                          <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                        </div>
+                      ) : commentsData?.comments && commentsData.comments.length > 0 ? (
+                        commentsData.comments.map((comment: Comment) => (
+                          <div key={comment.commentId} className="border-t border-gray-100 pt-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                {comment.author?.profileImageUrl ? (
+                                  <img
+                                    src={comment.author.profileImageUrl}
+                                    alt={comment.author?.nickname || "사용자"}
+                                    className="w-7 h-7 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-7 h-7 bg-gray-200 rounded-full"></div>
+                                )}
+                                <div>
+                                  <p className="text-sm font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>
+                                    {comment.author?.nickname || "익명"}
+                                  </p>
+                                  <p className="text-xs text-gray-400" style={{ fontFamily: 'Pretendard' }}>
+                                    {formatTime(comment.createdAt)}
+                                  </p>
+                                </div>
+                              </div>
+                              <button className="text-gray-300 hover:text-gray-500">
+                                <MoreVertical className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <p className="text-[#0F1724] text-sm mb-2" style={{ fontFamily: 'Pretendard', lineHeight: '1.5' }}>
+                              {comment.content}
+                            </p>
+                            <button
+                              onClick={() => handleCommentLike(comment.commentId, comment.isLiked ?? false)}
+                              className={`flex items-center gap-1 ${comment.isLiked ? "text-red-500" : "text-gray-400 hover:text-red-500"}`}
+                            >
+                              <Heart className={`w-3.5 h-3.5 ${comment.isLiked ? "fill-current" : ""}`} />
+                              <span className="text-xs">{comment.likeCount}</span>
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-6 text-gray-400 text-sm" style={{ fontFamily: 'Pretendard' }}>
+                          아직 댓글이 없습니다.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 댓글 입력 */}
+                  <div className="border-t border-gray-100 p-4 flex-shrink-0">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="댓글 작성하기"
+                        value={newCommentContent}
+                        onChange={(e) => setNewCommentContent(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleCreateComment()}
+                        className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-blue-300"
+                        style={{ fontFamily: 'Pretendard' }}
+                      />
+                      <button
+                        onClick={handleCreateComment}
+                        disabled={!newCommentContent.trim()}
+                        className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                      >
+                        <Send className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : showPostModal ? (
+                /* 게시글 작성 모드 */
                 <div className="p-5 h-full">
                   <textarea
                     placeholder="최소 5자 이상 입력해주세요. 연락처 교환 등 부적절한 글은 삭제될 수 있으며, 등록한 글은 수정과 삭제가 어려우니 참고해주세요."
@@ -1076,183 +1231,20 @@ export default function CommunityPage() {
             </div>
 
             {/* 글쓰기 버튼 - 플로팅 */}
-            {!showPostModal && (activeTab === "recent" || activeTab === "activity") && (
+            {!showPostModal && !selectedPost && (activeTab === "recent" || activeTab === "activity") && (
               <button
                 onClick={() => setShowPostModal(true)}
                 className="absolute bottom-6 right-6 px-5 py-2.5 bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition shadow-lg flex items-center gap-2 z-10"
                 style={{ fontFamily: 'Pretendard', borderRadius: '8px' }}
               >
+                <Pencil className="w-4 h-4" />
                 글쓰기
               </button>
             )}
           </div>
         </div>
-      </div>
 
-      {/* 게시글 상세 모달 */}
-      {selectedPost && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div
-            className="bg-white rounded-2xl shadow-xl w-full max-w-[500px] max-h-[90vh] overflow-hidden flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* 헤더 */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <button onClick={() => setSelectedPost(null)} className="text-gray-500 hover:text-gray-700">
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <h3 className="text-base font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>게시글</h3>
-              <div className="w-5"></div>
-            </div>
-
-            {/* 게시글 내용 */}
-            <div className="flex-1 overflow-y-auto p-5">
-              {/* 원본 게시글 */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    {selectedPost.author?.profileImage ? (
-                      <img
-                        src={selectedPost.author.profileImage}
-                        alt={selectedPost.author?.nickname || "사용자"}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>
-                        {selectedPost.author?.nickname || "익명"}
-                      </p>
-                      <p className="text-xs text-gray-400" style={{ fontFamily: 'Pretendard' }}>
-                        {formatTime(selectedPost.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowMoreMenu(showMoreMenu === selectedPost.postId ? null : selectedPost.postId)}
-                      className="text-gray-300 hover:text-gray-500"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
-                    {showMoreMenu === selectedPost.postId && (
-                      <div className="absolute right-0 top-6 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10 min-w-[150px]">
-                        <button
-                          onClick={() => handleReport(selectedPost.postId)}
-                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-                          style={{ fontFamily: 'Pretendard' }}
-                        >
-                          신고
-                        </button>
-                        <button
-                          onClick={() => handleBlock(selectedPost.author.id)}
-                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-                          style={{ fontFamily: 'Pretendard' }}
-                        >
-                          이 친구의 모든 글 차단
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <p className="text-[#0F1724] mb-3 whitespace-pre-line" style={{ fontFamily: 'Pretendard', fontSize: '14px', lineHeight: '1.6' }}>
-                  {selectedPost.content}
-                </p>
-
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => handleLike(selectedPost.postId, selectedPost.isLiked)}
-                    className={`flex items-center gap-1 ${selectedPost.isLiked ? "text-red-500" : "text-gray-400 hover:text-red-500"}`}
-                  >
-                    <Heart className={`w-4 h-4 ${selectedPost.isLiked ? "fill-current" : ""}`} />
-                    <span className="text-xs font-medium">{selectedPost.likeCount}</span>
-                  </button>
-                  <span className="flex items-center gap-1 text-gray-400">
-                    <MessageCircle className="w-4 h-4" />
-                    <span className="text-xs font-medium">{selectedPost.commentCount}</span>
-                  </span>
-                </div>
-              </div>
-
-              {/* 댓글 목록 */}
-              <div className="space-y-4">
-                {isCommentsLoading ? (
-                  <div className="flex items-center justify-center py-6">
-                    <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-                  </div>
-                ) : commentsData?.comments && commentsData.comments.length > 0 ? (
-                  commentsData.comments.map((comment: Comment) => (
-                    <div key={comment.commentId} className="border-t border-gray-100 pt-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          {comment.author?.profileImageUrl ? (
-                            <img
-                              src={comment.author.profileImageUrl}
-                              alt={comment.author?.nickname || "사용자"}
-                              className="w-7 h-7 rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-7 h-7 bg-gray-200 rounded-full"></div>
-                          )}
-                          <div>
-                            <p className="text-sm font-medium text-[#0F1724]" style={{ fontFamily: 'Pretendard' }}>
-                              {comment.author?.nickname || "익명"}
-                            </p>
-                            <p className="text-xs text-gray-400" style={{ fontFamily: 'Pretendard' }}>
-                              {formatTime(comment.createdAt)}
-                            </p>
-                          </div>
-                        </div>
-                        <button className="text-gray-300 hover:text-gray-500">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <p className="text-[#0F1724] text-sm mb-2" style={{ fontFamily: 'Pretendard', lineHeight: '1.5' }}>
-                        {comment.content}
-                      </p>
-                      <button
-                        onClick={() => handleCommentLike(comment.commentId, comment.isLiked ?? false)}
-                        className={`flex items-center gap-1 ${comment.isLiked ? "text-red-500" : "text-gray-400 hover:text-red-500"}`}
-                      >
-                        <Heart className={`w-3.5 h-3.5 ${comment.isLiked ? "fill-current" : ""}`} />
-                        <span className="text-xs">{comment.likeCount}</span>
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-6 text-gray-400 text-sm" style={{ fontFamily: 'Pretendard' }}>
-                    아직 댓글이 없습니다.
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 댓글 입력 */}
-            <div className="border-t border-gray-100 p-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  placeholder="댓글 작성하기"
-                  value={newCommentContent}
-                  onChange={(e) => setNewCommentContent(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleCreateComment()}
-                  className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-blue-300"
-                  style={{ fontFamily: 'Pretendard' }}
-                />
-                <button
-                  onClick={handleCreateComment}
-                  disabled={!newCommentContent.trim()}
-                  className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 게시글 상세는 이제 카드 내부에서 표시됨 */}
 
       {/* 알림 패널 - 오른쪽 */}
       {showNotificationModal && (
@@ -1512,6 +1504,6 @@ export default function CommunityPage() {
           scrollbar-width: none;
         }
       `}</style>
-    </div>
+    </>
   );
 }

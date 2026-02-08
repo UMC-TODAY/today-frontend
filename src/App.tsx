@@ -18,6 +18,11 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import WithdrawPage from "./pages/setting/WithdrawPage";
+import ICloudIntegrationPage from "./pages/setting/ICloudIntegrationPage";
+import NotionCallbackPage from "./pages/setting/NotionCallbackPage";
+import GoogleCallbackPage from "./pages/setting/GoogleCallbackPage";
+import SocialLoginCallbackPage from "./pages/auth/SocialLoginCallbackPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,6 +43,8 @@ function App() {
         <Routes>
           {/* 로그인 페이지 - 인증 불필요 */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login/naver/callback" element={<SocialLoginCallbackPage provider="naver" />} />
+          <Route path="/login/google/callback" element={<SocialLoginCallbackPage provider="google" />} />
           <Route path="/login/help" element={<LoginHelpPage />} />
           <Route path="/login/find-id" element={<FindIdPage />} />
           <Route path="/login/find-password" element={<FindPasswordPage />} />
@@ -72,6 +79,12 @@ function App() {
             <Route path="goal-tracker" element={<GoalTrackerPage />} />
             <Route path="community" element={<CommunityPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
+
+            {/* 설정 -> 탈퇴 페이지 */}
+            <Route path="setting/withdraw" element={<WithdrawPage />} />
+            <Route path="setting/calendar/icloud" element={<ICloudIntegrationPage />} />
+            <Route path="setting/calendar/notion/callback" element={<NotionCallbackPage />} />
+            <Route path="setting/calendar/google/callback" element={<GoogleCallbackPage />} />
           </Route>
 
           {/* 404 페이지 등 - 홈으로 리다이렉트 */}
