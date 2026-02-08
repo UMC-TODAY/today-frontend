@@ -98,6 +98,26 @@ export interface TogetherDaysResponse {
   message: string;
 }
 
+// 뱃지 및 완료 일정 통계 조회
+export interface BadgeStatusResponse {
+  badge: StatItem;
+  completedSchedule: StatItem;
+}
+
+export interface StatItem {
+  totalCount: number;
+  rankingPercent: number;
+  rankingDirection: string;
+}
+
+// 내 정보 보기
+export interface MyInfoResponse {
+  memberId: number;
+  nickname: string;
+  profileImage: string;
+  email: string;
+}
+
 // 2. post
 // 일정/할 일 등록
 // 1. 공통으로 들어가는 필드

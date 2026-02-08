@@ -1,10 +1,12 @@
 import { axiosInstance } from "./core/axiosInstance";
 import type { ApiResponse } from "../types/common";
 import type {
+  BadgeStatusResponse,
   BulkDeleteRequest,
   CreateScheduleRequest,
   GetMonthlyScheduleResponse,
   GetWeeklyResponse,
+  MyInfoResponse,
   ScheduleCompletionParams,
   ScheduleCompletionResponse,
   ScheduleDetail,
@@ -133,5 +135,20 @@ export const postCsvUpload = async (file: File) => {
       headers: { "Content-Type": "multipart/form-data" },
     },
   );
+  return response.data;
+};
+
+// 뱃지
+export const getBadgeStatus = async () => {
+  const response = await axiosInstance.get<ApiResponse<BadgeStatusResponse>>(
+    "/api/v1/analysis/badge-stats",
+  );
+  return response.data;
+};
+
+// 내 정보 보기 API
+export const getMyInfo = async () => {
+  const response =
+    await axiosInstance.get<ApiResponse<MyInfoResponse>>("/api/v1/members/me");
   return response.data;
 };

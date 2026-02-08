@@ -6,7 +6,9 @@ import {
 } from "@tanstack/react-query";
 import {
   deleteSchedulesBulk,
+  getBadgeStatus,
   getMonthlySchedule,
+  getMyInfo,
   getSchedule,
   getScheduleCompletion,
   getTodoCompletion,
@@ -170,5 +172,21 @@ export const useCsvUpload = () => {
       console.error("CSV 업로드 실패:", error);
       alert("파일 업로드 중 오류가 발생했습니다.");
     },
+  });
+};
+
+// 뱃지
+export const useBadgeStatus = () => {
+  return useQuery({
+    queryKey: ["badgeStats"],
+    queryFn: getBadgeStatus,
+  });
+};
+
+// 내 정보 조회 훅
+export const useMyInfo = () => {
+  return useQuery({
+    queryKey: ["myInfo"],
+    queryFn: getMyInfo,
   });
 };
