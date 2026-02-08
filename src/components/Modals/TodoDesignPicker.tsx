@@ -1,7 +1,7 @@
 import {
   SCHEDULE_EMOJIS,
   SCHEDULE_EMOJI_BACKGROUND_COLORS,
-} from "../../constants/design";
+} from "../../constants/design.ts";
 import { useState } from "react";
 
 interface TodoDesignPickerProps {
