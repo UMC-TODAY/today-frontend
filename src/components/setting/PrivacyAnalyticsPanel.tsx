@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTextStyle } from "../../styles/auth/loginStyles";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   type EditPrivacyInfoRequest,
   type EditPrivacyInfoResponse,
@@ -136,11 +136,12 @@ function isEditSuccess(
 }
 
 export default function PrivacyAnalyticsSettingPanel({
-  goWithdraw
+  goWithdraw,
 }: {
   goWithdraw: () => void;
 }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const token = getAccessToken() || "";
   const [dto, setDto] = useState<EditPrivacyInfoRequest>({
@@ -173,7 +174,6 @@ export default function PrivacyAnalyticsSettingPanel({
         privacyScope: data.data.privacyScope,
         dataUse: data.data.dataUse,
       });
-      setSaveMsg(null);
       setErrorMsg(null);
     } else {
       setErrorMsg("개인정보 및 분석설정 데이터를 불러오지 못했습니다.");
@@ -200,6 +200,14 @@ export default function PrivacyAnalyticsSettingPanel({
       if (isEditSuccess(result) && result.isSuccess) {
         setErrorMsg(null);
         setSaveMsg("저장되었습니다.");
+
+        setTimeout(() => {
+          setSaveMsg(null);
+        }, 4000);
+
+        queryClient.invalidateQueries({
+          queryKey: ["me", "privacyAnalyticsPreference", token],
+        });
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -363,7 +371,7 @@ export default function PrivacyAnalyticsSettingPanel({
         {(saveMsg || errorMsg) && (
           <div
             style={{
-              marginTop: "18px",
+              marginTop: "62px",
               marginRight: "30px",
               textAlign: "right",
               fontSize: "13px",

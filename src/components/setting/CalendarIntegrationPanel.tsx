@@ -63,11 +63,20 @@ export default function CalendarIntegrationPanel({
     onSuccess: (result) => {
       if (result.isSuccess) {
         setCSVMsg("CSV 일정 업로드가 완료되었습니다.");
+
+        setTimeout(() => {
+          setCSVMsg(null);
+        }, 4000);
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       setCSVMsg("CSV 업로드에 실패했습니다.");
+
+      setTimeout(() => {
+        setCSVMsg(null);
+      }, 4000);
+
       console.error("CSV 업로드 에러 상세:", error?.response?.data);
     },
   });
@@ -253,7 +262,7 @@ export default function CalendarIntegrationPanel({
               style={{
                 display: "flex",
                 justifyContent: "flex-end",
-                marginTop: "70px",
+                marginTop: "72px",
                 fontSize: "13px",
                 fontWeight: 600,
                 color: CSVMsg.includes("완료") ? "#0066FF" : "#D93025",

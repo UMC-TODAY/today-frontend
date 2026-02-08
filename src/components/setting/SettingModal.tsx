@@ -31,7 +31,7 @@ export default function SettingModal({
   const handleClose = () => {
     onClose();
     setChoice("profile");
-  }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -60,13 +60,19 @@ export default function SettingModal({
       default:
         return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choice]);
 
   if (!isOpen) return null;
 
   return (
-    <div style={s.overlay} role="dialog" aria-modal="true">
-      <div style={s.modal}>
+    <div
+      style={s.overlay}
+      role="dialog"
+      aria-modal="true"
+      onClick={handleClose}
+    >
+      <div style={s.modal} onClick={(e) => e.stopPropagation()}>
         {/* 닫기 버튼 */}
         <button
           type="button"
