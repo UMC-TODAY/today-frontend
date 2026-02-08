@@ -98,14 +98,10 @@ export const useUpdateScheduleStatus = () => {
     mutationFn: ({ id, data }: { id: number; data: { is_done: boolean } }) =>
       updateScheduleStatus(id, data),
 
-    onSuccess: (res) => {
-      console.log("=== [BACKEND CHECK] PATCH 성공 응답 데이터 ===", res);
-      // 성공하면 즉시 목록 데이터를 다시 불러오라고 명령함
+    onSuccess: () => {
+      // 성공 시 목록 데이터 무효화 및 다시 불러오기
       queryClient.invalidateQueries({ queryKey: ["todos"] });
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
-    },
-    onError: (err) => {
-      console.error("=== [BACKEND CHECK] PATCH 실패 ===", err);
     },
   });
 };
