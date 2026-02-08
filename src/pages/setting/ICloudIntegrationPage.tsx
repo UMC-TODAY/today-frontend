@@ -4,7 +4,10 @@ import { getTextStyle } from "../../styles/auth/loginStyles";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import ICloudIcon from "../../components/icons/ICloudIcon";
 import { useMutation } from "@tanstack/react-query";
-import { postICloudIntegration } from "../../api/setting/calendar";
+import {
+  getIntegrationStatus,
+  postICloudIntegration,
+} from "../../api/setting/calendar";
 import { getAccessToken } from "../../utils/tokenStorage";
 
 export default function CalendarConnectPage() {
@@ -30,8 +33,7 @@ export default function CalendarConnectPage() {
     mutationFn: () => postICloudIntegration(token, { icsUrl: link.trim() }),
     onSuccess: (result) => {
       if (result.isSuccess) {
-        setErrorMsg(null);
-        setSuccessMsg("iCloud 캘린더가 연동되었습니다.");
+        integrationStatusMutation.mutate();
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,6 +46,28 @@ export default function CalendarConnectPage() {
       }
 
       setErrorMsg("서버와의 연결에 실패했습니다.");
+      console.error("iCloud 연동 에러 상세:", error?.response.data);
+    },
+  });
+
+  const integrationStatusMutation = useMutation({
+    mutationFn: getIntegrationStatus,
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        const iCloudStatus = result.data?.providers.find(
+          (p) => p.provider === "ICLOUD",
+        );
+
+        if (iCloudStatus?.connected) {
+          setSuccessMsg("iCloud 캘린더가 연동되었습니다.");
+        } else {
+          setErrorMsg("iCloud 캘린더 연동에 실패했습니다.");
+        }
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      setErrorMsg("iCloud 연동에 실패했습니다.");
       console.error("iCloud 연동 에러 상세:", error?.response.data);
     },
   });
@@ -207,4 +231,3 @@ export default function CalendarConnectPage() {
     </div>
   );
 }
-
