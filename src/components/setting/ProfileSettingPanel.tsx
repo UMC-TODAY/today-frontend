@@ -98,6 +98,8 @@ export default function ProfileSettingPanel({
     onSuccess: async (result) => {
       if (!result.isSuccess) return;
 
+      // sidebar에 있는 myInfo 쿼리 갱신
+      queryClient.invalidateQueries({ queryKey: ["myInfo"] });
       setSaveMsg("저장되었습니다.");
 
       // 변경 플래그 리셋
