@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { getNotionCallback } from "../../api/setting/calendar";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
+import { getAccessToken } from "../../utils/tokenStorage";
 
 function useQueryParams() {
   const { search } = useLocation();
@@ -14,7 +15,7 @@ export default function NotionCallbackPage() {
   const navigate = useNavigate();
   const qs = useQueryParams();
 
-  const token = localStorage.getItem("accessToken") || "";
+  const token = getAccessToken() || "";
 
   const code = qs.get("code") || "";
   const state = qs.get("state") || "";
