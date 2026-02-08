@@ -10,7 +10,6 @@ export interface EmailLoginSuccessResponse {
     message: string;
     data: {
         accessToken: string;
-        refreshToken: string;
     };
 };
 
@@ -117,16 +116,11 @@ export interface ResetPasswordErrorResponse {
 export type ResetPasswordResponse = ResetPasswordSuccessResponse | ResetPasswordErrorResponse;
 
 // 로그인 유지
-export interface TokenReissueRequest {
-    refreshToken: string;
-}
-
 export interface TokenReissueSuccessResponse {
     isSuccess: boolean;
     message: string;
     data: {
         accessToken: string;
-        refreshToken: string;
     };
 }
 
