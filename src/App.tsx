@@ -22,6 +22,7 @@ import WithdrawPage from "./pages/setting/WithdrawPage";
 import ICloudIntegrationPage from "./pages/setting/ICloudIntegrationPage";
 import NotionCallbackPage from "./pages/setting/NotionCallbackPage";
 import GoogleCallbackPage from "./pages/setting/GoogleCallbackPage";
+import SocialLoginCallbackPage from "./pages/auth/SocialLoginCallbackPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +43,8 @@ function App() {
         <Routes>
           {/* 로그인 페이지 - 인증 불필요 */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login/naver/callback" element={<SocialLoginCallbackPage provider="naver" />} />
+          <Route path="/login/google/callback" element={<SocialLoginCallbackPage provider="google" />} />
           <Route path="/login/help" element={<LoginHelpPage />} />
           <Route path="/login/find-id" element={<FindIdPage />} />
           <Route path="/login/find-password" element={<FindPasswordPage />} />

@@ -26,7 +26,8 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(true);
   const [showPw, setShowPw] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  // const [isLoading, setIsLoading] = useState(false);
+  
+  const OAUTH_BASE = import.meta.env.VITE_API_BASE_URL;
 
   const canSubmit = useMemo(() => {
     if (!email.trim() || !password.trim()) return false;
@@ -90,11 +91,11 @@ export default function LoginPage() {
   }
 
   function handleGoogleLogin() {
-    alert("구글 로그인은 백엔드 연동 후 사용 가능합니다.");
+    window.location.href = `${OAUTH_BASE}/oauth2/authorization/google`;
   }
 
   function handleNaverLogin() {
-    alert("네이버 로그인은 백엔드 연동 후 사용 가능합니다.");
+    window.location.href = `${OAUTH_BASE}/oauth2/authorization/naver`;
   }
 
   const submitStyle: React.CSSProperties = {

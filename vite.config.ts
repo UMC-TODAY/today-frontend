@@ -21,6 +21,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/oauth2": {
+        target: "http://107.20.245.245",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
