@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { getNotionCallback } from "../../api/setting/calendar";
+import { getIntegrationStatus, getNotionCallback } from "../../api/setting/calendar";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { getAccessToken } from "../../utils/tokenStorage";
@@ -24,17 +24,11 @@ export default function NotionCallbackPage() {
 
   const alreadyDoneRef = useRef(false);
 
-  const NotionCallbackMutation = useMutation({
+  const notionCallbackMutation = useMutation({
     mutationFn: () => getNotionCallback(token, code, state),
     onSuccess: (result) => {
       if (result.isSuccess) {
-        setMsg("Notion 연동이 완료되었습니다.");
-
-        // 연동 완료 메시지 1초 띄우고 화면 전환
-        setTimeout(() => {
-          navigate("/dashboard?settings=calendar", { replace: true });
-        }, 1000);
-        return;
+        integrationStatusMutation.mutate();
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,6 +37,34 @@ export default function NotionCallbackPage() {
       console.error("Notion callback 에러 상세:", error?.response?.data);
     },
   });
+
+    const integrationStatusMutation = useMutation({
+      mutationFn: getIntegrationStatus,
+      onSuccess: (result) => {
+        if (result.isSuccess) {
+          const notionStatus = result.data?.providers.find(
+            (p) => p.provider === "NOTION",
+          );
+  
+          if (notionStatus?.connected) {
+            setMsg("Notion 연동이 완료되었습니다.");
+  
+            // 연동 완료 메시지 1.5초 띄우고 화면 전환
+            setTimeout(() => {
+              navigate("/dashboard?settings=calendar", { replace: true });
+            }, 1500);
+            return;
+          } else {
+            setMsg("Notion 연동에 실패했습니다.");
+          }
+        }
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onError: (error: any) => {
+        setMsg("Notion 연동에 실패했습니다.");
+        console.error("Notion callback 에러 상세:", error?.response?.data);
+      },
+    });
 
   useEffect(() => {
     if (!code) {
@@ -58,7 +80,7 @@ export default function NotionCallbackPage() {
     if (alreadyDoneRef.current) return;
     alreadyDoneRef.current = true;
 
-    NotionCallbackMutation.mutate();
+    notionCallbackMutation.mutate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code, state]);
 

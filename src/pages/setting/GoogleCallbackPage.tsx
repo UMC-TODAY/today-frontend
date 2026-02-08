@@ -3,7 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
-import { getGoogleCallback } from "../../api/setting/calendar";
+import {
+  getGoogleCallback,
+  getIntegrationStatus,
+} from "../../api/setting/calendar";
 import { getAccessToken } from "../../utils/tokenStorage";
 
 function useQueryParams() {
@@ -27,13 +30,35 @@ export default function GoogleCallbackPage() {
     mutationFn: () => getGoogleCallback(token, code),
     onSuccess: (result) => {
       if (result.isSuccess) {
-        setMsg("Google 연동이 완료되었습니다.");
+        integrationStatusMutation.mutate();
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      setMsg("Google 연동에 실패했습니다.");
+      console.error("Google callback 에러 상세:", error?.response?.data);
+    },
+  });
 
-        // 연동 완료 메시지 1초 띄우고 화면 전환
-        setTimeout(() => {
-          navigate("/dashboard?settings=calendar", { replace: true });
-        }, 1000);
-        return;
+  const integrationStatusMutation = useMutation({
+    mutationFn: getIntegrationStatus,
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        const googleStatus = result.data?.providers.find(
+          (p) => p.provider === "GOOGLE",
+        );
+
+        if (googleStatus?.connected) {
+          setMsg("Google 연동이 완료되었습니다.");
+
+          // 연동 완료 메시지 1.5초 띄우고 화면 전환
+          setTimeout(() => {
+            navigate("/dashboard?settings=calendar", { replace: true });
+          }, 1500);
+          return;
+        } else {
+          setMsg("Google 연동에 실패했습니다.");
+        }
       }
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

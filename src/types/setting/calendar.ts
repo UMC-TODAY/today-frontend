@@ -75,3 +75,21 @@ export interface GoogleCallbackErrorResponse {
 }
 
 export type GoogleCallbackResponse = GoogleCallbackSuccessResponse | GoogleCallbackErrorResponse;
+
+// 외부 연동 상태 조회
+export type IntegrationProvider = "GOOGLE" | "NOTION" | "ICLOUD";
+
+export interface ProviderStatus {
+    provider: IntegrationProvider;
+    connected: boolean;
+}
+
+export interface SocialIntegrationData {
+    providers: ProviderStatus[];
+}
+
+export interface IntegrationStatusResponse {
+    isSuccess: boolean;
+    message: string;
+    data?: SocialIntegrationData;
+}
