@@ -1,6 +1,7 @@
 import { axiosInstance } from "./core/axiosInstance";
 import type { ApiResponse } from "../types/common";
 import type {
+  BadgeStatusResponse,
   BulkDeleteRequest,
   CreateScheduleRequest,
   GetMonthlyScheduleResponse,
@@ -132,6 +133,14 @@ export const postCsvUpload = async (file: File) => {
     {
       headers: { "Content-Type": "multipart/form-data" },
     },
+  );
+  return response.data;
+};
+
+// 뱃지
+export const getBadgeStatus = async () => {
+  const response = await axiosInstance.get<ApiResponse<BadgeStatusResponse>>(
+    "/api/v1/analysis/badge-stats",
   );
   return response.data;
 };
