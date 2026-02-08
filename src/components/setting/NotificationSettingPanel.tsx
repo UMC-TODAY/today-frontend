@@ -14,6 +14,7 @@ import type {
   NotificationPreferenceSuccessResponse,
   EditNotificationSuccessResponse,
 } from "../../types/setting/notification";
+import { getAccessToken } from "../../utils/tokenStorage";
 
 type ToggleKey = "reminderAlert" | "kakaoAlert" | "emailAlert";
 
@@ -78,7 +79,7 @@ export default function NotificationSettingPanel({
 }) {
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("accessToken") || "";
+  const token = getAccessToken() || "";
   const [dto, setDto] = useState<EditNotificationRequest>({
     reminderAlert: false,
     kakaoAlert: false,

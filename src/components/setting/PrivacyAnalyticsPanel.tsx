@@ -13,6 +13,7 @@ import {
   getPrivacyInfo,
   patchEditPrivacyInfo,
 } from "../../api/setting/privacy";
+import { getAccessToken } from "../../utils/tokenStorage";
 
 type ShareScope = "FRIEND" | "PRIVATE";
 
@@ -141,7 +142,7 @@ export default function PrivacyAnalyticsSettingPanel({
 }) {
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("accessToken") || "";
+  const token = getAccessToken() || "";
   const [dto, setDto] = useState<EditPrivacyInfoRequest>({
     privacyScope: "FRIEND" as ShareScope,
     dataUse: true,

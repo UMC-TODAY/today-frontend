@@ -50,7 +50,6 @@ export default function LoginPage() {
       if (result.isSuccess && "data" in result) {
         const storage = remember ? window.localStorage : window.sessionStorage;
         storage.setItem("accessToken", result.data.accessToken);
-        storage.setItem("refreshToken", result.data.refreshToken);
 
         const payload = {
           email: email.trim(),

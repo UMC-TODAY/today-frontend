@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getMyInfo, patchWithdraw } from "../../api/setting/profile";
+import { clearAuth, getAccessToken } from "../../utils/tokenStorage";
 
 export default function WithdrawPage() {
   const navigate = useNavigate();
@@ -31,14 +32,13 @@ export default function WithdrawPage() {
 
   const withdrawMutation = useMutation({
     mutationFn: () => {
-      const token = localStorage.getItem("accessToken") || "";
+      const token = getAccessToken() || "";
       if (!token) throw new Error("no token");
       return patchWithdraw(token);
     },
     onSuccess: (result) => {
       if (result.isSuccess) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        clearAuth();
 
         navigate("/login", { replace: true });
       }

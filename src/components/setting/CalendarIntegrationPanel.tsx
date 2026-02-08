@@ -12,6 +12,7 @@ import {
   postNotionIntegration,
 } from "../../api/setting/calendar";
 import { useRef, useState } from "react";
+import { getAccessToken } from "../../utils/tokenStorage";
 
 export default function CalendarIntegrationPanel({
   goWithdraw,
@@ -20,7 +21,7 @@ export default function CalendarIntegrationPanel({
 }) {
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("accessToken") || "";
+  const token = getAccessToken() || "";
 
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [CSVMsg, setCSVMsg] = useState<string | null>(null);

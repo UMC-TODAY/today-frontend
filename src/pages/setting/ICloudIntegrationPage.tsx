@@ -5,11 +5,12 @@ import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import ICloudIcon from "../../components/icons/ICloudIcon";
 import { useMutation } from "@tanstack/react-query";
 import { postICloudIntegration } from "../../api/setting/calendar";
+import { getAccessToken } from "../../utils/tokenStorage";
 
 export default function CalendarConnectPage() {
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("accessToken") || "";
+  const token = getAccessToken() || "";
 
   const [link, setLink] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);

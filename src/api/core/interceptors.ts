@@ -1,5 +1,5 @@
 import type { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
-import { getTokens, setTokens, clearAuth } from "../../utils/tokenStorage";
+import { getAccessToken, setAccessToken, clearAuth } from "../../utils/tokenStorage";
 import { postTokenReissue } from "../auth/refresh";
 
 type RetryConfig = InternalAxiosRequestConfig & { _retry?: boolean };
@@ -8,10 +8,10 @@ export const setupInterceptors = (instance: AxiosInstance): AxiosInstance => {
   // request: accessToken 자동 첨부
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-      const tokens = getTokens();
-      if (tokens?.accessToken) {
+      const accessToken = getAccessToken();
+      if (accessToken) {
         config.headers = config.headers ?? {};
-        config.headers.Authorization = `Bearer ${tokens.accessToken}`;
+        config.headers.Authorization = `Bearer ${accessToken}`;
       }
       return config;
     },
@@ -44,16 +44,6 @@ export const setupInterceptors = (instance: AxiosInstance): AxiosInstance => {
       if (original._retry) return Promise.reject(error);
       original._retry = true;
 
-      const tokens = getTokens();
-      const refreshToken = tokens?.refreshToken;
-
-      // refreshToken 없으면 로그아웃
-      if (!refreshToken) {
-        clearAuth();
-        window.location.replace("/login");
-        return Promise.reject(error);
-      }
-
       // refresh 중이면 대기 큐에 넣기
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -73,28 +63,23 @@ export const setupInterceptors = (instance: AxiosInstance): AxiosInstance => {
       refreshPromise =
         refreshPromise ??
         (async () => {
-          const res = await postTokenReissue({ refreshToken });
+          const res = await postTokenReissue();
 
           if (!res.isSuccess) {
             throw new Error("새 엑세스 토큰 발급에 실패했습니다.");
           }
 
-          setTokens({
-            accessToken: res.data.accessToken,
-            refreshToken: res.data.refreshToken,
-          });
+          setAccessToken(res.data.accessToken);
 
           return res.data.accessToken;
         })();
 
       try {
         const newAccessToken = await refreshPromise;
-
         flushQueue(newAccessToken);
 
         original.headers = original.headers ?? {};
         original.headers.Authorization = `Bearer ${newAccessToken}`;
-
         return instance(original);
       } catch {
         flushQueue(null);

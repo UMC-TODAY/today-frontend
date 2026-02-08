@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 import { getGoogleCallback } from "../../api/setting/calendar";
+import { getAccessToken } from "../../utils/tokenStorage";
 
 function useQueryParams() {
   const { search } = useLocation();
@@ -14,7 +15,7 @@ export default function GoogleCallbackPage() {
   const navigate = useNavigate();
   const qs = useQueryParams();
 
-  const token = localStorage.getItem("accessToken") || "";
+  const token = getAccessToken() || "";
 
   const code = qs.get("code") || "";
 
