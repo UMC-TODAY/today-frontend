@@ -4,7 +4,7 @@ import {
   useUpdateScheduleStatus,
   useDeleteSchedules,
 } from "../../hooks/queries/useSchedule.ts";
-import TodoEditModal from "../goalTracker/TodoEditModal.tsx";
+import TodoEditModal from "../Modals/TodoEditModal.tsx";
 
 const formatDate = (date: Date) => {
   const year = date.getFullYear();

@@ -4,7 +4,7 @@ import {
   useDeleteSchedules,
   useUpdateScheduleStatus,
 } from "../../hooks/queries/useSchedule";
-import TodoEditModal from "../goalTracker/TodoEditModal.tsx";
+import TodoEditModal from "../Modals/TodoEditModal.tsx";
 
 type Schedule = {
   id: number;
