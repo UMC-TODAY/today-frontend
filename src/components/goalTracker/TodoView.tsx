@@ -57,7 +57,7 @@ export default function WeeklyTodoView() {
         <div className="flex gap-2">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm rounded-lg transition"
+            className="px-5 py-2 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 transition"
           >
             + 할일 등록하기
           </button>
