@@ -226,10 +226,10 @@ export default function ProfileSettingPanel({
             ) : (
               <div
                 style={{
-                  width: "40px",
-                  height: "40px",
+                  width: "76px",
+                  height: "76px",
                   borderRadius: "50%",
-                  background: "#D6D6D6",
+                  background: "#6d86c6ff",
                 }}
               />
             )}
