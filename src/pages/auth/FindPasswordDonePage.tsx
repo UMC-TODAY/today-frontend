@@ -5,7 +5,7 @@ import { getTextStyle } from "../../styles/auth/loginStyles";
 export default function FindPasswordDonePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = (location.state) || {};
+  const state = location.state || {};
   const email = state.email || "";
   const from = state.from || "";
 
@@ -24,6 +24,16 @@ export default function FindPasswordDonePage() {
     cursor: "pointer",
     marginTop: "10px",
   };
+
+  function handleResetPw() {
+    if (from === "profile-setting") {
+      navigate("/login/reset-password", {
+        state: { email: email.trim(), from: from.trim() },
+      });
+    } else {
+      navigate("/login/reset-password", { state: { email: email.trim() } });
+    }
+  }
 
   function handleBack() {
     if (from === "profile-setting") {
@@ -65,20 +75,12 @@ export default function FindPasswordDonePage() {
         </div>
 
         {/* 버튼들 */}
-        <div style={{ marginTop: "25px"}}>
-          <button
-            type="button"
-            style={primaryBtnStyle}
-            onClick={() => navigate("/login/reset-password", { state: { email: email.trim() }} )}
-          >
+        <div style={{ marginTop: "25px" }}>
+          <button type="button" style={primaryBtnStyle} onClick={handleResetPw}>
             <div style={getTextStyle(600, 14, "#FFFFFF")}>비밀번호 재설정</div>
           </button>
 
-          <button
-            type="button"
-            style={secondaryBtnStyle}
-            onClick={handleBack}
-          >
+          <button type="button" style={secondaryBtnStyle} onClick={handleBack}>
             <div style={getTextStyle(600, 14, "#0066FF")}>돌아가기</div>
           </button>
         </div>
