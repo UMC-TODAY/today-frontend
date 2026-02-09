@@ -99,7 +99,7 @@ export default function CalendarConnectPage() {
   };
 
   function handleBack() {
-    navigate(-1);
+    navigate("/dashboard?settings=calendar", { replace: true });
   }
 
   function handleIntegrate() {
