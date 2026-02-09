@@ -26,6 +26,7 @@ export default function ScheduleList() {
   const [year, setYear] = useState(2026);
   const [month, setMonth] = useState(2);
   const [hidePast, setHidePast] = useState(false);
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState<Schedule | null>(
@@ -57,6 +58,7 @@ export default function ScheduleList() {
     }
   };
   const handleToggleStatus = (schedule: Schedule) => {
+    if (isDeleteMode) return;
     const currentStatus = schedule.isDone ?? schedule._done ?? schedule.is_done;
     updateStatus({
       id: schedule.id,
@@ -69,12 +71,18 @@ export default function ScheduleList() {
     setIsEditModalOpen(true);
   };
   const handleBulkDelete = () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.length === 0) {
+      setIsDeleteMode(!isDeleteMode);
+      return;
+    }
     if (window.confirm(`${selectedIds.length}개의 일정을 삭제하시겠습니까?`)) {
       deleteSchedules(
         { ids: selectedIds },
         {
-          onSuccess: () => setSelectedIds([]),
+          onSuccess: () => {
+            setSelectedIds([]);
+            setIsDeleteMode(false);
+          },
         },
       );
     }
@@ -87,16 +95,24 @@ export default function ScheduleList() {
   };
   const grouped = useMemo(() => {
     const map = new Map<string, any[]>();
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
     scheduleList.forEach((s) => {
-      const isDoneValue = !!(s.isDone ?? s._done ?? s.is_done);
       const date = (s.startedAt || "").split(" ")[0];
+
+      if (hidePast && date < todayStr) {
+        return;
+      }
+
+      const isDoneValue = !!(s.isDone ?? s._done ?? s.is_done);
       const arr = map.get(date) ?? [];
       arr.push({ ...s, calculatedIsDone: isDoneValue });
       map.set(date, arr);
     });
     const dates = Array.from(map.keys()).sort((a, b) => a.localeCompare(b));
     return dates.map((date) => ({ date, items: map.get(date) ?? [] }));
-  }, [scheduleList]);
+  }, [scheduleList, hidePast]);
   return (
     <div className="flex h-full w-full min-h-0 flex-col overflow-hidden rounded-3xl bg-white shadow-sm">
       <div className="sticky top-0 z-10 bg-white px-5 pt-4 border-b border-slate-50">
@@ -105,14 +121,16 @@ export default function ScheduleList() {
             일정 리스트
           </div>
           <div className="flex gap-2">
-            {selectedIds.length > 0 && (
-              <button
-                onClick={handleBulkDelete}
-                className="px-3 py-1.5 rounded-full bg-red-50 text-red-500 text-[11px] font-bold border border-red-100 hover:bg-red-100 transition-colors"
-              >
-                삭제하기 ({selectedIds.length})
-              </button>
-            )}
+            <button
+              onClick={handleBulkDelete}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-colors ${isDeleteMode ? "bg-red-500 text-white border-red-500" : "bg-red-50 text-red-500 border-red-100 hover:bg-red-100"}`}
+            >
+              {isDeleteMode
+                ? selectedIds.length > 0
+                  ? `삭제하기 (${selectedIds.length})`
+                  : "취소"
+                : "삭제하기"}
+            </button>
             <button
               type="button"
               onClick={() => setHidePast((v) => !v)}
@@ -153,7 +171,7 @@ export default function ScheduleList() {
           <div className="py-10 text-center text-slate-400 text-sm">
             로딩 중...
           </div>
-        ) : scheduleList.length === 0 ? (
+        ) : grouped.length === 0 ? (
           <div className="py-10 text-center text-slate-400 text-[13px]">
             {hidePast ? "표시할 일정이 없습니다." : "등록된 일정이 없습니다."}
           </div>
@@ -175,13 +193,15 @@ export default function ScheduleList() {
                           : "bg-white border-slate-100 hover:border-slate-300 shadow-sm"
                       }`}
                     >
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(Number(schedule.id))}
-                        onChange={(e) => toggleSelect(Number(schedule.id), e)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="w-4 h-4 accent-slate-800 cursor-pointer"
-                      />
+                      {isDeleteMode && (
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(Number(schedule.id))}
+                          onChange={(e) => toggleSelect(Number(schedule.id), e)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-4 h-4 accent-slate-800 cursor-pointer"
+                        />
+                      )}
                       <div className="flex-1 flex items-center gap-3 min-w-0">
                         <div
                           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[18px] transition-colors"

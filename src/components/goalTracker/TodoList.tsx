@@ -23,6 +23,7 @@ const getWeekRange = (baseDate: Date) => {
 export default function TodoList() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [hidePast, setHidePast] = useState(false);
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<any>(null);
@@ -43,6 +44,7 @@ export default function TodoList() {
     setCurrentDate(new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
   const handleToggleTodo = (todo: any) => {
+    if (isDeleteMode) return;
     const currentStatus = todo.isDone ?? todo._done ?? todo.is_done;
     updateStatus({
       id: todo.id,
@@ -55,11 +57,19 @@ export default function TodoList() {
     setIsEditModalOpen(true);
   };
   const handleBulkDelete = () => {
-    if (selectedIds.length === 0) return;
+    if (selectedIds.length === 0) {
+      setIsDeleteMode(!isDeleteMode);
+      return;
+    }
     if (window.confirm(`${selectedIds.length}개의 일정을 삭제하시겠습니까?`)) {
       deleteSchedules(
         { ids: selectedIds },
-        { onSuccess: () => setSelectedIds([]) },
+        {
+          onSuccess: () => {
+            setSelectedIds([]);
+            setIsDeleteMode(false);
+          },
+        },
       );
     }
   };
@@ -74,8 +84,8 @@ export default function TodoList() {
     const todayStr = formatDate(new Date());
     todoList.forEach((t) => {
       const isDoneValue = !!(t.isDone ?? t._done ?? t.is_done);
-      if (hidePast && t.date && t.date < todayStr && isDoneValue) return;
       const key = t.date || "언제든지 할 일";
+      if (hidePast && key !== "언제든지 할 일" && key < todayStr) return;
       if (!map.has(key)) map.set(key, []);
       map.get(key)?.push({ ...t, calculatedIsDone: isDoneValue });
     });
@@ -100,14 +110,16 @@ export default function TodoList() {
             할일 리스트
           </div>
           <div className="flex gap-2">
-            {selectedIds.length > 0 && (
-              <button
-                onClick={handleBulkDelete}
-                className="px-3 py-1.5 rounded-full bg-red-50 text-red-500 text-[11px] font-bold border border-red-100 hover:bg-red-100 transition-colors"
-              >
-                삭제하기 ({selectedIds.length})
-              </button>
-            )}
+            <button
+              onClick={handleBulkDelete}
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-colors ${isDeleteMode ? "bg-red-500 text-white border-red-500" : "bg-red-50 text-red-500 border-red-100 hover:bg-red-100"}`}
+            >
+              {isDeleteMode
+                ? selectedIds.length > 0
+                  ? `삭제하기 (${selectedIds.length})`
+                  : "취소"
+                : "삭제하기"}
+            </button>
             <button
               onClick={() => setHidePast(!hidePast)}
               className={`px-3 py-1.5 rounded-full border text-[11px] transition-all font-medium ${hidePast ? "bg-slate-800 text-white border-slate-800" : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"}`}
@@ -161,13 +173,15 @@ export default function TodoList() {
                           : "bg-white border-slate-100 hover:border-slate-300 shadow-sm"
                       }`}
                     >
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(todo.id)}
-                        onChange={(e) => toggleSelect(todo.id, e)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="w-4 h-4 accent-slate-800 cursor-pointer"
-                      />
+                      {isDeleteMode && (
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(todo.id)}
+                          onChange={(e) => toggleSelect(todo.id, e)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-4 h-4 accent-slate-800 cursor-pointer"
+                        />
+                      )}
                       <div className="flex-1 flex items-center gap-3 min-w-0">
                         <div
                           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[18px] transition-colors hover:opacity-80"
