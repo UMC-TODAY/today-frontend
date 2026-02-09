@@ -2,10 +2,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FindIdXIcon from "../../components/icons/findIdXIcon";
 import QuestionIcon from "../../components/icons/QuestionIcon";
 import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
-import { getTextStyle } from "../../styles/auth/loginStyles";
+import { AUTH_KEY, getTextStyle } from "../../styles/auth/loginStyles";
 import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { postEmailSignup } from "../../api/auth/auth";
+import { postEmailLogin, postEmailSignup } from "../../api/auth/auth";
 
 function isValidPassword(pw: string) {
   // 8~32자 검증
@@ -42,6 +42,39 @@ export default function SignupPasswordPage() {
     [pw, pw2],
   );
 
+  const loginMutation = useMutation({
+    mutationFn: () =>
+      postEmailLogin({
+        email: email.trim(),
+        password: pw.trim(),
+      }),
+    onSuccess: (result) => {
+      if (!result.isSuccess) {
+        setErrorMsg("잘못된 이메일 혹은 비밀번호를 입력하셨습니다.");
+        return;
+      }
+
+      if (result.isSuccess && "data" in result) {
+        const storage = window.localStorage;
+        storage.setItem("accessToken", result.data.accessToken);
+
+        const payload = {
+          email: email.trim(),
+          loggedInAt: Date.now(),
+        };
+
+        storage.setItem(AUTH_KEY, JSON.stringify(payload));
+
+        navigate("/dashboard", { replace: true });
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      setErrorMsg("회원가입은 완료되었으나 로그인에 실패하였습니다.");
+      console.error("회원가입 성공 이후 로그인 에러 상세:", error.response?.data);
+    },
+  });
+
   const signupMutation = useMutation({
     mutationFn: () =>
       postEmailSignup({
@@ -51,7 +84,7 @@ export default function SignupPasswordPage() {
       }),
     onSuccess: (result) => {
       if (result.isSuccess) {
-        navigate("/dashboard", { replace: true });
+        loginMutation.mutate();
       } else {
         setErrorMsg(result.message ?? "회원가입에 실패했습니다.");
       }
