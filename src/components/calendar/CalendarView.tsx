@@ -129,7 +129,7 @@ export default function CalendarView() {
             onClick={() => setIsModalOpen(true)}
             className="px-5 py-2 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 transition"
           >
-            + 일정 등록
+            + 일정 등록하기
           </button>
         </div>
       </div>

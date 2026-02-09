@@ -20,17 +20,47 @@ import {
 
 const inputStyle = {
   width: "100%",
-  padding: "8px",
+  padding: "12px 0",
   marginTop: "5px",
   marginBottom: "10px",
-  border: "1px solid #ddd",
-  borderRadius: "6px",
+  border: "none",
+  borderBottom: "1px solid #eee",
+  borderRadius: "0",
   boxSizing: "border-box" as const,
+  outline: "none",
+  fontSize: "16px",
 };
+
 const labelStyle = {
-  fontSize: "12px",
+  fontSize: "14px",
   fontWeight: "bold",
-  color: "#555",
+  color: "#1a1a1a",
+  marginBottom: "12px",
+  display: "block",
+};
+
+const addNewButtonStyle = {
+  width: "100%",
+  padding: "16px",
+  backgroundColor: "#f8faff",
+  border: "1px dashed #dbeafe",
+  borderRadius: "16px",
+  color: "#3b82f6",
+  fontSize: "14px",
+  fontWeight: "500",
+  cursor: "pointer",
+  marginTop: "8px",
+  textAlign: "center" as const,
+};
+
+const subTaskItemStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "12px",
+  padding: "12px 0",
+  backgroundColor: "transparent",
+  borderBottom: "1px solid #f2f2f2",
+  fontSize: "14px",
 };
 
 interface TodoEditModalProps {
@@ -61,6 +91,7 @@ export default function TodoEditModal({
     initialData?.mode || "CUSTOM",
   );
   const [subTaskInput, setSubTaskInput] = useState("");
+  const [isAddingSubTask, setIsAddingSubTask] = useState(false);
   const [editingTarget, setEditingTarget] = useState<"MAIN" | number>("MAIN");
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -111,7 +142,10 @@ export default function TodoEditModal({
   };
 
   const handleAddSubTask = () => {
-    if (!subTaskInput.trim()) return;
+    if (!subTaskInput.trim()) {
+      setIsAddingSubTask(false);
+      return;
+    }
     setInputs({
       ...inputs,
       subTasks: [
@@ -120,6 +154,7 @@ export default function TodoEditModal({
       ],
     });
     setSubTaskInput("");
+    setIsAddingSubTask(false);
   };
 
   const removeSubTask = (indexToRemove: number) => {
@@ -227,7 +262,7 @@ export default function TodoEditModal({
         left: 0,
         width: "100%",
         height: "100%",
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0,0,0,0.4)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -238,11 +273,12 @@ export default function TodoEditModal({
       <div
         style={{
           backgroundColor: "white",
-          padding: "20px",
-          borderRadius: "10px",
-          width: "500px",
+          padding: "32px",
+          borderRadius: "24px",
+          width: "480px",
           maxHeight: "90vh",
           overflowY: "auto",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -251,31 +287,50 @@ export default function TodoEditModal({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: "15px",
+            marginBottom: "24px",
           }}
         >
-          <h3>{mode === "UPDATE" ? "일정 수정하기" : "일정 등록하기"}</h3>
-          <button
-            onClick={handleSubmit}
-            disabled={isPending}
-            style={{
-              padding: "6px 12px",
-              cursor: "pointer",
-              backgroundColor: "#2196F3",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-            }}
-          >
-            {mode === "UPDATE" ? "수정" : "등록"}
-          </button>
+          <h2 style={{ fontSize: "20px", fontWeight: "bold", margin: 0 }}>
+            {mode === "UPDATE" ? "일정 수정하기" : "일정 등록하기"}
+          </h2>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              onClick={onClose}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#f5f5f5",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                color: "#666",
+              }}
+            >
+              취소
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={isPending}
+              style={{
+                padding: "8px 20px",
+                cursor: "pointer",
+                backgroundColor: "#3b82f6",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                fontWeight: "600",
+              }}
+            >
+              {mode === "UPDATE" ? "수정" : "등록"}
+            </button>
+          </div>
         </div>
+
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "10px",
-            marginBottom: "15px",
+            gap: "12px",
+            marginBottom: "20px",
           }}
         >
           <EmojiCircle
@@ -286,98 +341,147 @@ export default function TodoEditModal({
               setIsDesignModalOpen(true);
             }}
           />
-          {isDesignModalOpen && (
-            <TodoDesignPicker
-              selectedEmoji={
-                editingTarget === "MAIN"
-                  ? inputs.emoji
-                  : inputs.subTasks[editingTarget as number]?.subEmoji
-              }
-              selectedColor={
-                editingTarget === "MAIN"
-                  ? inputs.bgColor
-                  : inputs.subTasks[editingTarget as number]?.subColor
-              }
-              onEmojiChange={handleEmojiChange}
-              onColorChange={handleColorChange}
-              onClose={() => setIsDesignModalOpen(false)}
-            />
-          )}
           <input
             name="title"
             value={inputs.title}
             onChange={handleChange}
             placeholder="일정 제목 입력"
-            style={{
-              ...inputStyle,
-              marginBottom: 0,
-              border: "none",
-              borderBottom: "1px solid #ddd",
-              borderRadius: 0,
-            }}
+            style={inputStyle}
           />
         </div>
-        <div style={{ marginBottom: "15px" }}>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            position: "relative",
+            marginBottom: "20px",
+          }}
+        >
           <button
             onClick={toggleModal}
             style={{
-              padding: "6px 12px",
-              borderRadius: "16px",
-              border: "1px solid #ddd",
-              backgroundColor: "#f9f9f9",
-              cursor: "pointer",
-            }}
-          >
-            {selectedType === "TASK" ? "할 일" : "일정"} -{" "}
-            {selectedMode === "CUSTOM" ? "사용자 지정" : "언제든지"} ▼
-          </button>
-        </div>
-        {isWorkTypeModalOpen && (
-          <div
-            style={{
+              padding: "10px 16px",
+              borderRadius: "12px",
               border: "1px solid #eee",
-              padding: "10px",
-              marginBottom: "15px",
-              borderRadius: "8px",
-              backgroundColor: "#fafafa",
+              backgroundColor: "#fff",
+              cursor: "pointer",
+              fontSize: "14px",
+              color: "#333",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
             }}
           >
+            {selectedType === "TASK" ? "할 일" : "이벤트"} -{" "}
+            {selectedMode === "CUSTOM" ? "사용자 지정" : "언제든지"}
+            <span style={{ fontSize: "10px", color: "#999" }}>▼</span>
+          </button>
+
+          {isWorkTypeModalOpen && (
             <div
-              style={{ padding: "8px", cursor: "pointer" }}
-              onClick={() => handleClick("TASK", "CUSTOM")}
-            >
-              할 일 (사용자 지정)
-            </div>
-            <div
-              style={{ padding: "8px", cursor: "pointer" }}
-              onClick={() => handleClick("TASK", "ANYTIME")}
-            >
-              할 일 (언제든지)
-            </div>
-            <div
-              style={{ padding: "8px", cursor: "pointer" }}
-              onClick={() => handleClick("EVENT", "CUSTOM")}
-            >
-              이벤트 (사용자 지정)
-            </div>
-          </div>
-        )}
-        <div style={{ marginBottom: "20px" }}>{renderDynamicInputs()}</div>
-        <div style={{ marginBottom: "20px" }}>
-          <label style={labelStyle}>하위 작업</label>
-          {inputs.subTasks.map((sub: any, index: number) => (
-            <div
-              key={index}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                marginBottom: "5px",
-                padding: "5px",
-                backgroundColor: "#f9f9f9",
-                borderRadius: "4px",
+                position: "absolute",
+                top: "45px",
+                right: 0,
+                width: "220px",
+                backgroundColor: "#fff",
+                borderRadius: "16px",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                border: "1px solid #f0f0f0",
+                zIndex: 10,
+                overflow: "hidden",
               }}
             >
+              <div
+                style={{
+                  padding: "16px 16px 8px 16px",
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: "#1a1a1a",
+                }}
+              >
+                작업 유형
+              </div>
+
+              <div
+                style={{
+                  padding: "12px 16px",
+                  cursor: "pointer",
+                  fontSize: "15px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  color:
+                    selectedType === "TASK" && selectedMode === "CUSTOM"
+                      ? "#1a1a1a"
+                      : "#1a1a1a",
+                  backgroundColor:
+                    selectedType === "TASK" && selectedMode === "CUSTOM"
+                      ? "#f8faff"
+                      : "transparent",
+                }}
+                onClick={() => handleClick("TASK", "CUSTOM")}
+              >
+                할 일(사용자 지정)
+                {selectedType === "TASK" && selectedMode === "CUSTOM" && (
+                  <span style={{ color: "#3b82f6" }}>✓</span>
+                )}
+              </div>
+              <div
+                style={{
+                  padding: "12px 16px",
+                  cursor: "pointer",
+                  fontSize: "15px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  color:
+                    selectedType === "TASK" && selectedMode === "ANYTIME"
+                      ? "#1a1a1a"
+                      : "#1a1a1a",
+                  backgroundColor:
+                    selectedType === "TASK" && selectedMode === "ANYTIME"
+                      ? "#f8faff"
+                      : "transparent",
+                  borderBottom: "1px solid #f2f2f2",
+                }}
+                onClick={() => handleClick("TASK", "ANYTIME")}
+              >
+                할 일 (언제든지)
+                {selectedType === "TASK" && selectedMode === "ANYTIME" && (
+                  <span style={{ color: "#3b82f6" }}>✓</span>
+                )}
+              </div>
+
+              <div
+                style={{
+                  padding: "16px",
+                  cursor: "pointer",
+                  fontSize: "15px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor:
+                    selectedType === "EVENT" ? "#f8faff" : "transparent",
+                }}
+                onClick={() => handleClick("EVENT", "CUSTOM")}
+              >
+                <span style={{ flex: 1 }}>이벤트</span>
+                {selectedType === "EVENT" && (
+                  <span style={{ color: "#3b82f6" }}>✓</span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ marginBottom: "24px" }}>{renderDynamicInputs()}</div>
+
+        <div style={{ marginBottom: "24px" }}>
+          <label style={labelStyle}>하위 작업</label>
+          {inputs.subTasks.map((sub: any, index: number) => (
+            <div key={index} style={subTaskItemStyle}>
               <EmojiCircle
                 emoji={sub.subEmoji}
                 color={sub.subColor}
@@ -388,53 +492,98 @@ export default function TodoEditModal({
                 size="28px"
                 fontSize="14px"
               />
-              <span>{sub.subTitle}</span>
+              <span style={{ flex: 1, fontSize: "14px" }}>{sub.subTitle}</span>
               <button
                 onClick={() => removeSubTask(index)}
                 style={{
                   border: "none",
                   background: "none",
                   cursor: "pointer",
-                  color: "#999",
+                  color: "#ccc",
                 }}
               >
                 ✕
               </button>
             </div>
           ))}
-          <div style={{ display: "flex", gap: "5px", marginTop: "5px" }}>
-            <input
-              value={subTaskInput}
-              onChange={(e) => setSubTaskInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAddSubTask()}
-              placeholder="하위 작업 입력"
-              style={{ ...inputStyle, marginBottom: 0 }}
-            />
+
+          {isAddingSubTask ? (
+            <div style={subTaskItemStyle}>
+              <EmojiCircle
+                emoji="📹"
+                color={inputs.bgColor}
+                size="28px"
+                fontSize="14px"
+                onClick={() => {}}
+              />
+              <input
+                autoFocus
+                value={subTaskInput}
+                onChange={(e) => setSubTaskInput(e.target.value)}
+                onBlur={handleAddSubTask}
+                onKeyDown={(e) => e.key === "Enter" && handleAddSubTask()}
+                style={{
+                  border: "none",
+                  outline: "none",
+                  width: "100%",
+                  fontSize: "14px",
+                }}
+              />
+            </div>
+          ) : (
             <button
-              onClick={handleAddSubTask}
-              style={{
-                padding: "0 12px",
-                backgroundColor: "#eee",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
+              style={addNewButtonStyle}
+              onClick={() => setIsAddingSubTask(true)}
             >
-              추가
+              새로 추가 +
             </button>
-          </div>
+          )}
         </div>
+
         <div>
           <label style={labelStyle}>메모</label>
-          <input
+          <textarea
             name="memo"
             value={inputs.memo}
             onChange={handleChange}
-            placeholder="메모 입력"
-            style={inputStyle}
+            placeholder="한 번에 한 번의 클릭으로 개인 이메일 수신함을 깔끔하고, 체계적으로 스트레스 없이 관리해보세요."
+            style={{
+              width: "100%",
+              minHeight: "120px",
+              padding: "12px",
+              marginTop: "5px",
+              marginBottom: "10px",
+              border: "1px solid #eee",
+              borderRadius: "12px",
+              boxSizing: "border-box",
+              outline: "none",
+              fontSize: "14px",
+              resize: "none",
+              lineHeight: "1.5",
+              color: "#333",
+            }}
           />
         </div>
       </div>
+
+      {isDesignModalOpen && (
+        <TodoDesignPicker
+          selectedEmoji={
+            editingTarget === "MAIN"
+              ? inputs.emoji
+              : inputs.subTasks[editingTarget as number]?.subEmoji
+          }
+          selectedColor={
+            editingTarget === "MAIN"
+              ? inputs.bgColor
+              : inputs.subTasks[editingTarget as number]?.subColor
+          }
+          onEmojiChange={handleEmojiChange}
+          onColorChange={handleColorChange}
+          onClose={() => setIsDesignModalOpen(false)}
+        />
+      )}
+
       {activePicker === "date" && (
         <DatePickerModal
           value={inputs.date}

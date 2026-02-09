@@ -1,23 +1,34 @@
-const inputStyle = {
-  width: "100%",
-  padding: "8px",
-  marginTop: "5px",
-  marginBottom: "10px",
-  border: "1px solid #ddd",
-  borderRadius: "6px",
-  boxSizing: "border-box" as const,
-};
+import ClockIcon from "../icons/ClockIcon.tsx";
+import Calendar2Icon from "../icons/Calendar2Icon.tsx";
+import RepeatIcon from "../icons/RepeatIcon.tsx";
+
 const labelStyle = {
-  fontSize: "12px",
-  fontWeight: "bold",
-  color: "#555",
+  fontSize: "15px",
+  fontWeight: "500",
+  color: "#1a1a1a",
 };
+
+const rowStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: "12px 0",
+  borderBottom: "1px solid #f2f2f2",
+};
+
 const pickerButtonStyle = {
-  ...inputStyle,
-  textAlign: "left" as const,
-  backgroundColor: "#fff",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "6px",
+  padding: "6px 12px",
+  backgroundColor: "#f5f5f5",
+  borderRadius: "8px",
   cursor: "pointer",
+  fontSize: "14px",
+  color: "#1a1a1a",
+  fontWeight: "500",
 };
+
 const repeatOptions = [
   { label: "안함", value: "" },
   { label: "매일", value: "DAILY" },
@@ -31,41 +42,38 @@ interface DynamicInputProps {
   setActivePicker: (picker: string) => void;
 }
 
-/**
- * 2. 할 일 (사용자 지정) UI
- */
 export function TaskCustomInput({
   inputs,
   setActivePicker,
 }: DynamicInputProps) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-      <div style={{ display: "flex", gap: "10px" }}>
-        <div style={{ flex: 1 }}>
-          <label style={labelStyle}>날짜</label>
-          <div
-            style={pickerButtonStyle}
-            onClick={() => setActivePicker("date")}
-          >
-            {inputs.date}
-          </div>
-        </div>
-        <div style={{ flex: 1 }}>
-          <label style={labelStyle}>소요시간</label>
-          <div
-            style={pickerButtonStyle}
-            onClick={() => setActivePicker("duration")}
-          >
-            {inputs.duration}분
-          </div>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={rowStyle}>
+        <label style={labelStyle}>날짜</label>
+        <div style={pickerButtonStyle} onClick={() => setActivePicker("date")}>
+          <Calendar2Icon size={14} />
+          {inputs.date}
         </div>
       </div>
-      <div>
+
+      <div style={rowStyle}>
+        <label style={labelStyle}>소요 시간</label>
+        <div
+          style={pickerButtonStyle}
+          onClick={() => setActivePicker("duration")}
+        >
+          <ClockIcon size={14} />
+          {inputs.duration}분
+        </div>
+      </div>
+
+      <div style={{ ...rowStyle, borderBottom: "none" }}>
         <label style={labelStyle}>반복</label>
         <div
           style={pickerButtonStyle}
           onClick={() => setActivePicker("repeat")}
         >
+          <RepeatIcon size={14} />
           {repeatOptions.find((opt) => opt.value === inputs.repeat)?.label ||
             "안함"}
         </div>
@@ -74,42 +82,39 @@ export function TaskCustomInput({
   );
 }
 
-/**
- * 3. 할 일 (언제든지) UI
- */
 export function TaskAnytimeInput({
   inputs,
   setActivePicker,
 }: DynamicInputProps) {
   return (
-    <div>
-      <label style={labelStyle}>소요시간</label>
+    <div style={{ ...rowStyle, borderBottom: "none" }}>
+      <label style={labelStyle}>소요 시간</label>
       <div
         style={pickerButtonStyle}
         onClick={() => setActivePicker("duration")}
       >
+        <ClockIcon size={14} />
         {inputs.duration}분
       </div>
     </div>
   );
 }
 
-/**
- * 4. 이벤트 (사용자 지정) UI
- */
 export function EventCustomInput({
   inputs,
   setActivePicker,
 }: DynamicInputProps) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-      <div style={{ display: "flex", gap: "10px" }}>
-        <div style={{ flex: 1 }}>
-          <label style={labelStyle}>시작</label>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {/* 시작 행: 날짜와 시간 병합 */}
+      <div style={rowStyle}>
+        <label style={labelStyle}>시작</label>
+        <div style={{ display: "flex", gap: "8px" }}>
           <div
             style={pickerButtonStyle}
             onClick={() => setActivePicker("startDate")}
           >
+            <Calendar2Icon size={14} />
             {inputs.startDate}
           </div>
           <div
@@ -119,12 +124,16 @@ export function EventCustomInput({
             {inputs.startTime}
           </div>
         </div>
-        <div style={{ flex: 1 }}>
-          <label style={labelStyle}>마감</label>
+      </div>
+
+      <div style={rowStyle}>
+        <label style={labelStyle}>마감</label>
+        <div style={{ display: "flex", gap: "8px" }}>
           <div
             style={pickerButtonStyle}
             onClick={() => setActivePicker("endDate")}
           >
+            <Calendar2Icon size={14} />
             {inputs.endDate}
           </div>
           <div
@@ -135,12 +144,14 @@ export function EventCustomInput({
           </div>
         </div>
       </div>
-      <div>
+
+      <div style={{ ...rowStyle, borderBottom: "none" }}>
         <label style={labelStyle}>반복</label>
         <div
           style={pickerButtonStyle}
           onClick={() => setActivePicker("repeat")}
         >
+          <RepeatIcon size={14} />
           {repeatOptions.find((opt) => opt.value === inputs.repeat)?.label ||
             "안함"}
         </div>
