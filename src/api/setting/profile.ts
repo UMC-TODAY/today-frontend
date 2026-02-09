@@ -4,7 +4,9 @@ import {
     type WithdrawResponse,
     type EditProfileRequest,
     type EditProfileResponse,
-    type MyInfoResponse
+    type MyInfoResponse,
+    type ChangePasswordRequest,
+    type ChangePasswordResponse
 } from "../../types/setting/profile";
 import { axiosInstance } from "../core/axiosInstance";
 
@@ -49,5 +51,19 @@ export const patchEditProfile = async (body: EditProfileRequest) => {
 // 내 정보 보기
 export const getMyInfo = async () => {
     const res = await axiosInstance.get<MyInfoResponse>("/api/v1/members/me");
+    return res.data;
+}
+
+// 비밀번호 변경
+export const patchChangePassword = async (token: string, body: ChangePasswordRequest) => {
+    const res = await axiosInstance.patch<ChangePasswordResponse>(
+        "/api/v1/members/password", 
+        body,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        },
+    );
     return res.data;
 }

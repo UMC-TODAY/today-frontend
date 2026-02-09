@@ -6,6 +6,8 @@ import { getTextStyle } from "../../styles/auth/loginStyles";
 import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { patchResetPassword } from "../../api/auth/auth";
+import { patchChangePassword } from "../../api/setting/profile";
+import { getAccessToken } from "../../utils/tokenStorage";
 
 function isValidPassword(pw: string) {
   // 8~32자 검증
@@ -29,6 +31,10 @@ export default function ResetPasswordPage() {
   const state = location.state;
 
   const email = state.email ?? "";
+  const from = state.from ?? "";
+
+  const token = getAccessToken() || "";
+
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [isPwInvalid, setIsPwInvalid] = useState(false);
@@ -71,8 +77,37 @@ export default function ResetPasswordPage() {
     },
   });
 
+  const changePasswordMutation = useMutation({
+    mutationFn: () => patchChangePassword(token, { password: pw.trim() }),
+    onSuccess: (result) => {
+      if (result.isSuccess) {
+        navigate("/dashboard?settings=profile", { replace: true });
+      } else {
+        setErrorMsg("비밀번호 재설정에 실패했습니다.");
+      }
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      const errorCode = error.response?.data.errorCode;
+
+      if (errorCode === "PASSWORD_400") {
+        setErrorMsg(error.response?.data.message);
+      } else if (errorCode === "COMMON002") {
+        setErrorMsg("비밀번호 재설정에 실패했습니다.");
+      } else {
+        setErrorMsg("서버와의 연결에 실패했습니다.");
+      }
+
+      console.error("비밀번호 재설정 에러 상세:", error.response?.data);
+    },
+  });
+
   function handleClose() {
-    navigate("/login", { replace: true });
+    if (from === "profile-setting") {
+      navigate("/dashboard?settings=profile", { replace: true });
+    } else {
+      navigate("/login");
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -90,7 +125,11 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    resetPasswordMutation.mutate();
+    if (from === "profile-setting") {
+      changePasswordMutation.mutate();
+    } else {
+      resetPasswordMutation.mutate();
+    }
   }
 
   const infoTextStyle: React.CSSProperties = {

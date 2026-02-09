@@ -60,3 +60,21 @@ export interface MyInfoResponse {
         email: string;
     }
 }
+
+// 비밀번호 변경
+export interface ChangePasswordRequest {
+    password: string;
+}
+
+export interface ChangePasswordSuccessResponse {
+    isSuccess: boolean;
+    message: string;
+}
+
+export interface ChangePasswordErrorResponse {
+    isSuccess: boolean;
+    errorCode: string;
+    message: string;
+}
+
+export type ChangePasswordResponse = ChangePasswordSuccessResponse | ChangePasswordErrorResponse;
