@@ -1,5 +1,8 @@
 import { useMyInfo } from "../../hooks/queries/useSchedule.ts";
 import { useBadgeStatus } from "../../hooks/queries/useSchedule.ts";
+import { BadgeIcon } from "../icons/BadgeIcon.tsx";
+import { CompletedIcon } from "../icons/CompletedIcon.tsx";
+import { RiseIcon } from "../icons/RiseIcon.tsx";
 
 export default function ProfileSummaryCard() {
   const { data: userData, isLoading: userLoading } = useMyInfo();
@@ -38,7 +41,7 @@ export default function ProfileSummaryCard() {
       <div className="w-full flex justify-between px-2">
         <div className="flex flex-col items-center flex-1">
           <div className="flex items-center gap-1.5 mb-3">
-            <span className="text-xl">🏆</span>
+            <BadgeIcon />
             <span className="text-[16px] font-bold text-[#444]">얻은 뱃지</span>
           </div>
           <div className="text-[28px] font-extrabold text-black mb-2">
@@ -46,14 +49,14 @@ export default function ProfileSummaryCard() {
           </div>
           <div className="text-[14px] text-[#6c9eff] flex items-center gap-1">
             상위 {stats?.badge.rankingPercent || 0}%
-            <span className="text-[#ff4d4d] text-[10px] mb-0.5">▲</span>
+            <RiseIcon />
           </div>
         </div>
 
         {/* 완료한 일정 */}
         <div className="flex flex-col items-center flex-1">
           <div className="flex items-center gap-1.5 mb-3">
-            <span className="text-xl text-blue-500">✅</span>
+            <CompletedIcon />
             <span className="text-[16px] font-bold text-[#444]">
               완료한 일정
             </span>
@@ -63,7 +66,7 @@ export default function ProfileSummaryCard() {
           </div>
           <div className="text-[14px] text-[#6c9eff] flex items-center gap-1">
             상위 {stats?.completedSchedule.rankingPercent || 0}%
-            <span className="text-[#ff4d4d] text-[10px] mb-0.5">▲</span>
+            <RiseIcon />
           </div>
         </div>
       </div>

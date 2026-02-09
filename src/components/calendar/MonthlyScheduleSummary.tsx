@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useGetScheduleCompletion } from "../../hooks/queries/useSchedule.ts";
+import { StarIcon } from "../icons/StarIcon.tsx";
 
 export default function MonthlyTodoSummary() {
   const { year, month } = useMemo(() => {
@@ -52,9 +53,7 @@ export default function MonthlyTodoSummary() {
               {data?.totalCount ?? 0}
             </span>
           </div>
-          <div className="flex items-center justify-center w-10 h-10 bg-slate-50 rounded-full">
-            <span className="text-[20px]">🌟</span>
-          </div>
+          <StarIcon />
         </div>
       </div>
     </div>
