@@ -1,5 +1,3 @@
-// src/constants/design.ts
-
 export const SCHEDULE_EMOJIS = [
   "🧑‍💻",
   "🤓",
