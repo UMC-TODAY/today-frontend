@@ -7,6 +7,7 @@ export default function FindPasswordDonePage() {
   const location = useLocation();
   const state = (location.state) || {};
   const email = state.email || "";
+  const from = state.from || "";
 
   const primaryBtnStyle: React.CSSProperties = {
     ...s.submitBase,
@@ -23,6 +24,14 @@ export default function FindPasswordDonePage() {
     cursor: "pointer",
     marginTop: "10px",
   };
+
+  function handleBack() {
+    if (from === "profile-setting") {
+      navigate("/dashboard?settings=profile", { replace: true });
+    } else {
+      navigate("/login");
+    }
+  }
 
   return (
     <div style={s.page}>
@@ -68,7 +77,7 @@ export default function FindPasswordDonePage() {
           <button
             type="button"
             style={secondaryBtnStyle}
-            onClick={() => navigate("/login")}
+            onClick={handleBack}
           >
             <div style={getTextStyle(600, 14, "#0066FF")}>돌아가기</div>
           </button>

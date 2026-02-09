@@ -140,7 +140,9 @@ export default function ProfileSettingPanel({
   }
 
   function onClickChangePassword() {
-    navigate("/login/find-password/done");
+    navigate("/login/find-password/done", {
+      state: { from: "profile-setting" },
+    });
   }
 
   function onClickWithdraw() {
