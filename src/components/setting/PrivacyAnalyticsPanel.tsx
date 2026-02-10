@@ -238,15 +238,24 @@ export default function PrivacyAnalyticsSettingPanel({
   const canSave = isChanged && !isLoading;
 
   function onClickInformation() {
-    alert("내 일정 학습 데이터 활용 동의 링크는 추후 연결 예정입니다.");
+    window.open(
+      "https://aquatic-battery-ff0.notion.site/30333e7fd7958044b1a5d38b7806c01c?pvs=74",
+      "_blank",
+    );
   }
 
   function onClickPrivacyPolicy() {
-    alert("개인정보 처리방침 링크는 추후 연결 예정입니다.");
+    window.open(
+      "https://aquatic-battery-ff0.notion.site/30233e7fd79580019784c1332a6c7cca",
+      "_blank",
+    );
   }
 
   function onClickServiceTerms() {
-    alert("서비스 이용 약관 링크는 추후 연결 예정입니다.");
+    window.open(
+      "https://aquatic-battery-ff0.notion.site/30233e7fd79580048d96e61697fb5622?pvs=74",
+      "_blank",
+    );
   }
 
   return (
