@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Check, X, Loader2 } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Check, Loader2, Plus, X } from "lucide-react";
 import {
   getWeeklyCompletionRate,
   getTogetherDays,
-  getDifficulty,
+  // getDifficulty,  // ❗GET 없다면 안 씀(있어도 지금 요구사항상 초기엔 비움)
   postDifficulty,
   patchDifficulty,
   getGrassMap,
@@ -13,45 +13,52 @@ import {
 } from "../api/analysis";
 import { getMyInfo } from "../api/setting/profile";
 
-// 이모지 옵션 (자연스러운 그라데이션)
+/** 이모지 옵션 (난이도 1~7로 매핑됨) */
 const emojiOptions = [
   {
+    level: 1,
     emoji: "😌",
     label: "매우 쉬움",
     gradient:
       "linear-gradient(180deg, #E8FAF8 0%, #A8E6DF 40%, #5BCDC2 70%, #2DB5A8 100%)",
   },
   {
+    level: 2,
     emoji: "😊",
     label: "쉬움",
     gradient:
       "linear-gradient(180deg, #EDFCFA 0%, #C5F0EA 40%, #9DE5DB 70%, #7DDAD0 100%)",
   },
   {
+    level: 3,
     emoji: "🙂",
     label: "조금 쉬움",
     gradient:
       "linear-gradient(180deg, #FFFBEB 0%, #FEF3C7 40%, #FDE68A 70%, #FCD34D 100%)",
   },
   {
+    level: 4,
     emoji: "😐",
     label: "보통",
     gradient:
       "linear-gradient(180deg, #F9FAFB 0%, #E5E7EB 40%, #D1D5DB 70%, #9CA3AF 100%)",
   },
   {
+    level: 5,
     emoji: "😥",
     label: "조금 어려움",
     gradient:
       "linear-gradient(180deg, #FEF2F2 0%, #FECACA 40%, #FCA5A5 70%, #F87171 100%)",
   },
   {
+    level: 6,
     emoji: "🥵",
     label: "어려움",
     gradient:
       "linear-gradient(180deg, #FEE2E2 0%, #FECACA 40%, #F87171 70%, #EF4444 100%)",
   },
   {
+    level: 7,
     emoji: "🤯",
     label: "매우 어려움",
     gradient:
@@ -59,14 +66,6 @@ const emojiOptions = [
   },
 ];
 
-// 난이도에 따른 그라데이션 반환
-const getDifficultyGradient = (label: string | null): string => {
-  if (!label) return "transparent";
-  const option = emojiOptions.find((opt) => opt.label === label);
-  return option?.gradient || "transparent";
-};
-
-// 잔디 색상 (보라색 5단계)
 const getGrassColor = (count: number): string => {
   if (count === 0) return "#F1F1F1";
   if (count <= 2) return "#EEEAFE";
@@ -75,7 +74,6 @@ const getGrassColor = (count: number): string => {
   return "#3B0BBF";
 };
 
-// 요일 한글 변환
 const dayKorean: Record<string, string> = {
   SUNDAY: "일요일",
   MONDAY: "월요일",
@@ -96,7 +94,6 @@ const dayShortKorean: Record<string, string> = {
   SATURDAY: "토",
 };
 
-// 요일 정렬 순서
 const dayOrder: Record<string, number> = {
   SUNDAY: 0,
   MONDAY: 1,
@@ -107,11 +104,9 @@ const dayOrder: Record<string, number> = {
   SATURDAY: 6,
 };
 
-// 카드 호버 스타일
 const cardHoverStyle =
   "transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1";
 
-// 제목 스타일
 const titleStyle: React.CSSProperties = {
   fontFamily: "Pretendard",
   fontWeight: 700,
@@ -123,17 +118,29 @@ export default function AnalyticsPage() {
   const queryClient = useQueryClient();
 
   const [distractionText, setDistractionText] = useState(
-    "이번주는 너무 할일이 많았고, 같은 처리 방식을 가진 일이 하루안에 몰려있지 않고, 다양하게 처리해야하는 업무 부분, 일상 부분, 취미 부분이 하루에 다 몰려있어서 몰입하기 어려웠습니다."
+    ""
   );
+
+  /** 난이도: GET이 없으므로, 프론트 로컬 상태로만 관리 */
+  const [difficultyLocal, setDifficultyLocal] = useState<
+    { date: string; difficultyLevel: number }[]
+  >([]);
+
   const [selectedDayIndex, setSelectedDayIndex] = useState<number | null>(null);
   const [showEmojiModal, setShowEmojiModal] = useState(false);
-  const [selectedEmoji, setSelectedEmoji] = useState<{
+  const [selectedDifficulty, setSelectedDifficulty] = useState<{
+    level: number;
     emoji: string;
     label: string;
+    gradient: string;
   } | null>(null);
 
-  // API 쿼리
-  const { data: weeklyData, isLoading: isWeeklyLoading, isError: isWeeklyError } = useQuery({
+  // ===== Queries =====
+  const {
+    data: weeklyData,
+    isLoading: isWeeklyLoading,
+    isError: isWeeklyError,
+  } = useQuery({
     queryKey: ["weeklyCompletionRate"],
     queryFn: getWeeklyCompletionRate,
     retry: false,
@@ -145,36 +152,35 @@ export default function AnalyticsPage() {
     retry: false,
   });
 
-  const { data: difficultyData } = useQuery({
-    queryKey: ["difficulty"],
-    queryFn: getDifficulty,
-    retry: false,
-  });
-
   const { data: grassMapData, isLoading: isGrassMapLoading } = useQuery({
     queryKey: ["grassMap"],
     queryFn: getGrassMap,
     retry: false,
   });
 
-  // 사용자 정보 조회
   const { data: userInfo } = useQuery({
     queryKey: ["myInfo"],
     queryFn: getMyInfo,
     retry: false,
   });
 
-  // 몰입 준비 체크리스트 조회
   const { data: checklistData, isLoading: isChecklistLoading } = useQuery({
     queryKey: ["focusChecklist"],
     queryFn: getFocusChecklist,
     retry: false,
   });
 
-  // 체크리스트 토글 mutation
+  // ===== Mutations =====
+
+  /** 체크리스트: 클릭 시 PATCH */
   const checklistMutation = useMutation({
-    mutationFn: ({ itemId, isCompleted }: { itemId: number; isCompleted: boolean }) =>
-      patchFocusChecklistItem(itemId, isCompleted),
+    mutationFn: ({
+      itemId,
+      isCompleted,
+    }: {
+      itemId: number;
+      isCompleted: boolean;
+    }) => patchFocusChecklistItem(itemId, isCompleted),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["focusChecklist"] });
     },
@@ -183,116 +189,127 @@ export default function AnalyticsPage() {
     },
   });
 
-  // 난이도 등록/수정 mutation
+  /**
+   * 난이도: 요구사항 request body
+   * { date, difficultyLevel } (1~7)
+   * - 최초: POST
+   * - 재선택: PATCH
+   */
   const difficultyMutation = useMutation({
     mutationFn: async ({
       date,
-      emoji,
-      label,
+      difficultyLevel,
       isEdit,
     }: {
       date: string;
-      emoji: string;
-      label: string;
+      difficultyLevel: number;
       isEdit: boolean;
     }) => {
+      // ✅ API 함수도 이 시그니처로 맞춰져 있어야 함:
+      // postDifficulty(date, difficultyLevel)
+      // patchDifficulty(date, difficultyLevel)
       if (isEdit) {
-        await patchDifficulty(date, emoji, label);
+        await patchDifficulty(date, difficultyLevel);
       } else {
-        await postDifficulty(date, emoji, label);
+        await postDifficulty(date, difficultyLevel);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["difficulty"] });
+    onSuccess: (_, variables) => {
+      // ✅ 성공 시 alert 없음. UI만 반영
+      setDifficultyLocal((prev) => {
+        const exists = prev.some((x) => x.date === variables.date);
+        if (exists) {
+          return prev.map((x) =>
+            x.date === variables.date
+              ? { date: variables.date, difficultyLevel: variables.difficultyLevel }
+              : x
+          );
+        }
+        return [...prev, { date: variables.date, difficultyLevel: variables.difficultyLevel }];
+      });
+
       setShowEmojiModal(false);
       setSelectedDayIndex(null);
-      setSelectedEmoji(null);
+      setSelectedDifficulty(null);
     },
     onError: () => {
-      alert("난이도 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+      // ❗실패할 때만 메시지
+      alert("난이도 저장에 실패했습니다. 다시 시도해주세요.");
     },
   });
 
-  // 요일별 완료율 데이터 (목업 제거, 일~토 정렬)
+  // ===== Data transforms =====
   const weeklyCompletionData = useMemo(() => {
-    if (weeklyData?.weeklyCompletionRates) {
-      return [...weeklyData.weeklyCompletionRates]
-        .sort((a, b) => dayOrder[a.dayOfWeek] - dayOrder[b.dayOfWeek])
-        .map((item) => ({
-          day: dayKorean[item.dayOfWeek] || item.dayOfWeek,
-          rate: Math.round(item.completionRate * 100),
-          dayOfWeek: item.dayOfWeek,
-        }));
-    }
-    return [];
+    const rates = weeklyData?.weeklyRates ?? [];
+
+    return [...rates]
+      .sort((a, b) => dayOrder[a.dayOfWeek] - dayOrder[b.dayOfWeek])
+      .map((item) => ({
+        day: item.dayName || dayKorean[item.dayOfWeek] || item.dayOfWeek,
+        rate: Math.round((item.completionRate ?? 0) * 100),
+        dayOfWeek: item.dayOfWeek,
+        totalCount: item.totalCount,
+        completedCount: item.completedCount,
+      }));
   }, [weeklyData]);
 
-  const analysisMessages = weeklyData?.analysisMessages || [];
+  const analysisMessages = weeklyData?.analysisMessages ?? [];
 
-  const totalDays = togetherData?.totalDays;
-  const consecutiveDays = togetherData?.consecutiveDays;
+  const togetherDays = togetherData?.togetherDays;      // 총 일수
+  const consecutiveDays = togetherData?.consecutiveDays; // 연속 일수
 
-  // 난이도 데이터 (7일 모두 미선택 상태로 초기화)
+  /** 7일 카드(일~토): GET이 없으니 항상 기본 상태 */
   const difficultyDays = useMemo(() => {
-    if (difficultyData?.difficulties) {
-      return difficultyData.difficulties.map((item) => ({
-        day: dayShortKorean[item.dayOfWeek] || item.dayOfWeek,
-        date: item.date,
-        emoji: item.emoji,
-        label: item.label,
-      }));
-    }
-    // GET이 없으므로 7일 모두 미선택 상태로 초기화
     const today = new Date();
-    const result = [];
+    const res: {
+      day: string;
+      date: string;
+      difficultyLevel: number | null;
+    }[] = [];
+
+    // 이번 주 일요일 기준
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - today.getDay());
+
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - today.getDay() + i);
-      result.push({
+      const d = new Date(sunday);
+      d.setDate(sunday.getDate() + i);
+      const dateStr = d.toISOString().split("T")[0];
+
+      const local = difficultyLocal.find((x) => x.date === dateStr);
+
+      res.push({
         day: ["일", "월", "화", "수", "목", "금", "토"][i],
-        date: date.toISOString().split("T")[0],
-        emoji: null,
-        label: null,
+        date: dateStr,
+        difficultyLevel: local?.difficultyLevel ?? null,
       });
     }
-    return result;
-  }, [difficultyData]);
+    return res;
+  }, [difficultyLocal]);
 
-  // 잔디맵 데이터 (빈 배열이어도 그리드는 렌더링)
   const grassData = useMemo(() => {
-    if (grassMapData?.grassMap) {
-      return grassMapData.grassMap;
-    }
-    return [];
+    return grassMapData?.grassMap ?? [];
   }, [grassMapData]);
 
-  // 사용자 닉네임
   const nickname = userInfo?.data?.nickname || grassMapData?.nickname;
   const totalCompletedTasks = grassMapData?.totalCompletedTasks;
 
-  // 잔디맵을 주 단위로 그룹화 (데이터가 없어도 빈 그리드 표시를 위해)
   const grassWeeks = useMemo(() => {
     if (grassData.length === 0) {
-      // 1년치 빈 데이터 생성 (365일 / 7 = 약 52주)
-      const emptyWeeks: { date: string; count: number }[][] = [];
-      for (let w = 0; w < 52; w++) {
-        const week: { date: string; count: number }[] = [];
-        for (let d = 0; d < 7; d++) {
-          week.push({ date: "", count: 0 });
-        }
-        emptyWeeks.push(week);
-      }
-      return emptyWeeks;
+      // 빈 그리드(52주*7일)
+      return Array.from({ length: 52 }, () =>
+        Array.from({ length: 7 }, () => ({ date: "", count: 0 }))
+      );
     }
 
     const weeks: { date: string; count: number }[][] = [];
-    let currentWeek: { date: string; count: number }[] = [];
+    let current: { date: string; count: number }[] = [];
 
-    grassData.forEach((day, index) => {
-      currentWeek.push(day);
-      if (currentWeek.length === 7 || index === grassData.length - 1) {
-        weeks.push(currentWeek);
-        currentWeek = [];
+    grassData.forEach((day, idx) => {
+      current.push(day);
+      if (current.length === 7 || idx === grassData.length - 1) {
+        weeks.push(current);
+        current = [];
       }
     });
 
@@ -301,57 +318,45 @@ export default function AnalyticsPage() {
 
   const months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan"];
 
+  // ===== Handlers =====
   const handleChecklistToggle = (itemId: number, currentState: boolean) => {
     checklistMutation.mutate({ itemId, isCompleted: !currentState });
   };
 
-  const handleDistractionSubmit = () => {
-    setDistractionText("");
-  };
-
-  const handleEmojiSelect = (emoji: string, label: string) => {
-    setSelectedEmoji({ emoji, label });
-  };
-
-  const handleConfirmEmoji = () => {
-    if (selectedDayIndex !== null && selectedEmoji) {
-      const selectedDay = difficultyDays[selectedDayIndex];
-      const isEdit = selectedDay.emoji !== null;
-      difficultyMutation.mutate({
-        date: selectedDay.date,
-        emoji: selectedEmoji.emoji,
-        label: selectedEmoji.label,
-        isEdit,
-      });
-    }
-  };
-
   const handleDayClick = (index: number) => {
     setSelectedDayIndex(index);
-    setSelectedEmoji(null);
+    setSelectedDifficulty(null);
     setShowEmojiModal(true);
   };
 
-  // 오늘 날짜의 인덱스 찾기
+  const handleConfirmDifficulty = () => {
+    if (selectedDayIndex === null || !selectedDifficulty) return;
+
+    const selectedDay = difficultyDays[selectedDayIndex];
+    const isEdit = selectedDay.difficultyLevel !== null;
+
+    difficultyMutation.mutate({
+      date: selectedDay.date,
+      difficultyLevel: selectedDifficulty.level, // ✅ 1~7
+      isEdit,
+    });
+  };
+
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
   const todayIndex = difficultyDays.findIndex((d) => d.date === todayStr);
 
+  const getDifficultyUI = (level: number | null) => {
+    if (!level) return null;
+    return emojiOptions.find((x) => x.level === level) ?? null;
+  };
+
   return (
-    <div
-      className="w-full h-full flex flex-col overflow-hidden"
-      style={{ fontFamily: "Pretendard" }}
-    >
-      {/* ===================== 상단 영역 (Grid 반응형 배치) ===================== */}
-      <div
-        className="grid grid-cols-[380px_1fr_2fr] gap-3 mb-3"
-        style={{ height: "clamp(300px, 58vh, 500px)" }}
-      >
-        {/* 1) 요일별 계획 대비 완료율 (좌측, row-span 2) */}
-        <div
-          className={`bg-white shadow-sm border ${cardHoverStyle} row-span-2 overflow-hidden flex flex-col`}
-          style={{ borderRadius: "16px", padding: "20px" }}
-        >
+    <div className="w-full h-full flex flex-col overflow-hidden" style={{ fontFamily: "Pretendard" }}>
+      {/* ===================== 상단 영역 ===================== */}
+      <div className="grid grid-cols-[380px_1fr_2fr] gap-3 mb-3" style={{ height: "clamp(300px, 58vh, 500px)" }}>
+        {/* 1) 요일별 완료율 */}
+        <div className={`bg-white shadow-sm border ${cardHoverStyle} row-span-2 overflow-hidden flex flex-col`} style={{ borderRadius: "16px", padding: "20px" }}>
           <h2 className="text-[#0F1724] mb-4 text-left flex-shrink-0" style={titleStyle}>
             요일별 계획 대비 완료율
           </h2>
@@ -364,63 +369,70 @@ export default function AnalyticsPage() {
             <div className="text-center text-gray-500 text-sm flex-1 flex items-center justify-center">
               데이터를 불러오지 못했습니다.
             </div>
-          ) : weeklyCompletionData.length === 0 ? (
-            <div className="text-center text-gray-500 text-sm flex-1 flex items-center justify-center">
-              이번 주 완료율 데이터가 없습니다.
-            </div>
           ) : (
             <>
               <div className="space-y-2 flex-shrink-0">
                 {weeklyCompletionData.map((item) => (
                   <div key={item.day} className="flex items-center gap-3">
                     <span
-                      className={`text-xs w-10 text-left flex-shrink-0 ${
-                        item.dayOfWeek === "SUNDAY" || item.dayOfWeek === "SATURDAY" ? "text-red-500" : "text-gray-600"
-                      }`}
+                      className={`text-xs w-10 text-left flex-shrink-0 ${item.dayOfWeek === "SUNDAY" || item.dayOfWeek === "SATURDAY"
+                          ? "text-red-500"
+                          : "text-gray-600"
+                        }`}
                     >
                       {item.day}
                     </span>
+
                     <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${item.rate}%`, backgroundColor: "#8B5CF6" }}
-                      />
+                      <div className="h-full rounded-full transition-all" style={{ width: `${item.rate}%`, backgroundColor: "#8B5CF6" }} />
                     </div>
-                    <span className="text-xs text-gray-500 w-10 text-right flex-shrink-0">{item.rate}%</span>
+
+                    <span className="text-xs text-gray-500 w-10 text-right flex-shrink-0">
+                      {item.rate}%
+                    </span>
                   </div>
                 ))}
               </div>
 
               <div className="mt-4 text-[11px] text-gray-500 space-y-1 text-left flex-1 overflow-auto">
-                {analysisMessages.map((msg: any, idx: number) => (
-                  <p key={idx}>
-                    {typeof msg === 'string' ? msg : (
-                      <>
-                        {msg.message}
-                        {msg.recommendation && (
-                          <span className="block text-gray-400 mt-0.5">{msg.recommendation}</span>
-                        )}
-                      </>
-                    )}
+                {analysisMessages.length === 0 ? (
+                  <p className="text-gray-400">
+                    이번 주에는 분석 메시지가 아직 없어요.
                   </p>
-                ))}
+                ) : (
+                  analysisMessages.map((msg: any, idx: number) => (
+                    <p key={idx}>
+                      {typeof msg === "string" ? (
+                        msg
+                      ) : (
+                        <>
+                          {msg.message}
+                          {msg.recommendation && (
+                            <span className="block text-gray-400 mt-0.5">
+                              {msg.recommendation}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </p>
+                  ))
+                )}
               </div>
             </>
           )}
         </div>
 
-        {/* 가운데+오른쪽 영역을 2행으로 나눔 */}
+        {/* 가운데+오른쪽 2행 */}
         <div className="col-span-2 grid grid-rows-2 gap-3">
-          {/* 상단 행: TO:DAY + 난이도 (비율 1:2) */}
+          {/* 상단 행: Together + Difficulty */}
           <div className="grid grid-cols-[1fr_2fr] gap-3">
-            {/* 2) TO:DAY 와 함께하고 있어요 */}
+            {/* 2) TO:DAY 함께 */}
             <div className={`bg-white shadow-sm border ${cardHoverStyle} flex flex-col overflow-hidden`} style={{ borderRadius: "16px", padding: "16px" }}>
               <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
                 TO:DAY 와 함께하고 있어요.
               </h2>
 
               <div className="flex gap-3 justify-center flex-1 items-center min-h-0">
-                {/* 총 일수 */}
                 <div
                   className="flex flex-col items-end justify-end p-3 transition-transform duration-300 hover:scale-105 aspect-square relative"
                   style={{
@@ -431,13 +443,12 @@ export default function AnalyticsPage() {
                     boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)",
                   }}
                 >
-                  <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-[#0F1724]">
-                    {totalDays ?? '-'}
+                  <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-[#0F1724]">
+                    {togetherDays ?? "-"}
                   </span>
                   <span className="text-xs text-gray-400">총 일수</span>
                 </div>
 
-                {/* 연속 일수 */}
                 <div
                   className="flex flex-col items-end justify-end p-3 transition-transform duration-300 hover:scale-105 aspect-square relative"
                   style={{
@@ -448,64 +459,73 @@ export default function AnalyticsPage() {
                     boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.08)",
                   }}
                 >
-                  <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-[#0F1724]">
-                    {consecutiveDays ?? '-'}
+                  <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-[#0F1724]">
+                    {consecutiveDays ?? "-"}
                   </span>
                   <span className="text-xs text-gray-400">연속 일수</span>
                 </div>
               </div>
             </div>
 
-            {/* 3) 일정 소화 난이도 성찰하기 */}
+            {/* 3) 난이도 */}
             <div className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden flex flex-col`} style={{ borderRadius: "16px", padding: "16px" }}>
               <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
                 일정 소화 난이도 성찰하기
               </h2>
 
-              {/* 7등분 grid - 83*152 비율 */}
               <div className="grid grid-cols-7 gap-1 flex-1 min-h-0">
-                {difficultyDays.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col items-center gap-1 cursor-pointer transition-transform duration-200 hover:scale-105 min-h-0"
-                    style={{ width: "83px" }}
-                    onClick={() => handleDayClick(index)}
-                  >
+                {difficultyDays.map((item, index) => {
+                  const ui = getDifficultyUI(item.difficultyLevel);
+                  const hasDifficulty = !!ui;
+
+                  return (
                     <div
-                      className={`flex items-center justify-center w-full flex-1 min-h-0 ${
-                        item.emoji ? "" : index === todayIndex ? "border-2 border-blue-400" : "border-2 border-gray-200"
-                      }`}
-                      style={{
-                        borderRadius: "12px",
-                        background: item.emoji ? getDifficultyGradient(item.label) : index === todayIndex ? "#EBF5FF" : "#FFFFFF",
-                        maxHeight: "152px",
-                      }}
+                      key={index}
+                      className="flex flex-col items-center gap-1 cursor-pointer transition-transform duration-200 hover:scale-105 min-h-0"
+                      style={{ width: "83px" }}
+                      onClick={() => handleDayClick(index)}
                     >
-                      {item.emoji ? (
-                        <div className="flex flex-col items-center">
-                          <span className="text-lg">{item.emoji}</span>
-                          <span className="text-[7px] text-gray-600 mt-0.5" style={{ fontFamily: "Pretendard" }}>
-                            {item.label}
-                          </span>
-                        </div>
-                      ) : (
-                        <Plus className="w-4 h-4 text-gray-300" />
-                      )}
+                      <div
+                        className={`flex items-center justify-center w-full flex-1 min-h-0 ${hasDifficulty
+                            ? "" // ✅ 난이도 있으면 border 제거
+                            : index === todayIndex
+                              ? "border-2 border-blue-400"
+                              : "border-2 border-gray-200"
+                          }`}
+                        style={{
+                          borderRadius: "12px",
+                          background: hasDifficulty
+                            ? ui!.gradient
+                            : index === todayIndex
+                              ? "#EBF5FF"
+                              : "#FFFFFF",
+                          maxHeight: "152px",
+                        }}
+                      >
+                        {hasDifficulty ? (
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg">{ui!.emoji}</span>
+                            <span className="text-[7px] text-gray-600 mt-0.5">
+                              {ui!.label}
+                            </span>
+                          </div>
+                        ) : (
+                          <Plus className="w-4 h-4 text-gray-300" />
+                        )}
+                      </div>
+
+                      <span className={`text-xs flex-shrink-0 ${index === todayIndex ? "text-blue-500 font-medium" : "text-gray-500"}`}>
+                        {item.day}
+                      </span>
                     </div>
-                    <span className={`text-xs flex-shrink-0 ${index === todayIndex ? "text-blue-500 font-medium" : "text-gray-500"}`}>
-                      {item.day}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* 하단 행: 몰입을 방해하는 잡념 */}
-          <div
-            className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden flex flex-col h-full`}
-            style={{ borderRadius: "16px", padding: "20px" }}
-          >
+          {/* 하단 행: 잡념 */}
+          <div className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden flex flex-col h-full min-h-0`} style={{ borderRadius: "16px", padding: "20px" }}>
             <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
               몰입을 방해하는 잡념과 할 일들을 적어보세요.
             </h2>
@@ -514,15 +534,13 @@ export default function AnalyticsPage() {
               value={distractionText}
               onChange={(e) => setDistractionText(e.target.value)}
               className="w-full flex-1 p-3 text-sm text-gray-600 bg-gray-50 rounded-xl text-left resize-none min-h-0"
-              style={{ fontFamily: "Pretendard" }}
               placeholder="몰입을 방해하는 생각이나 할 일들을 자유롭게 적어보세요..."
             />
 
             <div className="flex justify-end mt-3 flex-shrink-0">
               <button
-                onClick={handleDistractionSubmit}
+                onClick={() => setDistractionText("")}
                 className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 hover:shadow-md transition-all duration-200"
-                style={{ fontFamily: "Pretendard" }}
               >
                 등록하기
               </button>
@@ -531,12 +549,12 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* ===================== 하단 영역 (잔디맵 7:3 비율) ===================== */}
+      {/* ===================== 하단 영역 ===================== */}
       <div className="grid grid-cols-[2fr_1fr] gap-3 flex-1 min-h-0" style={{ maxHeight: "280px" }}>
         {/* 잔디맵 */}
         <div className={`bg-white shadow-sm border ${cardHoverStyle} overflow-hidden flex flex-col`} style={{ borderRadius: "16px", padding: "16px" }}>
           <h2 className="text-[#0F1724] mb-2 text-left flex-shrink-0" style={titleStyle}>
-            {nickname ? `${nickname}님의 잔디, 이만큼 자랐어요!` : '잔디, 이만큼 자랐어요!'}
+            {nickname ? `${nickname}님의 잔디, 이만큼 자랐어요!` : "잔디, 이만큼 자랐어요!"}
           </h2>
 
           {isGrassMapLoading ? (
@@ -545,22 +563,20 @@ export default function AnalyticsPage() {
             </div>
           ) : (
             <>
-              {/* Month labels */}
               <div className="flex mb-1 ml-4 flex-shrink-0">
-                {months.map((month, idx) => (
-                  <span key={idx} className="text-gray-400 flex-1" style={{ fontFamily: "Pretendard", fontSize: "14px" }}>
-                    {month}
+                {months.map((m) => (
+                  <span key={m} className="text-gray-400 flex-1" style={{ fontSize: "14px" }}>
+                    {m}
                   </span>
                 ))}
               </div>
 
-              {/* Grass grid - 항상 렌더링 */}
               <div className="flex gap-[2px] overflow-hidden flex-1 min-h-0">
-                {grassWeeks.map((week, weekIdx) => (
-                  <div key={weekIdx} className="flex flex-col gap-[2px] flex-1">
-                    {week.map((day, dayIdx) => (
+                {grassWeeks.map((week, wIdx) => (
+                  <div key={wIdx} className="flex flex-col gap-[2px] flex-1">
+                    {week.map((day, dIdx) => (
                       <div
-                        key={dayIdx}
+                        key={dIdx}
                         className="rounded-sm transition-transform duration-150 hover:scale-150 flex-1"
                         style={{
                           backgroundColor: getGrassColor(day.count),
@@ -568,7 +584,6 @@ export default function AnalyticsPage() {
                           minHeight: "6px",
                           maxWidth: "14px",
                           maxHeight: "14px",
-                          // count=0이어도 존재감 유지
                           boxShadow: day.count === 0 ? "inset 0 0 0 1px rgba(0,0,0,0.05)" : "none",
                         }}
                         title={day.date ? `${day.date}: ${day.count}개` : undefined}
@@ -578,17 +593,17 @@ export default function AnalyticsPage() {
                 ))}
               </div>
 
-              {/* Legend & Summary */}
               <div className="flex items-center justify-between mt-2 flex-shrink-0">
-                <p className="text-xs text-blue-500" style={{ fontFamily: "Pretendard" }}>
+                <p className="text-xs text-blue-500">
                   {totalCompletedTasks !== undefined
                     ? `1년간 ${totalCompletedTasks.toLocaleString()}개의 일정을 처리하셨어요!`
-                    : '아직 완료한 일정이 없습니다.'}
+                    : "아직 완료한 일정이 없습니다."}
                 </p>
+
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] text-gray-400">적음</span>
-                  {[0, 2, 4, 7, 10].map((count, idx) => (
-                    <div key={idx} className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: getGrassColor(count) }} />
+                  {[0, 2, 4, 7, 10].map((c) => (
+                    <div key={c} className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: getGrassColor(c) }} />
                   ))}
                   <span className="text-[10px] text-gray-400">많음</span>
                 </div>
@@ -597,7 +612,7 @@ export default function AnalyticsPage() {
           )}
         </div>
 
-        {/* 몰입 준비 체크리스트 */}
+        {/* 체크리스트 */}
         <div className={`bg-white shadow-sm border relative ${cardHoverStyle} overflow-hidden flex flex-col`} style={{ borderRadius: "16px", padding: "16px" }}>
           <h2 className="text-[#0F1724] mb-3 text-left flex-shrink-0" style={titleStyle}>
             몰입 준비 체크리스트
@@ -610,24 +625,24 @@ export default function AnalyticsPage() {
           ) : (
             <div className="space-y-2 flex-1 overflow-auto min-h-0">
               {checklistData?.items && checklistData.items.length > 0 ? (
-                checklistData.items.map((item) => (
+                checklistData.items.map((item: any) => (
                   <label
                     key={item.itemId}
                     className="flex items-center gap-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 hover:shadow-sm transition-all duration-200 px-3 py-2"
                   >
                     <div
-                      className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition ${
-                        item.isCompleted ? "bg-blue-500 border-blue-500" : "border-gray-300 bg-white"
-                      }`}
+                      className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition ${item.isCompleted ? "bg-blue-500 border-blue-500" : "border-gray-300 bg-white"
+                        }`}
                       onClick={() => handleChecklistToggle(item.itemId, item.isCompleted)}
                     >
                       {item.isCompleted && <Check className="w-3 h-3 text-white" />}
                     </div>
+
+                    {/* ✅ content로 렌더 */}
                     <span
                       className={`text-xs ${item.isCompleted ? "text-gray-400 line-through" : "text-gray-700"}`}
-                      style={{ fontFamily: "Pretendard" }}
                     >
-                      {item.text}
+                      {item.content}
                     </span>
                   </label>
                 ))
@@ -639,19 +654,21 @@ export default function AnalyticsPage() {
             </div>
           )}
 
-          <p className="absolute bottom-3 right-4 text-gray-400 flex-shrink-0" style={{ fontFamily: "Pretendard", fontSize: "9px" }}>
-            매일 오전 6시에 갱신됩니다.
+          <p className="absolute bottom-3 right-4 text-gray-400 flex-shrink-0" style={{ fontSize: "9px" }}>
+            {checklistData?.nextResetAt
+              ? `${checklistData.nextResetAt}에 갱신됩니다.`
+              : "매일 오전 6시에 갱신됩니다."}
           </p>
         </div>
       </div>
 
-      {/* ===================== 이모지 선택 모달 ===================== */}
+      {/* ===================== 난이도 모달 ===================== */}
       {showEmojiModal && (
         <div
           className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
           onClick={() => {
             setShowEmojiModal(false);
-            setSelectedEmoji(null);
+            setSelectedDifficulty(null);
           }}
         >
           <div
@@ -659,18 +676,14 @@ export default function AnalyticsPage() {
             onClick={(e) => e.stopPropagation()}
             style={{ width: "700px", height: "400px" }}
           >
-            {/* 모달 헤더 */}
             <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100">
-              <h3
-                className="text-[#0F1724]"
-                style={{ fontFamily: "Pretendard", fontWeight: 700, fontSize: "24px" }}
-              >
+              <h3 className="text-[#0F1724]" style={{ fontWeight: 700, fontSize: "24px" }}>
                 선택해주신 요일의 일정 소화 난이도를 알려주세요!
               </h3>
               <button
                 onClick={() => {
                   setShowEmojiModal(false);
-                  setSelectedEmoji(null);
+                  setSelectedDifficulty(null);
                 }}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
@@ -678,45 +691,42 @@ export default function AnalyticsPage() {
               </button>
             </div>
 
-            {/* 이모지 옵션들 */}
             <div className="px-8 py-10">
               <div className="flex justify-between gap-3">
-                {emojiOptions.map((option) => (
+                {emojiOptions.map((opt) => (
                   <button
-                    key={option.emoji}
-                    onClick={() => handleEmojiSelect(option.emoji, option.label)}
-                    className={`flex flex-col items-center justify-center gap-3 rounded-2xl transition-all duration-200 relative hover:scale-105 hover:shadow-lg ${
-                      selectedEmoji?.emoji === option.emoji ? "ring-4 ring-blue-500 shadow-lg" : ""
-                    }`}
+                    key={opt.level}
+                    onClick={() => setSelectedDifficulty(opt)}
+                    className={`flex flex-col items-center justify-center gap-3 rounded-2xl transition-all duration-200 relative hover:scale-105 hover:shadow-lg ${selectedDifficulty?.level === opt.level ? "ring-4 ring-blue-500 shadow-lg" : ""
+                      }`}
                     style={{
                       width: "95px",
                       height: "130px",
-                      background: option.gradient,
+                      background: opt.gradient,
                     }}
                   >
-                    {selectedEmoji?.emoji === option.emoji && (
+                    {selectedDifficulty?.level === opt.level && (
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-md">
                         <Check className="w-4 h-4 text-white" />
                       </div>
                     )}
-                    <span className="text-4xl">{option.emoji}</span>
-                    <span className="text-xs text-gray-700 text-center font-medium" style={{ fontFamily: "Pretendard" }}>
-                      {option.label}
+                    <span className="text-4xl">{opt.emoji}</span>
+                    <span className="text-xs text-gray-700 text-center font-medium">
+                      {opt.label}
                     </span>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* 확인 버튼 */}
             <div className="px-8 pb-8">
               <button
-                onClick={handleConfirmEmoji}
-                disabled={!selectedEmoji || difficultyMutation.isPending}
+                onClick={handleConfirmDifficulty}
+                disabled={!selectedDifficulty || difficultyMutation.isPending}
                 className="w-full py-5 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 hover:shadow-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
-                style={{ fontFamily: "Pretendard", fontWeight: 600, fontSize: "24px" }}
+                style={{ fontWeight: 600, fontSize: "24px" }}
               >
-                {difficultyMutation.isPending ? '저장 중...' : '확인'}
+                {difficultyMutation.isPending ? "저장 중..." : "확인"}
               </button>
             </div>
           </div>
