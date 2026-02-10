@@ -1,24 +1,17 @@
 export type NotificationType =
   | 'FRIEND_REQUEST'
   | 'COMMENT'
-  | 'LIKE'
-  | 'HASHTAG_COMMENT'
-  | 'HASHTAG_LIKE';
+  | 'LIKE';
 
 export interface Notification {
   notificationId: number;
+  content: string;
   type: NotificationType;
-  senderId: number;
-  senderNickname: string;
-  senderProfileImageUrl?: string;
-  message: string;
-  postId?: number;
-  commentId?: number;
-  isRead: boolean;
+  targetId: number;
   createdAt: string;
+  read: boolean;
 }
 
 export interface NotificationsResponse {
   notifications: Notification[];
-  hasUnread: boolean;
 }

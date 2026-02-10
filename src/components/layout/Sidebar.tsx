@@ -159,7 +159,7 @@ export default function Sidebar() {
           gap: "12px",
         }}
       >
-      
+
 
         {/* 유저 정보 버튼 */}
         <button
@@ -168,7 +168,7 @@ export default function Sidebar() {
             marginTop: "auto",
             display: "flex",
             alignItems: "center",
-            gap: "10px",
+            gap: "12px",
             padding: "0px 0",
             background: "transparent",
             border: "none",
@@ -182,33 +182,40 @@ export default function Sidebar() {
             boxSizing: "border-box",
           }}
         >
-          {/* 프로필 이미지 */}
-          {user?.profileImage ? (
-            <img
-              src={user.profileImage}
-              alt="프로필"
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
-            />
-          ) : (
+          <div
+            style={{
+              height: "100%",
+              padding: "8px",
+              boxSizing: "border-box",
+            }}
+          >
+            {/* 프로필 이미지 */}
             <div
               style={{
                 width: "42px",
                 height: "42px",
-                marginLeft: "8px",
                 borderRadius: "50%",
-                backgroundColor: "#6d86c6ff", 
+                boxSizing: "border-box",
+                backgroundColor: user?.profileImage ? "transparent" : "#6d86c6ff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
-            />
-          )}
-
+            >
+              {user?.profileImage && (
+                <img
+                  src={user.profileImage}
+                  alt="프로필"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+            </div>
+          </div>
           {/* 닉네임 & 이메일 */}
           <div style={{ flex: 1, textAlign: "left" }}>
             <div
@@ -217,6 +224,7 @@ export default function Sidebar() {
                 fontWeight: 400,
                 fontSize: "13px",
                 color: user?.nickname ? "#111827" : "#9CA3AF",
+               
               }}
             >
               {user?.nickname || "닉네임을 설정해주세요"}
@@ -227,6 +235,7 @@ export default function Sidebar() {
                 fontWeight: 400,
                 fontSize: "13px",
                 color: user?.email ? "#111827" : "#9CA3AF",
+                
               }}
             >
               {user?.email || "이메일 정보 없음"}

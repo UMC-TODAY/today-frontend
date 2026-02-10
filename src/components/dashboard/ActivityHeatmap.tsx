@@ -20,7 +20,7 @@ export default function ActivityHeatmap() {
   });
 
   const grassWeeks = useMemo(() => {
-    const serverGrassData = response?.data?.grass || response?.grass;
+    const serverGrassData = response?.grassMap;
     if (!serverGrassData || !Array.isArray(serverGrassData)) return [];
     const weeks = [];
     for (let i = 0; i < serverGrassData.length; i += 7) {
@@ -70,9 +70,9 @@ export default function ActivityHeatmap() {
                 {week.map((day) => (
                   <div
                     key={day.date}
-                    title={`${day.date}: ${day.completedCount}개 완료`}
+                    title={`${day.date}: ${day.count}개 완료`}
                     className="h-[14px] w-[14px] rounded-[3px] transition-all hover:bg-slate-200 cursor-help"
-                    style={{ backgroundColor: getGrassColor(day.level) }}
+                    style={{ backgroundColor: getGrassColor(day.count) }}
                   />
                 ))}
               </div>

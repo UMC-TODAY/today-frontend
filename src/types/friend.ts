@@ -1,9 +1,9 @@
 export interface Friend {
-  friendId: number;
-  userId: number;
+  friendRecordId: number;
+  memberId: number;
   nickname: string;
   profileImageUrl?: string;
-  isSharingSchedule: boolean;
+  sharingCalendar: boolean;
 }
 
 export interface FriendsResponse {
@@ -18,5 +18,6 @@ export interface FriendSearchResult {
 }
 
 export interface FriendSearchResponse {
-  users: FriendSearchResult[];
+  friends: FriendSearchResult[];
+  friendCount: number;
 }

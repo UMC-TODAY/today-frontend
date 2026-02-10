@@ -74,3 +74,26 @@ export const getGrassMap = async (): Promise<GrassMapResponse> => {
   const response = await axiosInstance.get("/api/v1/analysis/grass-map");
   return response.data;
 };
+
+// 몰입 준비 체크리스트 응답 타입
+export interface FocusChecklistItem {
+  itemId: number;
+  text: string;
+  isCompleted: boolean;
+}
+
+export interface FocusChecklistResponse {
+  items: FocusChecklistItem[];
+  nextResetAt: string;
+}
+
+// 몰입 준비 체크리스트 조회
+export const getFocusChecklist = async (): Promise<FocusChecklistResponse> => {
+  const response = await axiosInstance.get("/api/v1/analysis/focus-checklist");
+  return response.data;
+};
+
+// 몰입 준비 체크리스트 토글
+export const patchFocusChecklistItem = async (itemId: number, isCompleted: boolean): Promise<void> => {
+  await axiosInstance.patch(`/api/v1/analysis/focus-checklist/${itemId}`, { isCompleted });
+};
