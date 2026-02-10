@@ -1,6 +1,6 @@
 import { axiosInstance } from "./core/axiosInstance";
 import type { ApiResponse } from "../types/common";
-import type { Friend, FriendsResponse, FriendSearchResponse } from "../types/friend";
+import type { FriendsResponse, FriendSearchResponse } from "../types/friend";
 
 // 친구 목록 조회
 export const getFriends = async (): Promise<FriendsResponse> => {
@@ -11,19 +11,19 @@ export const getFriends = async (): Promise<FriendsResponse> => {
 };
 
 // 친구 검색
-export const searchFriends = async (query: string): Promise<FriendSearchResponse> => {
+export const searchFriends = async (keyword: string): Promise<FriendSearchResponse> => {
   const response = await axiosInstance.get<ApiResponse<FriendSearchResponse>>(
-    "/api/v1/friends/requests",
-    { params: { query } }
+    "/api/v1/friends/search/all",
+    { params: { keyword } }
   );
   return response.data.data;
 };
 
 // 친구 요청 보내기
-export const sendFriendRequest = async (userId: number): Promise<void> => {
+export const sendFriendRequest = async (receiverId: number): Promise<void> => {
   await axiosInstance.post<ApiResponse<null>>(
-    `/api/v1/friends/requests`,
-    { userId }
+    `/api/v1/friends/request`,
+    { receiverId }
   );
 };
 

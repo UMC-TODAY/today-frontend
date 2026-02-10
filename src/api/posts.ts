@@ -41,17 +41,13 @@ export const reportPost = async (postId: number, reason: string): Promise<void> 
 };
 
 // 내 피드 목록 조회
-export interface MyPostsStats {
-  totalPosts: number;
-  totalLikes: number;
-  totalComments: number;
-}
-
 export interface MyPostsResponse {
-  stats: MyPostsStats;
+  totalPostCount: number;
+  totalLikeCount: number;
+  totalCommentCount: number;
   posts: Post[];
   hasNext: boolean;
-  nextCursor?: number;
+  lastPostId?: number;
 }
 
 export const getMyPosts = async (cursor?: number): Promise<MyPostsResponse> => {

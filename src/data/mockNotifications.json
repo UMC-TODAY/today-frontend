@@ -1,0 +1,55 @@
+{
+  "hasUnread": true,
+  "notifications": [
+    {
+      "notificationId": 1,
+      "type": "FRIEND_REQUEST",
+      "message": "마들렌 ㄱ님이 친구 요청을 보냈습니다.",
+      "senderId": 100,
+      "senderNickname": "마들렌 ㄱ",
+      "senderProfileImageUrl": null,
+      "isRead": false,
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "notificationId": 2,
+      "type": "COMMENT",
+      "message": "마들렌입니다다다다님이 쓰신 글에 댓글이 작성되었습니다.",
+      "senderId": 101,
+      "senderNickname": "마들렌입니다다다다",
+      "senderProfileImageUrl": null,
+      "isRead": false,
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "notificationId": 3,
+      "type": "LIKE",
+      "message": "마들렌입니다다다다님이 쓰신 글에 누군가 좋아요를 남겼습니다.",
+      "senderId": 102,
+      "senderNickname": "마들렌입니다다다다",
+      "senderProfileImageUrl": null,
+      "isRead": true,
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "notificationId": 4,
+      "type": "HASHTAG_COMMENT",
+      "message": "마들렌입니다다다다님이 쓰신 글에 댓글이 작성되었습니다.",
+      "senderId": 103,
+      "senderNickname": "마들렌입니다다다다",
+      "senderProfileImageUrl": null,
+      "isRead": true,
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "notificationId": 5,
+      "type": "HASHTAG_LIKE",
+      "message": "마들렌입니다다다다님이 쓰신 글에 누군가 좋아요를 남겼습니다.",
+      "senderId": 104,
+      "senderNickname": "마들렌입니다다다다",
+      "senderProfileImageUrl": null,
+      "isRead": true,
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    }
+  ]
+}

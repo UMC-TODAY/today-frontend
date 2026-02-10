@@ -1,7 +1,7 @@
 export interface PostAuthor {
   id: number;
   nickname: string;
-  profileImage?: string;
+  profileImageUrl?: string;
 }
 
 export interface Post {

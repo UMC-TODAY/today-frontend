@@ -22,13 +22,13 @@ export const createComment = async (postId: number, content: string): Promise<Co
 // 댓글 좋아요
 export const likeComment = async (commentId: number): Promise<void> => {
   await axiosInstance.post<ApiResponse<null>>(
-    `/api/v1/posts/${commentId}/likes`
+    `/api/v1/posts/comments/${commentId}/likes`
   );
 };
 
 // 댓글 좋아요 취소
 export const unlikeComment = async (commentId: number): Promise<void> => {
   await axiosInstance.delete<ApiResponse<null>>(
-    `/api/v1/posts/${commentId}/likes`
+    `/api/v1/posts/comments/${commentId}/likes`
   );
 };

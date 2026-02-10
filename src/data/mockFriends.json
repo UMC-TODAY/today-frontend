@@ -1,0 +1,26 @@
+{
+  "friends": [
+    {
+      "friendRecordId": 1,
+      "memberId": 755,
+      "nickname": "계획적인 곰_816",
+      "profileImageUrl": null,
+      "sharingCalendar": true
+    },
+    {
+      "friendRecordId": 2,
+      "memberId": 2186,
+      "nickname": "행복한 곰ㅎㅎ",
+      "profileImageUrl": "https://bucket-todayy.s3.amazonaws.com/profile/2186/e9cf6cb2-49fe-43ba-8daa-3b22c74f625f.png",
+      "sharingCalendar": false
+    },
+    {
+      "friendRecordId": 3,
+      "memberId": 100,
+      "nickname": "열정적인 다람쥐",
+      "profileImageUrl": null,
+      "sharingCalendar": true
+    }
+  ],
+  "friendCount": 3
+}
