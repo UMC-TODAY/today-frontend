@@ -4,7 +4,7 @@ import { authCommenStyles as s } from "../../styles/auth/authCommonStyles";
 import { getTextStyle } from "../../styles/auth/loginStyles";
 
 interface Props {
-    provider: "naver" | "google";
+  provider: "naver" | "google";
 }
 
 function useQueryParams() {
@@ -24,11 +24,11 @@ const SocialLoginCallbackPage = ({ provider }: Props) => {
   useEffect(() => {
     if (accessToken) {
       localStorage.setItem("accessToken", accessToken);
-      setMsg(`${providerName} 연동이 완료되었습니다.`)
+      setMsg(`${providerName} 연동이 완료되었습니다.`);
 
       // 연동 상태 메시지 1초 띄우고 화면 전환
       const timer = setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }, 2000);
 
       return () => clearTimeout(timer);
