@@ -126,7 +126,7 @@ interface BaseScheduleRequest {
   memo: string;
   emoji: string;
   bgColor: string;
-  subSchedules?: SubSchedule[];
+  subSchedules?: CreateSubSchedule[];
 }
 
 // 2. [할일 - 사용자 지정]
@@ -160,7 +160,8 @@ export type CreateScheduleRequest =
   | TaskAnytimeRequest
   | EventCustomRequest;
 
-export interface SubSchedule {
+// 생성 시 사용하는 하위 일정 타입
+export interface CreateSubSchedule {
   subTitle: string;
   subColor: string;
   subEmoji: string;
@@ -177,6 +178,7 @@ export type ScheduleType = "EVENT" | "TODO";
 export type ScheduleMode = "CUSTOM" | "ANYTIME";
 export type RepeatType = "NONE" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
+// 조회/수정 시 사용하는 하위 일정 타입
 export interface SubSchedule {
   subScheduleId: number;
   title: string;

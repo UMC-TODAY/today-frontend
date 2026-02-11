@@ -84,26 +84,6 @@ const dayKorean: Record<string, string> = {
   SATURDAY: "토요일",
 };
 
-const dayShortKorean: Record<string, string> = {
-  SUNDAY: "일",
-  MONDAY: "월",
-  TUESDAY: "화",
-  WEDNESDAY: "수",
-  THURSDAY: "목",
-  FRIDAY: "금",
-  SATURDAY: "토",
-};
-
-const dayOrder: Record<string, number> = {
-  SUNDAY: 0,
-  MONDAY: 1,
-  TUESDAY: 2,
-  WEDNESDAY: 3,
-  THURSDAY: 4,
-  FRIDAY: 5,
-  SATURDAY: 6,
-};
-
 const cardHoverStyle =
   "transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1";
 
@@ -239,18 +219,23 @@ export default function AnalyticsPage() {
   });
 
   // ===== Data transforms =====
+  // 항상 7개(일~토) 행을 반환, 없는 요일은 0%로 채움
+  const DAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"] as const;
+
   const weeklyCompletionData = useMemo(() => {
     const rates = weeklyData?.weeklyRates ?? [];
 
-    return [...rates]
-      .sort((a, b) => dayOrder[a.dayOfWeek] - dayOrder[b.dayOfWeek])
-      .map((item) => ({
-        day: item.dayName || dayKorean[item.dayOfWeek] || item.dayOfWeek,
-        rate: Math.round((item.completionRate ?? 0) * 100),
-        dayOfWeek: item.dayOfWeek,
-        totalCount: item.totalCount,
-        completedCount: item.completedCount,
-      }));
+    return DAYS.map((dow) => {
+      const found = rates.find((r) => r.dayOfWeek === dow);
+      const completionRate = found?.completionRate ?? 0;
+      return {
+        dayOfWeek: dow,
+        day: found?.dayName ?? dayKorean[dow],
+        rate: Math.round(completionRate * 100),
+        totalCount: found?.totalCount ?? 0,
+        completedCount: found?.completedCount ?? 0,
+      };
+    });
   }, [weeklyData]);
 
   const analysisMessages = weeklyData?.analysisMessages ?? [];

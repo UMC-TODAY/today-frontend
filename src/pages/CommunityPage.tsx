@@ -36,6 +36,7 @@ export default function CommunityPage() {
   } = useCommunityQueries({
     activeTab,
     friendSearchQuery,
+    showNotificationModal,
   });
 
   // Mutations
@@ -162,11 +163,11 @@ export default function CommunityPage() {
           onCreateComment={handleCreateComment}
           onReport={handleReport}
           onBlock={handleBlock}
-          onSendFriendRequest={(userId) =>
-            sendFriendRequestMutation.mutate(userId)
+          onSendFriendRequest={(receiverId) =>
+            sendFriendRequestMutation.mutate(receiverId)
           }
-          onCancelFriendRequest={(userId) =>
-            cancelFriendRequestMutation.mutate(userId)
+          onCancelFriendRequest={(receiverId) =>
+            cancelFriendRequestMutation.mutate(receiverId)
           }
           onToggleSharing={(friendId, sharing) =>
             toggleSharingMutation.mutate({ friendId, sharing })
@@ -188,9 +189,9 @@ export default function CommunityPage() {
       <NotificationPanel
         isOpen={showNotificationModal}
         onClose={() => setShowNotificationModal(false)}
-        // ✅ 핵심: getNotifications()가 response.data.data를 반환하면,
-        // data.notifications가 아니라 data 자체를 넘겨야 함
         notifications={notificationsQuery.data}
+        isLoading={notificationsQuery.isLoading}
+        isError={notificationsQuery.isError}
         onAcceptFriend={handleAcceptFriend}
         onRejectFriend={handleRejectFriend}
       />

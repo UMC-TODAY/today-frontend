@@ -1,12 +1,13 @@
 import { axiosInstance } from "./core/axiosInstance";
 import type { ApiResponse } from "../types/common";
-import type { NotificationsResponse } from "../types/notification";
+import type { Notification } from "../types/notification";
 
-// 알림 목록 조회
-export const getNotifications = async (): Promise<NotificationsResponse> => {
-  const response = await axiosInstance.get<ApiResponse<NotificationsResponse>>(
+// 알림 목록 조회 - API가 배열을 직접 반환
+export const getNotifications = async (): Promise<Notification[]> => {
+  const response = await axiosInstance.get<ApiResponse<Notification[]>>(
     "/api/v1/notifications"
   );
+  console.log("notifications response:", response.data.data); // 디버깅용
   return response.data.data;
 };
 

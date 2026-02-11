@@ -11,7 +11,7 @@ export interface FriendsResponse {
 }
 
 export interface FriendSearchResult {
-  userId: number;
+  memberId: number;
   nickname: string;
   profileImageUrl?: string;
   friendStatus: 'FRIEND' | 'PENDING' | 'NONE';
