@@ -20,7 +20,7 @@ interface FeedCardProps {
   isFriendsLoading: boolean;
   friendSearchData: { friends: FriendSearchResult[]; friendCount: number } | undefined;
   isFriendSearchLoading: boolean;
-  notificationsData: { notifications: Notification[] } | undefined;
+  notificationsData: Notification[] | undefined;
 
   // Mutations
   onLike: (postId: number, isLiked: boolean) => void;
@@ -29,8 +29,8 @@ interface FeedCardProps {
   onCreateComment: (postId: number, content: string) => void;
   onReport: (postId: number) => void;
   onBlock: (userId: number) => void;
-  onSendFriendRequest: (userId: number) => void;
-  onCancelFriendRequest: (userId: number) => void;
+  onSendFriendRequest: (receiverId: number) => void;
+  onCancelFriendRequest: (receiverId: number) => void;
   onToggleSharing: (friendId: number, sharing: boolean) => void;
   onDeleteFriend: (friendRecordId: number) => void;
 
@@ -85,7 +85,7 @@ export function FeedCard({
   const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
   const [openFriendMenu, setOpenFriendMenu] = useState<number | null>(null);
 
-  const hasUnreadNotifications = notificationsData?.notifications?.some((n: Notification) => !n.read) ?? false;
+  const hasUnreadNotifications = notificationsData?.some((n: Notification) => !n.read) ?? false;
 
   const handleCreatePost = () => {
     if (newPostContent.trim().length >= 5) {
@@ -513,8 +513,8 @@ export function FeedCard({
                         </div>
                         {friendSearchData.friends.map((searchFriend: FriendSearchResult) => (
                           <div
-                            key={searchFriend.userId}
-                            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg"
+                            key={searchFriend.memberId}
+                            className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all duration-200"
                           >
                             <div className="flex items-center gap-3">
                               {searchFriend.profileImageUrl ? (
@@ -532,38 +532,60 @@ export function FeedCard({
                             </div>
                             <div className="flex items-center gap-2">
                               {searchFriend.friendStatus === 'FRIEND' ? (
-                                <div className="flex items-center gap-2">
-                                  <Share2 className="w-4 h-4 text-gray-400" />
-                                  <span className="text-xs text-gray-500" style={{ fontFamily: 'Pretendard' }}>일정 공유</span>
-                                  <div className="w-10 h-5 bg-gray-800 rounded-full relative cursor-pointer">
-                                    <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full"></div>
+                                // 친구인 경우: 일정 공유 토글 + 점 3개 메뉴
+                                <>
+                                  <div className="flex items-center gap-2">
+                                    <Share2 className="w-4 h-4 text-gray-400" />
+                                    <span className="text-xs text-gray-500" style={{ fontFamily: 'Pretendard' }}>일정 공유</span>
+                                    <div
+                                      className="w-10 h-5 bg-gray-800 rounded-full relative cursor-pointer hover:bg-gray-700 transition-colors"
+                                      onClick={() => onToggleSharing(searchFriend.memberId, true)}
+                                    >
+                                      <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-all"></div>
+                                    </div>
                                   </div>
-                                </div>
+                                  <div className="relative">
+                                    <button
+                                      onClick={() => setOpenFriendMenu(openFriendMenu === searchFriend.memberId ? null : searchFriend.memberId)}
+                                      className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                    >
+                                      <MoreVertical className="w-4 h-4" />
+                                    </button>
+                                    {openFriendMenu === searchFriend.memberId && (
+                                      <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-10">
+                                        <button
+                                          onClick={() => {
+                                            onDeleteFriend(searchFriend.memberId);
+                                            setOpenFriendMenu(null);
+                                          }}
+                                          className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 whitespace-nowrap"
+                                          style={{ fontFamily: 'Pretendard' }}
+                                        >
+                                          친구 삭제
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </>
                               ) : searchFriend.friendStatus === 'PENDING' ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg" style={{ fontFamily: 'Pretendard' }}>
-                                    친구 요청 중
-                                  </span>
-                                  <button
-                                    onClick={() => onCancelFriendRequest(searchFriend.userId)}
-                                    className="px-4 py-2 border border-blue-500 text-blue-500 text-sm rounded-lg hover:bg-blue-50"
-                                    style={{ fontFamily: 'Pretendard' }}
-                                  >
-                                    취소
-                                  </button>
-                                </div>
-                              ) : (
+                                // 요청 중인 경우: 요청 취소 버튼 (빨간색)
                                 <button
-                                  onClick={() => onSendFriendRequest(searchFriend.userId)}
-                                  className="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
+                                  onClick={() => onCancelFriendRequest(searchFriend.memberId)}
+                                  className="px-4 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 hover:shadow-md transition-all duration-200"
+                                  style={{ fontFamily: 'Pretendard' }}
+                                >
+                                  요청 취소
+                                </button>
+                              ) : (
+                                // 친구 아닌 경우: 친구 요청 버튼만
+                                <button
+                                  onClick={() => onSendFriendRequest(searchFriend.memberId)}
+                                  className="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 hover:shadow-md transition-all duration-200"
                                   style={{ fontFamily: 'Pretendard' }}
                                 >
                                   친구 요청
                                 </button>
                               )}
-                              <button className="text-gray-400">
-                                <MoreVertical className="w-4 h-4" />
-                              </button>
                             </div>
                           </div>
                         ))}

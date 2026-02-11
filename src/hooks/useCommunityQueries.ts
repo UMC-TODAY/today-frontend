@@ -6,11 +6,13 @@ import { getNotifications } from "../api/notifications";
 interface UseCommunityQueriesParams {
   activeTab: "recent" | "friends" | "activity";
   friendSearchQuery: string;
+  showNotificationModal: boolean;
 }
 
 export function useCommunityQueries({
   activeTab,
   friendSearchQuery,
+  showNotificationModal,
 }: UseCommunityQueriesParams) {
   // 피드 목록 조회
   const postsQuery = useQuery({
@@ -25,10 +27,13 @@ export function useCommunityQueries({
     enabled: activeTab === "activity",
   });
 
-  // 알림 목록 조회
+  // 알림 목록 조회 - 모달 열릴 때만 요청
   const notificationsQuery = useQuery({
     queryKey: ["notifications"],
     queryFn: () => getNotifications(),
+    enabled: showNotificationModal,
+    refetchOnWindowFocus: false,
+    retry: false,
   });
 
   // 친구 목록 조회

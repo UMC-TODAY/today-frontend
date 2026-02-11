@@ -1,10 +1,12 @@
-import { X, Heart, MessageCircle, ChevronRight } from "lucide-react";
+import { X, Heart, MessageCircle, ChevronRight, Loader2 } from "lucide-react";
 import type { Notification } from "../../types/notification";
 
 interface NotificationPanelProps {
   isOpen: boolean;
   onClose: () => void;
   notifications: Notification[] | undefined;
+  isLoading?: boolean;
+  isError?: boolean;
   onAcceptFriend: (notificationId: number) => void;
   onRejectFriend: (notificationId: number) => void;
   onNotificationClick?: (notification: Notification) => void;
@@ -14,6 +16,8 @@ export function NotificationPanel({
   isOpen,
   onClose,
   notifications,
+  isLoading,
+  isError,
   onAcceptFriend,
   onRejectFriend,
   onNotificationClick,
@@ -60,7 +64,15 @@ export function NotificationPanel({
 
         {/* 알림 목록 */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {sortedNotifications.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+            </div>
+          ) : isError ? (
+            <div className="text-center py-16 text-gray-400 text-base" style={{ fontFamily: 'Pretendard' }}>
+              알림을 불러오지 못했습니다.
+            </div>
+          ) : sortedNotifications.length > 0 ? (
             sortedNotifications.map((notification: Notification) => (
               <div
                 key={notification.notificationId}
