@@ -27,10 +27,11 @@ export const sendFriendRequest = async (receiverId: number): Promise<void> => {
   );
 };
 
-// 친구 요청 취소
-export const cancelFriendRequest = async (userId: number): Promise<void> => {
-  await axiosInstance.delete<ApiResponse<null>>(
-    `/api/v1/friends/requests/${userId}`
+// 친구 요청 취소 (같은 요청을 다시 보내면 취소됨)
+export const cancelFriendRequest = async (receiverId: number): Promise<void> => {
+  await axiosInstance.post<ApiResponse<null>>(
+    `/api/v1/friends/request`,
+    { receiverId }
   );
 };
 

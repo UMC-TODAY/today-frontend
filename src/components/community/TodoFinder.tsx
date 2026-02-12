@@ -6,7 +6,7 @@ import { categoryColors, itemEmojis, getTodayDate, getRepeatLabel } from "./cons
 import type { TodoItem, Category } from "./types";
 
 interface TodoFinderProps {
-  onOpenModal: (todo: TodoItem) => void;
+  onOpenModal: (payload: { todo: TodoItem; emoji: string; bgColor: string }) => void;
 }
 
 export function TodoFinder({ onOpenModal }: TodoFinderProps) {
@@ -28,9 +28,9 @@ export function TodoFinder({ onOpenModal }: TodoFinderProps) {
   // 카테고리 정렬 로직
   const sortedCategories = selectedCategory
     ? [
-        categories.find(cat => cat.categoryKey === selectedCategory)!,
-        ...categories.filter(cat => cat.categoryKey !== selectedCategory)
-      ]
+      categories.find(cat => cat.categoryKey === selectedCategory)!,
+      ...categories.filter(cat => cat.categoryKey !== selectedCategory)
+    ]
     : categories;
 
   return (
@@ -122,9 +122,17 @@ export function TodoFinder({ onOpenModal }: TodoFinderProps) {
                     </div>
                     {isOpen ? (
                       <button
-                        onClick={(e) => { e.stopPropagation(); onOpenModal(todo); }}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          // tailwindToHex 없으니 일단 고정값으로
+                          const bgColor = "#F0EFC4";
+
+                          onOpenModal({ todo, emoji, bgColor });
+                        }}
                         className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition flex items-center gap-1.5 bg-white"
-                        style={{ fontFamily: 'Pretendard' }}
+                        style={{ fontFamily: "Pretendard" }}
                       >
                         <Plus className="w-4 h-4" />
                         내 할일에 추가하기

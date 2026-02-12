@@ -38,3 +38,15 @@ export const getRepeatLabel = (rule: string) => {
   };
   return labels[rule] || "매주";
 };
+
+// Tailwind bg-color 클래스를 hex 색상으로 변환
+export const tailwindToHex: Record<string, string> = {
+  "bg-green-100": "#dcfce7",
+  "bg-red-100": "#fee2e2",
+  "bg-orange-100": "#ffedd5",
+  "bg-yellow-100": "#fef9c3",
+  "bg-purple-100": "#f3e8ff",
+  "bg-blue-100": "#dbeafe",
+  "bg-pink-100": "#fce7f3",
+  "bg-indigo-100": "#e0e7ff",
+};

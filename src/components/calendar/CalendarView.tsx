@@ -9,12 +9,25 @@ import {
 } from "../../hooks/queries/useSchedule";
 import TodoEditModal from "../Modals/TodoEditModal.tsx";
 
+// 🔥 핵심: 서버에서 내려오는 done 필드가 여러 형태일 수 있으니 안전하게 추출
+type DoneLike = {
+  isDone?: boolean;
+  is_done?: boolean;
+  _done?: boolean;
+};
+
+const getIsDone = (ev: unknown): boolean => {
+  const e = ev as DoneLike | null | undefined;
+  return !!(e?.isDone ?? e?._done ?? e?.is_done);
+};
+
 export default function CalendarView() {
   const { mutate: uploadCsv } = useCsvUpload();
   const { mutate: updateStatus } = useUpdateScheduleStatus();
   const [activeDate, setActiveDate] = useState(new Date());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const calendarRef = useRef<FullCalendar>(null);
+
   const { data: response } = useGetMonthlySchedule({
     year: activeDate.getFullYear(),
     month: activeDate.getMonth() + 1,
@@ -23,9 +36,7 @@ export default function CalendarView() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      uploadCsv(file);
-    }
+    if (file) uploadCsv(file);
     e.target.value = "";
   };
 
@@ -35,26 +46,35 @@ export default function CalendarView() {
     }
   };
 
-  const events = response?.data?.events || [];
+  // events 타입을 모르더라도 unknown[]로 잡고, 읽을 때만 좁히기
+  const events = (response?.data?.events ?? []) as Array<{
+    id: number | string;
+    title: string;
+    startedAt: string;
+    endedAt: string;
+    emoji?: string;
+    color?: string;
+  } & DoneLike>;
 
-  const handleEventClick = (info: any) => {
+  const handleEventClick = (info: { event: { id: string } }) => {
     const eventId = info.event.id;
-    const rawData = events.find((ev: any) => ev.id.toString() === eventId);
-    if (rawData) {
-      const currentStatus = !!(
-        rawData.isDone ??
-        rawData._done ??
-        rawData.is_done
-      );
-      updateStatus({
-        id: rawData.id,
-        data: { is_done: !currentStatus },
-      });
-    }
+
+    const rawData = events.find((ev) => ev.id.toString() === eventId);
+    if (!rawData) return;
+
+    const currentStatus = getIsDone(rawData);
+    const numericId = typeof rawData.id === "string" ? parseInt(rawData.id, 10) : rawData.id;
+
+    updateStatus({
+      id: numericId,
+      // ✅ 서버로 보낼 때는 백엔드 스펙대로 is_done 사용
+      data: { is_done: !currentStatus },
+    });
   };
 
   const calendarEvents = events.map((ev) => {
-    const isDone = !!(ev.isDone ?? ev._done ?? ev.is_done);
+    const isDone = getIsDone(ev);
+
     return {
       id: ev.id.toString(),
       title: ev.title,
@@ -67,7 +87,7 @@ export default function CalendarView() {
         color: ev.color || "#4F85F8",
         startedAt: ev.startedAt,
         endedAt: ev.endedAt,
-        isDone: isDone,
+        isDone,
         hasTime:
           ev.startedAt &&
           ev.startedAt.includes(" ") &&
@@ -81,6 +101,7 @@ export default function CalendarView() {
     calendarApi?.prev();
     setActiveDate(calendarApi?.getDate() || new Date());
   };
+
   const handleNext = () => {
     const calendarApi = calendarRef.current?.getApi();
     calendarApi?.next();
@@ -96,6 +117,7 @@ export default function CalendarView() {
         className="hidden"
         onChange={handleFileChange}
       />
+
       <div className="flex justify-between items-center mb-4 flex-shrink-0">
         <div className="flex items-center gap-4">
           <button
@@ -114,6 +136,7 @@ export default function CalendarView() {
             ▶
           </button>
         </div>
+
         <div className="flex gap-2">
           <select
             onChange={onSelectChange}
@@ -125,6 +148,7 @@ export default function CalendarView() {
             <option value="CSV파일 업로드">CSV파일 업로드</option>
             <option>Notion</option>
           </select>
+
           <button
             onClick={() => setIsModalOpen(true)}
             className="px-5 py-2 bg-blue-600 text-white font-bold text-sm rounded-lg hover:bg-blue-700 transition"
@@ -133,9 +157,11 @@ export default function CalendarView() {
           </button>
         </div>
       </div>
+
       {isModalOpen && (
         <TodoEditModal mode="CREATE" onClose={() => setIsModalOpen(false)} />
       )}
+
       <div
         className="flex-grow w-full overflow-hidden
         [&_.fc]:font-sans
@@ -173,11 +199,20 @@ export default function CalendarView() {
             return days[args.date.getDay()];
           }}
           eventContent={(info) => {
-            const { title, extendedProps: props } = info.event;
+            const { title, extendedProps } = info.event;
+            const props = extendedProps as {
+              emoji?: string;
+              color: string;
+              startedAt: string;
+              endedAt: string;
+              isDone: boolean;
+              hasTime: boolean;
+            };
             const hasTime = props.hasTime;
             const isStart = info.isStart;
             const isEnd = info.isEnd;
             const isDone = props.isDone;
+
             let timeText = "";
             if (hasTime && isEnd) {
               try {
@@ -187,6 +222,7 @@ export default function CalendarView() {
                 console.log(e);
               }
             }
+
             return (
               <div
                 className={`w-full min-h-[20px] px-2 py-[2px] text-[11px] font-medium flex items-center justify-between cursor-pointer transition hover:opacity-80 shadow-md ${
@@ -197,22 +233,20 @@ export default function CalendarView() {
                     : "text-white"
                 } ${!hasTime && isStart ? "rounded-l-full pl-3" : ""} ${!hasTime && isEnd ? "rounded-r-full pr-3" : ""} ${!isStart && !isEnd ? "rounded-none" : ""}`}
                 style={{
-                  borderLeftColor:
-                    hasTime && isStart ? props.color : "transparent",
+                  borderLeftColor: hasTime && isStart ? props.color : "transparent",
                   backgroundColor: hasTime ? "white" : props.color,
                 }}
               >
                 <div className="flex items-center gap-1 overflow-hidden">
                   {isStart ? (
-                    <span
-                      className={`truncate ${isDone ? "line-through" : ""}`}
-                    >
+                    <span className={`truncate ${isDone ? "line-through" : ""}`}>
                       {title}
                     </span>
                   ) : (
                     <span className="invisible">.</span>
                   )}
                 </div>
+
                 {hasTime && isStart && (
                   <span className="text-[9px] ml-1 text-gray-400 shrink-0 uppercase">
                     {timeText}

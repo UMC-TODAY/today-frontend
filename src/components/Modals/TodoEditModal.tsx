@@ -6,6 +6,7 @@ import {
   useCreateSchedule,
   useUpdateSchedule,
 } from "../../hooks/queries/useSchedule.ts";
+import type { CreateScheduleRequest, UpdateScheduleRequest } from "../../types/event.ts";
 import {
   DatePickerModal,
   DurationPickerModal,
@@ -63,11 +64,34 @@ const subTaskItemStyle = {
   fontSize: "14px",
 };
 
+// SubTask 타입 정의
+interface SubTask {
+  subTitle: string;
+  subColor: string;
+  subEmoji: string;
+}
+
+// initialData 타입 정의
+interface InitialData {
+  scheduleType?: string;
+  mode?: string;
+  title?: string;
+  date?: string;
+  duration?: number;
+  repeatType?: string;
+  subSchedules?: SubTask[];
+  memo?: string;
+  emoji?: string;
+  bgColor?: string;
+  startAt?: string;
+  endAt?: string;
+}
+
 interface TodoEditModalProps {
   onClose: () => void;
   mode?: "CREATE" | "UPDATE";
   scheduleId?: number;
-  initialData?: any;
+  initialData?: InitialData | null;
 }
 
 export default function TodoEditModal({
@@ -160,7 +184,7 @@ export default function TodoEditModal({
   const removeSubTask = (indexToRemove: number) => {
     setInputs({
       ...inputs,
-      subTasks: inputs.subTasks.filter((_, index) => index !== indexToRemove),
+      subTasks: inputs.subTasks.filter((_: SubTask, index: number) => index !== indexToRemove),
     });
   };
 
@@ -188,7 +212,7 @@ export default function TodoEditModal({
     }
   };
 
-  const handleChange = (e: any) =>
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setInputs({ ...inputs, [e.target.name]: e.target.value });
   const handlePickerChange = (name: string, value: string) => {
     setInputs({ ...inputs, [name]: value });
@@ -204,7 +228,7 @@ export default function TodoEditModal({
       bgColor: inputs.bgColor,
       subSchedules: inputs.subTasks,
     };
-    let requestData: any;
+    let requestData: CreateScheduleRequest;
     if (selectedType === "EVENT") {
       requestData = {
         ...baseFields,
@@ -213,7 +237,7 @@ export default function TodoEditModal({
         startAt: `${inputs.startDate} ${inputs.startTime}`,
         endAt: `${inputs.endDate} ${inputs.endTime}`,
         repeatType: inputs.repeat || "NONE",
-      };
+      } as CreateScheduleRequest;
     } else if (selectedType === "TASK" && selectedMode === "CUSTOM") {
       requestData = {
         ...baseFields,
@@ -222,22 +246,28 @@ export default function TodoEditModal({
         date: inputs.date,
         duration: Number(inputs.duration) || 0,
         repeatType: inputs.repeat || "NONE",
-      };
+      } as CreateScheduleRequest;
     } else {
       requestData = {
         ...baseFields,
         scheduleType: "TASK",
         mode: "ANYTIME",
         duration: Number(inputs.duration) || 0,
-      };
+      } as CreateScheduleRequest;
     }
-    const mutation = mode === "UPDATE" ? updateSchedule : createSchedule;
-    mutation(requestData, {
+
+    const onSuccessCallback = {
       onSuccess: () => {
         alert(`일정이 ${mode === "UPDATE" ? "수정" : "등록"}되었습니다.`);
         onClose();
       },
-    });
+    };
+
+    if (mode === "UPDATE") {
+      updateSchedule(requestData as unknown as UpdateScheduleRequest, onSuccessCallback);
+    } else {
+      createSchedule(requestData, onSuccessCallback);
+    }
   };
 
   const renderDynamicInputs = () => {
@@ -480,7 +510,7 @@ export default function TodoEditModal({
 
         <div style={{ marginBottom: "24px" }}>
           <label style={labelStyle}>하위 작업</label>
-          {inputs.subTasks.map((sub: any, index: number) => (
+          {inputs.subTasks.map((sub: SubTask, index: number) => (
             <div key={index} style={subTaskItemStyle}>
               <EmojiCircle
                 emoji={sub.subEmoji}
