@@ -261,7 +261,6 @@ export default function AnalyticsPage() {
   };
 
   // ===== Grass map (52주×7일) =====
-  const grassData = grassMapData?.grass ?? [];
   const totalCompletedTasks = grassMapData?.summary?.totalCompletedCount;
   const nickname = userInfo?.data?.nickname ?? "사용자";
 
