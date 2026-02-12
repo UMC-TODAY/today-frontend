@@ -40,17 +40,65 @@ export interface DifficultyResponse {
   difficulties: DifficultyDay[];
 }
 
-// 잔디맵 응답 타입
+// 주간 난이도 조회 응답 타입
+export interface WeeklyDifficultyDay {
+  date: string;
+  dayOfWeek: string;
+  dayName: string;
+  difficultyLevel: number | null;
+  difficultyName: string | null;
+  isRegistered: boolean;
+}
+
+export interface WeeklyDifficultyResponse {
+  weekStart: string;
+  weekEnd: string;
+  days: WeeklyDifficultyDay[];
+}
+
 export interface GrassMapDay {
   date: string;
-  count: number;
+  dayOfWeek: string;
+  completedCount: number;
+  level: number; // 0~4
+}
+
+export interface GrassMapSummary {
+  totalCompletedCount: number;
+  maxCompletedCount: number;
+  averageCompletedCount: number;
+  activeDays: number;
+}
+
+export interface GrassMapLevelCriteria {
+  level0: string;
+  level1: string;
+  level2: string;
+  level3: string;
+  level4: string;
 }
 
 export interface GrassMapResponse {
-  nickname: string;
-  grassMap: GrassMapDay[];
-  totalCompletedTasks: number;
+  period: {
+    startDate: string;
+    endDate: string;
+    days: number;
+  };
+  grid: {
+    rows: number;
+    cols: number;
+    size: number;
+  };
+  grass: GrassMapDay[];
+  summary: GrassMapSummary;
+  levelCriteria: GrassMapLevelCriteria;
 }
+
+// 잔디맵 조회
+export const getGrassMap = async (): Promise<GrassMapResponse> => {
+  const response = await axiosInstance.get("/api/v1/analysis/grass-map");
+  return response.data.data;
+};
 
 // 요일별 완료율 조회
 export const getWeeklyCompletionRate = async (): Promise<WeeklyCompletionApiData> => {
@@ -72,6 +120,14 @@ export const getDifficulty = async (): Promise<DifficultyResponse> => {
   return response.data;
 };
 
+// 주간 난이도 조회
+export const getWeeklyDifficulty = async (date: string): Promise<WeeklyDifficultyResponse> => {
+  const response = await axiosInstance.get("/api/v1/analysis/difficulty/weekly", {
+    params: { date },
+  });
+  return response.data.data;
+};
+
 // 난이도 등록
 export const postDifficulty = async (date: string, difficultyLevel: number): Promise<void> => {
   await axiosInstance.post("/api/v1/analysis/difficulty", {  date, difficultyLevel });
@@ -82,16 +138,12 @@ export const patchDifficulty = async (date: string, difficultyLevel: number): Pr
   await axiosInstance.patch("/api/v1/analysis/difficulty", { date, difficultyLevel });
 };
 
-// 잔디맵 조회
-export const getGrassMap = async (): Promise<GrassMapResponse> => {
-  const response = await axiosInstance.get("/api/v1/analysis/grass-map");
-  return response.data;
-};
+
 
 // 몰입 준비 체크리스트 응답 타입
 export interface FocusChecklistItem {
   itemId: number;
-  text: string;
+  content: string;
   isCompleted: boolean;
 }
 

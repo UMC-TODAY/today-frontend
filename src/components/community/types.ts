@@ -18,3 +18,10 @@ export interface Category {
   categoryKey: string;
   items: TodoItem[];
 }
+
+// TodoFinder에서 모달로 전달할 데이터 (color/emoji 포함)
+export interface SelectedTodoData {
+  todo: TodoItem;
+  emoji: string;
+  bgColor: string;
+}

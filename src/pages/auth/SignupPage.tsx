@@ -123,8 +123,7 @@ export default function SignupPage() {
   });
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [okMsg, setOkMsg] = useState<string | null>(null);
+  const [_okMsg, setOkMsg] = useState<string | null>(null);
 
   const birthOk = useMemo(() => birth.length === 6, [birth]);
   const rr1Ok = useMemo(() => rr1.length === 1, [rr1]);

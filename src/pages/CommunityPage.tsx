@@ -6,15 +6,15 @@ import {
   FeedCard,
   NotificationPanel,
   ReportModal,
-  TodoRegistrationModal,
 } from "../components/community";
-import type { TodoItem } from "../components/community";
+import TodoEditModal from "../components/Modals/TodoEditModal";
+import type { SelectedTodoData } from "../components/community";
 
 export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState<"recent" | "friends" | "activity">(
     "recent"
   );
-  const [modalTodo, setModalTodo] = useState<TodoItem | null>(null);
+  const [selectedTodoData, setSelectedTodoData] = useState<SelectedTodoData | null>(null);
 
   // Notification states
   const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -103,14 +103,32 @@ export default function CommunityPage() {
   };
 
   // 모달 열기
-  const handleOpenModal = (todo: TodoItem) => {
-    setModalTodo(todo);
+  const handleOpenModal = (data: SelectedTodoData) => {
+    setSelectedTodoData(data);
   };
 
   // 모달 닫기
   const handleCloseModal = () => {
-    setModalTodo(null);
+    setSelectedTodoData(null);
   };
+
+  // TodoEditModal의 initialData 형식으로 변환
+  const todoEditInitialData = selectedTodoData ? {
+    scheduleType: "TASK" as const,
+    mode: "CUSTOM" as const,
+    title: selectedTodoData.todo.title,
+    date: new Date().toISOString().split("T")[0], // YYYY-MM-DD
+    memo: selectedTodoData.todo.description,
+    duration: selectedTodoData.todo.defaultDurationMin,
+    repeatType: selectedTodoData.todo.repeatRule || "NONE",
+    emoji: selectedTodoData.emoji,
+    bgColor: selectedTodoData.bgColor,
+    subSchedules: selectedTodoData.todo.subTasks.map((subTask) => ({
+      subTitle: subTask,
+      subColor: selectedTodoData.bgColor,
+      subEmoji: selectedTodoData.emoji,
+    })),
+  } : null;
 
   // ✅ 알림 모달 열 때 GET 요청 강제(refetch)
   const handleShowNotificationModal = useCallback(() => {
@@ -204,7 +222,13 @@ export default function CommunityPage() {
       />
 
       {/* 일정 등록하기 모달 */}
-      <TodoRegistrationModal todo={modalTodo} onClose={handleCloseModal} />
+      {selectedTodoData && (
+        <TodoEditModal
+          mode="CREATE"
+          initialData={todoEditInitialData}
+          onClose={handleCloseModal}
+        />
+      )}
 
       {/* 스크롤바 숨기기 스타일 */}
       <style>{`

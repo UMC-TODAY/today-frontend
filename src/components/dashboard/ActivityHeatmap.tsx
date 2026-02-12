@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getGrassMap } from "../../api/analysis.ts";
+import { getGrassMap, type GrassMapDay } from "../../api/analysis.ts";
 import { format, parseISO } from "date-fns";
 
 const getGrassColor = (level: number): string => {
@@ -20,7 +20,7 @@ export default function ActivityHeatmap() {
   });
 
   const grassWeeks = useMemo(() => {
-    const serverGrassData = response?.grassMap;
+    const serverGrassData = response?.grass;
     if (!serverGrassData || !Array.isArray(serverGrassData)) return [];
     const weeks = [];
     for (let i = 0; i < serverGrassData.length; i += 7) {
@@ -44,7 +44,7 @@ export default function ActivityHeatmap() {
 
       <div className="w-full overflow-x-auto scrollbar-hide">
         <div className="flex min-w-max justify-center gap-[5px] pb-2">
-          {grassWeeks.map((week: any[], weekIdx: number) => {
+          {grassWeeks.map((week: GrassMapDay[], weekIdx: number) => {
             const firstDayOfVisibleWeek = week[0]?.date;
             const monthLabel = firstDayOfVisibleWeek
               ? format(parseISO(firstDayOfVisibleWeek), "MMM")
@@ -70,9 +70,9 @@ export default function ActivityHeatmap() {
                 {week.map((day) => (
                   <div
                     key={day.date}
-                    title={`${day.date}: ${day.count}개 완료`}
+                    title={`${day.date}: ${day.completedCount}개 완료`}
                     className="h-[14px] w-[14px] rounded-[3px] transition-all hover:bg-slate-200 cursor-help"
-                    style={{ backgroundColor: getGrassColor(day.count) }}
+                    style={{ backgroundColor: getGrassColor(day.level) }}
                   />
                 ))}
               </div>
