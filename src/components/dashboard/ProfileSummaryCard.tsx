@@ -20,9 +20,8 @@ export default function ProfileSummaryCard() {
   const stats = statsData?.data;
 
   return (
-    <div className="relative flex flex-col items-center w-full bg-white rounded-[24px] pt-12 px-6 pb-8 ">
-      {/* 프로필 이미지 (중앙 큰 원) */}
-      <div className="w-48 h-48 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden mb-12">
+    <div className="relative flex flex-col items-center w-full bg-white rounded-[24px] pt-12 px-6 pb-8 box-border">
+      <div className="w-32 h-32 md:w-48 md:h-48 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden mb-12 shrink-0">
         {user?.profileImage ? (
           <img
             src={user.profileImage}
@@ -38,13 +37,15 @@ export default function ProfileSummaryCard() {
         )}
       </div>
 
-      <div className="w-full flex justify-between px-2">
-        <div className="flex flex-col items-center flex-1">
+      <div className="w-full flex flex-wrap justify-between gap-y-6 px-2">
+        <div className="flex flex-col items-center min-w-[120px] flex-1">
           <div className="flex items-center gap-1.5 mb-3">
             <BadgeIcon />
-            <span className="text-[16px] font-bold text-[#444]">얻은 뱃지</span>
+            <span className="text-[16px] font-bold text-[#444] whitespace-nowrap">
+              얻은 뱃지
+            </span>
           </div>
-          <div className="text-[28px] font-extrabold text-black mb-2">
+          <div className="text-[28px] font-extrabold text-black mb-2 truncate max-w-full">
             + {stats?.badge.totalCount.toLocaleString() || 0}
           </div>
           <div className="text-[14px] text-[#6c9eff] flex items-center gap-1">
@@ -53,15 +54,14 @@ export default function ProfileSummaryCard() {
           </div>
         </div>
 
-        {/* 완료한 일정 */}
-        <div className="flex flex-col items-center flex-1">
+        <div className="flex flex-col items-center min-w-[120px] flex-1">
           <div className="flex items-center gap-1.5 mb-3">
             <CompletedIcon />
-            <span className="text-[16px] font-bold text-[#444]">
+            <span className="text-[16px] font-bold text-[#444] whitespace-nowrap">
               완료한 일정
             </span>
           </div>
-          <div className="text-[28px] font-extrabold text-black mb-2">
+          <div className="text-[28px] font-extrabold text-black mb-2 truncate max-w-full">
             + {stats?.completedSchedule.totalCount.toLocaleString() || 0}
           </div>
           <div className="text-[14px] text-[#6c9eff] flex items-center gap-1">

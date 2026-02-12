@@ -35,7 +35,7 @@ export default function ActivityHeatmap() {
     );
 
   return (
-    <div className="w-full p-6 bg-white rounded-3xl overflow-hidden">
+    <div className="w-full p-6 bg-white rounded-3xl overflow-hidden box-border">
       <div className="mb-6">
         <h2 className="text-[22px] font-bold text-slate-800">
           최근 3달 일정 처리 집계
@@ -43,7 +43,7 @@ export default function ActivityHeatmap() {
       </div>
 
       <div className="w-full overflow-x-auto scrollbar-hide">
-        <div className="flex min-w-max justify-center gap-[5px] pb-2">
+        <div className="flex justify-start md:justify-center gap-[5px] pb-2">
           {grassWeeks.map((week: GrassMapDay[], weekIdx: number) => {
             const firstDayOfVisibleWeek = week[0]?.date;
             const monthLabel = firstDayOfVisibleWeek
@@ -62,7 +62,7 @@ export default function ActivityHeatmap() {
                 className="relative flex shrink-0 flex-col gap-[5px] pt-7"
               >
                 {isNewMonth && (
-                  <span className="absolute top-0 left-0 text-[12px] font-semibold text-slate-400">
+                  <span className="absolute top-0 left-0 text-[12px] font-semibold text-slate-400 whitespace-nowrap">
                     {monthLabel}
                   </span>
                 )}
