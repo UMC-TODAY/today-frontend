@@ -19,17 +19,17 @@ export default function CategoryStatsCard() {
   }
 
   return (
-    <div className="w-full p-7 bg-white rounded-3xl  transition-all ">
+    <div className="w-full p-7 bg-white rounded-3xl transition-all box-border">
       <div className="flex flex-col gap-2">
         <span className="text-[16px] font-bold text-slate-800 tracking-tight">
           지금까지
         </span>
 
-        <div className="flex items-baseline gap-x-1.5 whitespace-nowrap overflow-hidden">
+        <div className="flex flex-wrap items-baseline gap-x-1.5 overflow-hidden">
           <span className="text-[38px] font-black text-blue-500 leading-none">
             {togetherData?.togetherDays ?? 0}
           </span>
-          <span className="text-[20px] font-bold text-slate-700 truncate">
+          <span className="text-[20px] font-bold text-slate-700">
             일의 값진 경험을 쌓아왔어요!
           </span>
         </div>
